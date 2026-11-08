@@ -1,0 +1,22 @@
+{
+  "name": "mochicurve-genlayer",
+  "version": "1.0.0",
+  "description": "Integer bonding curves with consensus-driven delivery graduation on GenLayer Studionet",
+  "scripts": {
+    "build": "esbuild src/app.js --bundle --minify --legal-comments=linked --format=esm --platform=browser --target=es2022 --outfile=dist/app.js",
+    "test": "python3 -m unittest tests/test_mochi_curve.py -v",
+    "dev": "node scripts/serve.mjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "genlayer-js": "1.1.8",
+    "viem": "2.57.17"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2"
+  },
+  "private": true
+}

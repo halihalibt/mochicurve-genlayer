@@ -1,0 +1,343 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en" data-lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>MochiCurve — Spatial Bonding Curve & Consensus Graduation Gate</title>
+  <meta name="description" content="On-chain Meme & AI token bonding curve launchpad with GenLayer subjective graduation gate and anti-rug redemption floor pool." />
+</head>
+<body>
+  <!-- Top Spatial Telemetry Bar (No generic navbar; integrated cockpit HUD) -->
+  <header class="spatial-hud" role="banner">
+    <div class="hud-brand">
+      <span class="hud-logo-mark" aria-hidden="true">▲</span>
+      <div class="hud-brand-text">
+        <span class="hud-title" data-i18n="app_title">MOCHICURVE // 61999</span>
+        <span class="hud-subtitle" data-i18n="app_subtitle">GenLayer Studionet Bonding Curve Cockpit</span>
+      </div>
+    </div>
+
+    <div class="hud-scroll-telemetry" aria-live="polite">
+      <span class="telemetry-chip">
+        <span data-i18n="hud_angle_label">ORBIT</span>:
+        <strong id="hud-orbit-deg">0° FRONT</strong>
+      </span>
+      <span class="telemetry-chip">
+        <span data-i18n="hud_state_label">MOCHI STATE</span>:
+        <strong id="hud-mochi-pose">FLOAT_IDLE</strong>
+      </span>
+      <span class="telemetry-chip" id="hud-mode-chip">
+        <span data-i18n="hud_mode_label">MODE</span>:
+        <strong id="hud-chain-mode">PREVIEW_SEED</strong>
+      </span>
+    </div>
+
+    <div class="hud-controls">
+      <button type="button" id="btn-audio-toggle" class="hud-pill-btn" aria-pressed="false">
+        <span data-i18n="btn_audio_off">SFX: OFF</span>
+      </button>
+      <button type="button" id="btn-lang-toggle" class="hud-pill-btn" aria-label="Switch Language">
+        <span id="lang-indicator">EN / 中文</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Dogstudio-Inspired Persistent 3D-Scrubbed MOCHI Stage (Transform & Opacity Only) -->
+  <div id="mochi-persistent-stage" class="mochi-stage-layer" aria-hidden="true">
+    <div id="mochi-actor-rig" class="mochi-rig">
+      <div id="mochi-halo-ring" class="mochi-halo"></div>
+      <!-- Continuous 3-view rotation layers (0° front, 90° side, 180° back) -->
+      <img id="mochi-layer-front" class="mochi-sprite is-visible" src="./assets/mochi-front.png" alt="MOCHI 0 deg front view" />
+      <img id="mochi-layer-side" class="mochi-sprite" src="./assets/mochi-side.png" alt="MOCHI 90 deg side view" />
+      <img id="mochi-layer-back" class="mochi-sprite" src="./assets/mochi-back.png" alt="MOCHI 180 deg back view" />
+      <!-- Real-time state override layer (float / point / thinking / celebrate) -->
+      <img id="mochi-layer-state" class="mochi-sprite is-state-active" src="./assets/mochi-float.png" alt="MOCHI active state" />
+      <div id="mochi-caption-pill" class="mochi-caption-pill">0° // MOCHI_FLOAT</div>
+    </div>
+  </div>
+
+  <!-- Continuous Spatial Narrative & Trading World -->
+  <main id="spatial-scroll-world" class="spatial-world">
+    <!-- STATION 01 (0° Front): Curve Orbit Selector & Live Solvency Telemetry -->
+    <section class="spatial-station station-01" data-station="0" data-angle="0">
+      <div class="station-column station-left">
+        <div class="station-kicker" data-i18n="st1_kicker">01 // SPATIAL BONDING CURVE ORBIT (0° FRONT)</div>
+        <h1 class="kinetic-headline" id="kinetic-title" data-i18n="st1_headline">
+          TRADE THE CURVE. GRADUATE BY PROOF. SLASH THE RUG.
+        </h1>
+        <p class="station-lead" data-i18n="st1_lead">
+          Every token launches on an integer bonding curve with 25,000 mGEN locked creator collateral. Crossing 100,000 mGEN in cumulative net buys unlocks the GenLayer Graduation Gate: validators audit live GitHub deliverables to boost curve slope (+25%) or slash 100% of collateral into the holder Redemption Floor Pool.
+        </p>
+
+        <!-- Active Curve Switcher Cards -->
+        <div class="curve-orbit-selector" id="curve-selector-list" role="listbox" aria-label="Select Active Bonding Curve"></div>
+      </div>
+
+      <div class="station-column station-right">
+        <!-- Live Curve Reserve & Threshold Gauge -->
+        <div class="telemetry-card">
+          <div class="card-header-row">
+            <span class="badge-ticker" id="active-curve-ticker">$MPRIME</span>
+            <span class="badge-status" id="active-curve-status">GATE_UNLOCKED</span>
+          </div>
+          <h2 class="card-curve-title" id="active-curve-name">Mochi Prime</h2>
+          <p class="card-manifesto" id="active-curve-manifesto"></p>
+
+          <div class="threshold-meter-box">
+            <div class="meter-labels">
+              <span data-i18n="meter_reserve_label">Cumulative Net Buys vs. 100,000 mGEN Graduation Threshold</span>
+              <strong id="meter-reserve-text">102,240 / 100,000 mGEN (102%)</strong>
+            </div>
+            <div class="meter-track" role="progressbar" aria-valuemin="0" aria-valuemax="100000" aria-valuenow="102240">
+              <div class="meter-fill" id="meter-reserve-fill"></div>
+            </div>
+          </div>
+
+          <div class="metrics-grid">
+            <div class="metric-item">
+              <span class="metric-label" data-i18n="metric_supply">Circulating Supply (S)</span>
+              <strong class="metric-val" id="metric-val-supply">71</strong>
+            </div>
+            <div class="metric-item">
+              <span class="metric-label" data-i18n="metric_spot">Spot Price P(S)</span>
+              <strong class="metric-val" id="metric-val-spot">2,860 mGEN</strong>
+            </div>
+            <div class="metric-item">
+              <span class="metric-label" data-i18n="metric_slope">Slope k / Offset</span>
+              <strong class="metric-val" id="metric-val-slope">k=40 / 0</strong>
+            </div>
+            <div class="metric-item">
+              <span class="metric-label" data-i18n="metric_floor_pool">Redemption Floor Pool</span>
+              <strong class="metric-val highlight-cyan" id="metric-val-floor">0 mGEN (1.0000x)</strong>
+            </div>
+            <div class="metric-item">
+              <span class="metric-label" data-i18n="metric_collateral">Creator Collateral + Fee Escrow</span>
+              <strong class="metric-val" id="metric-val-collateral">27,044 mGEN</strong>
+            </div>
+            <div class="metric-item">
+              <span class="metric-label" data-i18n="metric_invariant">Solvency Invariant R_eff == R</span>
+              <strong class="metric-val highlight-purple" id="metric-val-invariant">VERIFIED (102,240)</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STATION 02 (90° Side): Interactive Bonding Curve Trading Cockpit & Commit-Reveal -->
+    <section class="spatial-station station-02" data-station="1" data-angle="90">
+      <div class="station-column station-left">
+        <div class="station-kicker" data-i18n="st2_kicker">02 // BONDING CURVE TRADING COCKPIT (90° SIDE PROFILE)</div>
+        <h2 class="station-title" data-i18n="st2_title">Integer Curve Execution & Floor Redemption</h2>
+        <p class="station-desc" data-i18n="st2_desc">
+          Scrub token delta to preview exact integer reserve integral costs, 2.00% fee escrow accumulation, and pro-rata Redemption Floor Pool bonuses upon selling.
+        </p>
+
+        <!-- SVG Dynamic Bonding Curve Visualizer -->
+        <div class="curve-chart-box">
+          <svg id="bonding-curve-svg" viewBox="0 0 480 210" preserveAspectRatio="none" aria-label="Bonding Curve Integral Chart">
+            <path id="svg-curve-area" d="" />
+            <path id="svg-curve-path" d="" />
+            <line id="svg-threshold-line" x1="0" y1="65" x2="480" y2="65" />
+            <circle id="svg-current-dot" cx="240" cy="100" r="6" />
+          </svg>
+          <div class="chart-legend">
+            <span data-i18n="chart_legend_formula">Formula: R_eff(S) = B*S + (k*S^2)//2 - offset</span>
+            <span id="chart-cursor-readout">S=71 | R=102,240 mGEN</span>
+          </div>
+        </div>
+
+        <!-- Commit-Reveal Secret Catalyst Capsule -->
+        <div class="commit-reveal-box">
+          <h3 class="sub-box-title" data-i18n="cr_title">Secret Catalyst Commit-Reveal</h3>
+          <p class="warning-banner" data-i18n="cr_honest_warning">
+            Notice: SHA-256 commitment is hiding, not encryption; short guessable secrets can be brute-forced. Salt and secret never leave your browser during commit—if you lose your salt or mistype the secret, the catalyst can never be revealed.
+          </p>
+          <div class="cr-status-line">
+            <span data-i18n="cr_onchain_hash">On-Chain Commitment:</span>
+            <code id="cr-commitment-code"></code>
+          </div>
+          <div class="cr-status-line">
+            <span data-i18n="cr_revealed_label">Revealed Catalyst:</span>
+            <strong id="cr-revealed-val"></strong>
+          </div>
+          <div class="cr-input-row">
+            <input type="text" id="input-reveal-salt" data-i18n-placeholder="ph_reveal_salt" placeholder="Salt (e.g. mochi-salt-01)" />
+            <input type="text" id="input-reveal-secret" data-i18n-placeholder="ph_reveal_secret" placeholder="Secret Catalyst (e.g. v1.0-mainnet-bridge-module)" />
+            <button type="button" id="btn-reveal-catalyst" class="action-btn secondary-btn" data-i18n="btn_reveal">Reveal Catalyst</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="station-column station-right">
+        <!-- Trade Execution & Wallet / Ephemeral Signer Box -->
+        <div class="cockpit-trade-card">
+          <div class="wallet-disclosure-box">
+            <div class="wallet-row">
+              <div>
+                <span class="wallet-label" data-i18n="wallet_read_label">Injected Wallet (Connect & Read Only):</span>
+                <strong id="connected-wallet-addr" data-i18n="wallet_not_connected">Not Connected (Read-Only Seed Active)</strong>
+              </div>
+              <button type="button" id="btn-connect-wallet" class="hud-pill-btn" data-i18n="btn_connect_wallet">Connect OKX / EVM Wallet</button>
+            </div>
+            <p class="signer-honest-note" data-i18n="wallet_honest_disclosure">
+              Disclosure: Injected EVM wallets (OKX, MetaMask, Rabby, Coinbase) are used strictly for connection and state reading. Studionet write operations default to the explicitly labeled in-browser ephemeral test account below (key stays in browser memory and is never disguised as your main wallet signature).
+            </p>
+            <div class="ephemeral-row">
+              <span data-i18n="ephemeral_signer_label">Active Studionet Write Signer (Ephemeral Test Account):</span>
+              <code id="ephemeral-Account-badge">Not enabled</code>
+              <button type="button" class="hud-pill-btn" id="btn-enable-test-account">Enable temporary test account</button>
+              <span class="balance-pill"><span data-i18n="user_bal_label">Balance</span>: <strong id="user-mgen-balance">300,000</strong> mGEN</span>
+            </div>
+          </div>
+
+          <div class="trade-slider-block">
+            <label for="input-trade-amount" class="slider-header">
+              <span data-i18n="trade_amount_label">Token Delta (ΔS)</span>
+              <strong id="trade-amount-display">5 Tokens</strong>
+            </label>
+            <input type="range" id="input-trade-amount" min="1" max="40" value="5" />
+            <div class="trade-sim-breakdown">
+              <div class="sim-line">
+                <span data-i18n="sim_buy_cost">Est. Buy Cost (Integral ΔR + 2% Fee):</span>
+                <strong id="sim-buy-val">15,096 mGEN</strong>
+              </div>
+              <div class="sim-line">
+                <span data-i18n="sim_sell_payout">Est. Sell Payout (Integral ΔR + Pro-Rata Floor Bonus):</span>
+                <strong id="sim-sell-val" class="highlight-cyan">13,800 mGEN (Floor Bonus: +0)</strong>
+              </div>
+              <div class="sim-line">
+                <span data-i18n="sim_holder_pos">Your Current Position in Curve:</span>
+                <strong id="user-token-position">0 Tokens</strong>
+              </div>
+            </div>
+            <div class="trade-btn-group">
+              <button type="button" id="btn-buy-tokens" class="action-btn primary-btn" data-i18n="btn_buy_tokens">Buy Along Curve</button>
+              <button type="button" id="btn-sell-tokens" class="action-btn cyan-btn" data-i18n="btn_sell_tokens">Sell & Claim Floor</button>
+            </div>
+          </div>
+
+          <!-- Quick Launch New Curve Drawer -->
+          <details class="launch-drawer">
+            <summary data-i18n="launch_drawer_title">+ Launch New Bonding Curve Token (Locks 25,000 mGEN Collateral)</summary>
+            <div class="launch-form-grid">
+              <input type="text" id="launch-id" placeholder="curve-neko-ai" />
+              <input type="text" id="launch-name" placeholder="Neko AI Agent" />
+              <input type="text" id="launch-ticker" placeholder="$NEKO" />
+              <input type="text" id="launch-repo" placeholder="genlayer-craft/neko-ai" />
+              <input type="text" id="launch-manifesto" placeholder="Deliver v1.0 agent router with >=4 commits in genlayer-craft/neko-ai" />
+              <input type="password" id="launch-secret-raw" placeholder="salt-01|secret-catalyst-v1" />
+              <button type="button" class="hud-pill-btn" id="btn-generate-commitment">Generate private salt and catalyst</button>
+                <button type="button" id="btn-launch-curve" class="action-btn secondary-btn" data-i18n="btn_launch_submit">Commit & Launch Curve</button>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- STATION 03 (135°–180° Back Transition): Subjective Graduation Gate & Dual-Mirror Audit -->
+    <section class="spatial-station station-03" data-station="2" data-angle="140">
+      <div class="station-column station-left">
+        <div class="station-kicker" data-i18n="st3_kicker">03 // GENLAYER GRADUATION GATE (140° REAR-SIDE INSPECTION)</div>
+        <h2 class="station-title" data-i18n="st3_title">Dual-Mirror GitHub Release Adjudication</h2>
+        <p class="station-desc" data-i18n="st3_desc">
+          Once cumulative_buy_volume >= 100,000 mGEN, validators fetch release_manifest.json from Primary (GitHub Raw) and Backup (jsDelivr CDN) mirrors, compare canonical manifests, independently verify the claimed GitHub tag, and execute CATALYST_BOOST, GRADUATE_APPROVED, or RUG_SLASHED.
+        </p>
+
+        <div class="mirror-config-card">
+          <label class="mirror-label" for="input-primary-url" data-i18n="label_primary_mirror">Primary Source (GitHub Raw JSON Mirror)</label>
+          <input type="url" id="input-primary-url" class="url-input" readonly />
+
+          <label class="mirror-label" for="input-backup-url" data-i18n="label_backup_mirror">Backup Source (jsDelivr CDN Equivalent Mirror)</label>
+          <input type="url" id="input-backup-url" class="url-input" readonly />
+
+          <div class="rehearsal-preset-row">
+            <span data-i18n="rehearsal_scenario_label">Local Mock Test Scenario (When No Live Contract Configured):</span>
+            <select id="select-mock-scenario">
+              <option value="PRIMARY_BOOST">1. Primary OK -> CATALYST_BOOST (+25% k, +15,000 Floor)</option>
+              <option value="BACKUP_SLASH">2. Primary Fail / Backup OK -> RUG_SLASHED (Slash 100% Collateral)</option>
+              <option value="BOTH_FAIL">3. Both Sources Fail -> Revert Before Write (Stay GATE_UNLOCKED)</option>
+              <option value="GRADUATE_APPROVED">4. Primary OK -> GRADUATE_APPROVED (Release Collateral, Keep Slope k)</option>
+            </select>
+          </div>
+
+          <button type="button" id="btn-evaluate-gate" class="action-btn primary-btn" data-i18n="btn_trigger_gate">
+            Trigger Consensus Graduation Audit
+          </button>
+        </div>
+      </div>
+
+      <div class="station-column station-right">
+        <div class="audit-verdict-card" id="audit-verdict-container">
+          <h3 class="sub-box-title" data-i18n="audit_card_title">Latest Consensus Graduation Verdict</h3>
+          <div id="audit-verdict-body" class="audit-body"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STATION 04 (180° Back Core): Contradiction Witness Log & Trust Surface -->
+    <section class="spatial-station station-04" data-station="3" data-angle="180">
+      <div class="station-column station-left">
+        <div class="station-kicker" data-i18n="st4_kicker">04 // CONTRADICTION WITNESS LOG (180° BACK CORE)</div>
+        <h2 class="station-title" data-i18n="st4_title">Immutable State & Contradiction Witnesses</h2>
+        <p class="station-desc" data-i18n="st4_desc">
+          Conflicting post-audit declarations never overwrite a finalized graduation verdict. Instead, the contract preserves the active state and appends a cryptographic contradiction witness.
+        </p>
+
+        <div class="witness-form-card">
+          <h3 class="sub-box-title" data-i18n="wit_form_title">Submit Conflicting Post-Audit Claim</h3>
+          <div class="cr-input-row">
+            <select id="input-witness-verdict">
+              <option value="RUG_SLASHED">Claim: RUG_SLASHED</option>
+              <option value="CATALYST_BOOST">Claim: CATALYST_BOOST</option>
+              <option value="GRADUATE_APPROVED">Claim: GRADUATE_APPROVED</option>
+            </select>
+            <input type="text" id="input-witness-tag" placeholder="Claimed Tag (e.g. none or v0.0-broken)" value="none" />
+            <button type="button" id="btn-record-witness" class="action-btn secondary-btn" data-i18n="btn_record_witness">
+              Record Witness
+            </button>
+          </div>
+          <div id="witness-list-container" class="witness-list"></div>
+        </div>
+      </div>
+
+      <div class="station-column station-right">
+        <!-- Complete Trust & Finality Surface -->
+        <aside class="trust-surface-card" aria-label="On-Chain Trust and Telemetry Surface">
+          <h3 class="sub-box-title" data-i18n="trust_title">Studionet Trust & Finality Surface</h3>
+          <div class="trust-grid">
+            <div class="trust-row">
+              <span data-i18n="trust_network">Target Network:</span>
+              <strong>GenLayer Stable Studionet (Chain ID 61999 | Gas: 0)</strong>
+            </div>
+            <div class="trust-row">
+              <span data-i18n="trust_rpc">RPC Endpoint:</span>
+              <code>https://studio.genlayer.com/api</code>
+            </div>
+            <div class="trust-row">
+              <span data-i18n="trust_contract">Contract Address:</span>
+              <code id="trust-contract-addr">Unconfigured (Local Seed Rehearsal Mode — Non-On-Chain)</code>
+            </div>
+            <div class="trust-row">
+              <span data-i18n="trust_tx_status">Latest Transaction Status:</span>
+              <strong id="trust-tx-status" class="tx-badge">IDLE (NO_TX_SUBMITTED)</strong>
+            </div>
+            <div class="trust-row">
+              <span data-i18n="trust_tx_hash">Transaction / Explorer Link:</span>
+              <a id="trust-tx-link" href="https://studio.genlayer.com" target="_blank" rel="noopener noreferrer">https://studio.genlayer.com</a>
+            </div>
+            <div class="trust-row">
+              <span data-i18n="trust_timestamp">Last Telemetry Timestamp:</span>
+              <code id="trust-timestamp">--</code>
+            </div>
+          </div>
+          <p id="seed-demo-notice" role="note"></p>
+          <div id="trust-feedback-banner" class="trust-feedback" role="status" aria-live="polite"></div>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="./dist/app.js"></script>
+</body>
+</html>

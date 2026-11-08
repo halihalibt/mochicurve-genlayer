@@ -1,0 +1,16 @@
+{
+  "network": "Stable Studionet",
+  "chain_id": 61999,
+  "rpc": "https://studio.genlayer.com/api",
+  "source_sha256": "e59819027aed4851743712c024424327e1230b8fd6fd41d7937042107b98d504",
+  "source_commit": "ade5f88876931087c90fd26efb9272dcf939770e",
+  "sender": "0x2995101AAAf359256f087d4d68860112da708545",
+  "status": "FINALIZED",
+  "created_at": "2026-11-08T19:30:13.507Z",
+  "evm_hash": "0x8f4847b845bca91011588a3b5b4ffab21a469c892889cd08cc61c8f23809d67c",
+  "tx_hash": "0x8f4847b845bca91011588a3b5b4ffab21a469c892889cd08cc61c8f23809d67c",
+  "contract_address": "0x0A96f7CB3636Dc46d517CEacb7b6E63b292b2632",
+  "finalized_at": "2026-11-08T19:30:59.823Z",
+  "execution_result": "SUCCESS",
+  "constructor_args": []
+}
