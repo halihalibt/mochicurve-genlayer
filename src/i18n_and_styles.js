@@ -364,76 +364,68 @@ export function injectMochiStyles() {
       box-shadow: 0 0 14px rgba(199, 58, 242, 0.5);
     }
 
-    /* Persistent 3D-Scrubbed MOCHI Stage */
+    /* One continuous atmosphere behind the narrative, with a camera in front. */
+    .mochi-atmosphere {
+      position: fixed; inset: 0; z-index: 0; overflow: hidden;
+      pointer-events: none; background: var(--mochi-navy);
+    }
+    .scene-light, .scene-shade { position: absolute; inset: -12%; will-change: transform, opacity; }
+    .scene-light-cyan {
+      background: radial-gradient(ellipse at 72% 42%, rgba(34,232,242,0.32), transparent 62%);
+    }
+    .scene-light-violet {
+      background: radial-gradient(ellipse at 48% 48%, rgba(199,58,242,0.28), transparent 65%),
+        radial-gradient(ellipse at 62% 25%, rgba(34,232,242,0.15), transparent 52%);
+    }
+    .scene-light-magenta {
+      background: radial-gradient(ellipse at 26% 58%, rgba(199,58,242,0.46), transparent 64%);
+    }
+    .scene-shade { background: var(--mochi-navy); will-change: opacity; }
     .mochi-stage-layer {
-      position: fixed;
-      top: 50%;
-      left: 50%;
+      position: fixed; top: 50%; left: 50%;
       transform: translate(-50%, -50%);
-      width: 250px;
-      height: 420px;
-      pointer-events: none;
-      z-index: 4;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      width: clamp(300px, 32vw, 460px); aspect-ratio: 1;
+      pointer-events: none; z-index: 8;
+      perspective: 850px; perspective-origin: 50% 42%;
     }
-
     .mochi-rig {
-      position: relative;
-      width: 320px;
-      height: 320px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      will-change: transform;
+      position: relative; width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center;
+      transform-style: preserve-3d; will-change: transform;
     }
-
+    .mochi-turntable {
+      position: absolute; inset: 0;
+      transform-style: preserve-3d; will-change: transform;
+    }
     .mochi-halo {
-      position: absolute;
-      width: 260px;
-      height: 260px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(34, 232, 242, 0.25) 0%, rgba(199, 58, 242, 0.05) 70%, transparent 100%);
-      border: 1px dashed rgba(34, 232, 242, 0.4);
-      animation: haloPulse 4s infinite alternate ease-in-out;
-      transition: background 0.3s ease;
+      position: absolute; inset: 3%; border-radius: 50%;
+      will-change: transform; pointer-events: none;
     }
-
-    .mochi-halo[data-tone="cyan"] {
-      background: radial-gradient(circle, rgba(34, 232, 242, 0.38) 0%, rgba(34, 232, 242, 0.08) 70%, transparent 100%);
-      border-color: var(--mochi-cyan);
-      box-shadow: 0 0 30px rgba(34, 232, 242, 0.4);
+    .halo-light {
+      position: absolute; inset: 0; border-radius: inherit;
+      will-change: opacity; opacity: 0;
     }
-
-    .mochi-halo[data-tone="purple-alert"] {
-      background: radial-gradient(circle, rgba(199, 58, 242, 0.4) 0%, rgba(199, 58, 242, 0.1) 70%, transparent 100%);
-      border-color: var(--mochi-purple);
-      box-shadow: 0 0 30px rgba(199, 58, 242, 0.5);
+    .halo-light-cyan {
+      background: radial-gradient(circle, rgba(34,232,242,0.28), transparent 70%);
+      box-shadow: inset 0 0 60px rgba(34,232,242,0.24), 0 0 70px rgba(34,232,242,0.16);
     }
-
-    @keyframes haloPulse {
-      0% { transform: scale(0.95); opacity: 0.7; }
-      100% { transform: scale(1.08); opacity: 1; }
+    .halo-light-violet {
+      background: radial-gradient(circle, rgba(199,58,242,0.23), rgba(34,232,242,0.07) 50%, transparent 72%);
+      box-shadow: inset 0 0 60px rgba(199,58,242,0.3);
     }
-
+    .halo-light-magenta {
+      background: radial-gradient(circle, rgba(199,58,242,0.38), transparent 72%);
+      box-shadow: inset 0 0 60px rgba(199,58,242,0.35), 0 0 80px rgba(199,58,242,0.22);
+    }
     .mochi-sprite {
-      position: absolute;
-      width: 280px;
-      height: 280px;
-      object-fit: contain;
-      opacity: 0;
-      transition: opacity 0.35s ease-in-out;
-      filter: drop-shadow(0 12px 24px rgba(18,33,71,0.5));
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      object-fit: contain; opacity: 0; backface-visibility: hidden;
+      will-change: transform, opacity;
+      /* Texture changes are controlled by the edge-on hinge, never a CSS crossfade. */
+      transition: none;
+      filter: drop-shadow(0 16px 22px rgba(18,33,71,0.45));
     }
-
-    .mochi-sprite.is-visible {
-      opacity: 0.22;
-    }
-
-    .mochi-sprite.is-state-active {
-      opacity: 0.22;
-    }
+    .mochi-sprite.is-visible { opacity: 1; }
 
     .mochi-caption-pill {
       position: absolute;
@@ -457,13 +449,13 @@ export function injectMochiStyles() {
 
     .spatial-station {
       min-height: 100vh;
-      padding: 80px 64px;
+      padding: 140px 64px;
       display: grid;
       grid-template-columns: minmax(0,1fr) minmax(0,1fr);
-      column-gap: 250px;
+      column-gap: clamp(64px, 9vw, 160px);
       row-gap: 48px;
       align-items: center;
-      border-bottom: 1px solid rgba(185, 183, 201, 0.12);
+      border-bottom: 0;
       position: relative;
     }
 
@@ -471,9 +463,23 @@ export function injectMochiStyles() {
       display: flex;
       flex-direction: column;
       gap: 20px;
-      z-index: 10;
+      z-index: auto;
     }
 
+    /* Headings sit behind MOCHI. Reading copy and controls sit in front. */
+    .station-column > * { position: relative; z-index: 12; }
+    .station-column > .kinetic-headline, .station-column > .station-title { z-index: 2; }
+    @media (min-width: 861px) {
+      .station-01 .station-right { align-self: end; }
+    }
+    .station-lead, .station-desc {
+      background: rgba(18,33,71,0.88); border-radius: 12px;
+      padding: 14px 16px;
+    }
+    .station-02 .station-title, .station-03 .station-title {
+      font-size: clamp(42px, 5.8vw, 88px); line-height: 0.98;
+      letter-spacing: -0.055em; max-width: 11ch;
+    }
     .station-kicker {
       font-size: 11px;
       font-weight: 800;
@@ -1121,6 +1127,8 @@ export function injectMochiStyles() {
     .orbit-curve-card { text-align: left; }
     .spatial-hud { padding-top: env(safe-area-inset-top); }
     @media (prefers-reduced-motion: reduce) {
+      .mochi-stage-layer { perspective: none; }
+      .mochi-rig, .mochi-turntable { transform-style: flat; }
       *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
     }
     @media (max-width: 860px) {
@@ -1158,14 +1166,20 @@ export function injectMochiStyles() {
         display: none;
       }
       .mochi-stage-layer {
+        perspective: none;
         top: auto; bottom: 0; left: auto; right: 6px; transform: none;
         width: 118px;
         height: 150px;
       }
-      .mochi-sprite {
-        width: 118px;
-        height: 118px;
+      .mochi-rig { width: 118px; height: 118px; transform-style: flat; }
+      .mochi-turntable { transform-style: flat; }
+      .mochi-sprite { width: 118px; height: 118px; }
+      .station-02 .station-title, .station-03 .station-title {
+        font-size: 36px; line-height: 1.08; letter-spacing: -0.03em; max-width: none;
       }
+      .station-lead, .station-desc { padding: 0; background: none; }
+      .scene-light { inset: 0; }
+
       .metrics-grid, .trade-btn-group, .audit-detail-grid {
         grid-template-columns: minmax(0, 1fr);
       }

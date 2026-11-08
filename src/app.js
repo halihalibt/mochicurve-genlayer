@@ -164,93 +164,140 @@ async function submitStudionetWriteOrRehearsal(methodName, args, rehearsalCallba
 }
 
 // ==============================================================================
-// 2. DOGSTUDIO-INSPIRED PERSISTENT 3D-SCRUBBED MOCHI STAGE (Transform & Opacity Only)
+// 2. CONTINUOUS MOCHI CAMERA, SINGLE-TEXTURE TURN AND SCENE LIGHTING
 // ==============================================================================
+let requestMochiFrame = () => {};
 function setupContinuousScrollScrub() {
   const rig = document.getElementById("mochi-actor-rig");
-  const frontImg = document.getElementById("mochi-layer-front");
-  const sideImg = document.getElementById("mochi-layer-side");
-  const backImg = document.getElementById("mochi-layer-back");
-  const stateImg = document.getElementById("mochi-layer-state");
-  const halo = document.getElementById("mochi-halo-ring");
   const stage = document.getElementById("mochi-persistent-stage");
+  const sprites = ["front", "side", "back", "state"].map(view =>
+    document.getElementById(`mochi-layer-${view}`));
+  const halo = document.getElementById("mochi-halo-ring");
   const degLabel = document.getElementById("hud-orbit-deg");
-  const captionPill = document.getElementById("mochi-caption-pill");
-  const kineticTitle = document.getElementById("kinetic-title");
+  const caption = document.getElementById("mochi-caption-pill");
+  const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const mobileQuery = window.matchMedia("(max-width: 860px)");
+  const turntable = document.createElement("div");
+  turntable.className = "mochi-turntable";
+  rig.insertBefore(turntable, sprites[0]);
+  sprites.forEach(sprite => turntable.appendChild(sprite));
 
-  let ticking = false;
+  // Layered palette lights blend by opacity; no per-frame color or filter paints.
+  const atmosphere = document.createElement("div");
+  atmosphere.className = "mochi-atmosphere";
+  atmosphere.setAttribute("aria-hidden", "true");
+  const lightLayers = ["cyan", "violet", "magenta"].map(tone => {
+    const light = document.createElement("div");
+    light.className = `scene-light scene-light-${tone}`;
+    atmosphere.appendChild(light);
+    const rim = document.createElement("span");
+    rim.className = `halo-light halo-light-${tone}`;
+    halo.appendChild(rim);
+    return [light, rim];
+  });
+  const shade = document.createElement("div");
+  shade.className = "scene-shade";
+  atmosphere.appendChild(shade);
+  document.body.prepend(atmosphere);
 
-  function updateScrubFrame() {
-    ticking = false;
-    const maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
-    const progress = appState.reducedMotion ? 0 : Math.min(1, Math.max(0, window.scrollY / maxScroll));
-    const deg = Math.round(progress * 180);
-    appState.scrollDeg = deg;
+  const clamp = value => Math.max(0, Math.min(1, value));
+  const smooth = value => { const t = clamp(value); return t * t * (3 - 2 * t); };
+  const mix = (a, b, t) => a + (b - a) * t;
+  let current = 0, target = 0, frame = 0, previousTime = 0;
+  let width = innerWidth, height = innerHeight, maxScroll = 1, passes = [];
 
-    // Cross-fade 0° Front -> 90° Side -> 180° Back continuously
-    let wFront = 0;
-    let wSide = 0;
-    let wBack = 0;
-    if (deg <= 90) {
-      const t = deg / 90;
-      wFront = 1 - t;
-      wSide = t;
-    } else {
-      const t = (deg - 90) / 90;
-      wSide = 1 - t;
-      wBack = t;
-    }
-
-    // If an active override pose is set (e.g. thinking or celebrating), highlight state layer
-    const hasOverride = Boolean(appState.mochiOverridePose);
-    frontImg.style.opacity = hasOverride ? (wFront * 0.18).toFixed(3) : wFront.toFixed(3);
-    sideImg.style.opacity = hasOverride ? (wSide * 0.18).toFixed(3) : wSide.toFixed(3);
-    backImg.style.opacity = hasOverride ? (wBack * 0.18).toFixed(3) : wBack.toFixed(3);
-    stateImg.style.opacity = hasOverride ? "1" : "0";
-
-    // Depth interleaving: between 55° and 125°, MOCHI steps in front of background copy (z-index 18 vs 4)
-    const isForegroundPass = deg >= 55 && deg <= 125;
-    // Stage layering stays fixed; scroll only animates transform and opacity.
-
-    if (!appState.reducedMotion) {
-      const isMobile = window.innerWidth < 860;
-      const shiftX = isMobile ? 0 : Math.sin(progress * Math.PI * 2) * 34;
-      const shiftY = Math.cos(progress * Math.PI) * -14;
-      const scale = isMobile ? 0.88 : 1 + Math.sin(progress * Math.PI) * 0.08;
-      const tiltY = isMobile ? 0 : (progress - 0.5) * 22;
-      rig.style.transform = `translate3d(${shiftX.toFixed(1)}px, ${shiftY.toFixed(1)}px, 0) scale(${scale.toFixed(3)}) rotateY(${tiltY.toFixed(1)}deg)`;
-      halo.style.transform = `scale(${(0.92 + Math.sin(progress * Math.PI) * 0.16).toFixed(3)})`;
-      if (kineticTitle) {
-        const stretch = 1 + Math.min(0.12, progress * 0.25);
-        kineticTitle.style.transform = `scaleX(${stretch.toFixed(3)})`;
-      }
-    } else {
-      rig.style.transform = "translate3d(0, 0, 0) scale(1)";
-    }
-
-    const viewTag = deg < 45 ? "FRONT" : deg < 135 ? "SIDE" : "BACK";
-    degLabel.textContent = `${deg}° ${viewTag}`;
-    const c = appState.curves[appState.activeCurveId];
-    const activePoseName = (appState.mochiOverridePose || c.mochi_state).replace(".png", "").toUpperCase();
-    captionPill.textContent = `${deg}° ${viewTag} // ${activePoseName}`;
+  function measureScene() {
+    width = innerWidth; height = innerHeight;
+    maxScroll = Math.max(1, document.documentElement.scrollHeight - height);
+    passes = [...document.querySelectorAll(".station-02 .station-title, .station-03 .station-title")]
+      .map(title => {
+        const rect = title.getBoundingClientRect();
+        return { progress: (rect.top + scrollY + rect.height / 2 - height / 2) / maxScroll,
+          x: rect.left + rect.width / 2 - width / 2 };
+      });
+    target = clamp(scrollY / maxScroll);
+    requestMochiFrame();
   }
 
-  window.addEventListener(
-    "scroll",
-    () => {
-      if (!ticking) {
-        window.requestAnimationFrame(updateScrubFrame);
-        ticking = true;
+  function renderFrame(time) {
+    frame = 0;
+    const reduced = motionQuery.matches, mobile = mobileQuery.matches;
+    appState.reducedMotion = reduced;
+    const dt = previousTime ? Math.min(32, time - previousTime) : 16.67;
+    previousTime = time;
+    // Frame-rate independent 110ms camera response, with no scroll interception.
+    current = reduced ? 0 : current + (target - current) * (1 - Math.exp(-dt / 110));
+    if (Math.abs(target - current) < 0.00002) current = target;
+    const p = reduced ? 0 : current;
+    const yaw = mobile || reduced ? 0 : p * 180;
+    const pitch = mobile || reduced ? 0 : p <= 0.5
+      ? mix(0, -12, smooth(p * 2)) : mix(-12, 8, smooth((p - 0.5) * 2));
+    const scale = reduced ? 1 : mobile ? 0.88 : p <= 0.5
+      ? mix(0.85, 1.5, smooth(p * 2)) : mix(1.5, 1.15, smooth((p - 0.5) * 2));
+    let x = mobile || reduced ? 0 : mix(width * 0.27, -width * 0.27, smooth(p));
+    const y = mobile || reduced ? 0 : Math.sin(p * Math.PI * 2) * height * 0.055;
+    let foreground = 0;
+    if (!mobile && !reduced) {
+      for (const pass of passes) {
+        const weight = 1 - smooth(Math.abs(p - pass.progress) / (height * 0.62 / maxScroll));
+        if (weight > foreground) { foreground = weight; x = mix(x, pass.x, weight); }
       }
-    },
-    { passive: true }
-  );
+    }
+    rig.style.transform = `translate3d(${x.toFixed(2)}px, ${y.toFixed(2)}px, 0) scale(${scale.toFixed(4)})`;
+    turntable.style.transform = `rotateX(${pitch.toFixed(3)}deg) rotateY(${yaw.toFixed(3)}deg)`;
 
-  updateScrubFrame();
+    // Each texture is a facet of the turn. A short hinge makes the outgoing
+    // and incoming facets edge-on at 45/135 degrees. Never overlap textures.
+    const view = mobile || reduced ? 0 : yaw < 45 ? 0 : yaw < 135 ? 1 : 2;
+    const boundary = view === 0 ? 45 : view === 2 ? 135 : yaw < 90 ? 45 : 135;
+    let hinge = 0;
+    if (!mobile && !reduced) {
+      if (view > 0 && yaw < view * 90 - 40)
+        hinge = -45 * (1 - smooth((yaw - (view * 90 - 45)) / 5));
+      if (view < 2 && yaw > view * 90 + 40)
+        hinge = 45 * smooth((yaw - (view * 90 + 40)) / 5);
+    }
+    const alpha = mobile || reduced ? 1 : clamp(Math.abs(yaw - boundary) / 0.9);
+    const showState = !reduced && view === 0 && Boolean(appState.mochiOverridePose);
+    const selected = showState ? 3 : view;
+    sprites.forEach((sprite, index) => {
+      sprite.style.opacity = index === selected ? String(alpha) : "0";
+      sprite.style.transform = `rotateY(${-view * 90 + hinge}deg)`;
+    });
+    const weights = p <= 0.5 ? [1 - smooth(p * 2), smooth(p * 2), 0]
+      : [0, 1 - smooth((p - 0.5) * 2), smooth((p - 0.5) * 2)];
+    lightLayers.forEach(([light, rim], index) => {
+      light.style.opacity = String(weights[index]); rim.style.opacity = String(weights[index]);
+      light.style.transform = `translate3d(${(x * 0.25).toFixed(1)}px, ${(-y).toFixed(1)}px, 0) scale(${(1 + p * 0.18).toFixed(3)})`;
+    });
+    shade.style.opacity = String(reduced ? 0.18 : mix(0.38, 0.08, Math.sin(p * Math.PI)));
+    halo.style.transform = `scale(${(0.92 + Math.sin(p * Math.PI) * 0.18).toFixed(3)})`;
+    const degrees = Math.round(yaw), tag = ["FRONT", "SIDE", "BACK"][view];
+    appState.scrollDeg = degrees;
+    degLabel.textContent = `${degrees}° ${tag}`;
+    caption.textContent = `${degrees}° ${tag}`;
+    // Public visual telemetry is also useful when checking device fallbacks.
+    stage.dataset.yaw = yaw.toFixed(2); stage.dataset.pitch = pitch.toFixed(2);
+    stage.dataset.scale = scale.toFixed(3); stage.dataset.progress = p.toFixed(5);
+    stage.dataset.foreground = foreground.toFixed(3);
+    stage.dataset.motion = reduced ? "reduced" : mobile ? "mobile" : "desktop";
+    if (!reduced && current !== target) requestMochiFrame();
+    else previousTime = 0;
+  }
+  requestMochiFrame = () => { if (!frame) frame = requestAnimationFrame(renderFrame); };
+  window.addEventListener("scroll", () => {
+    target = clamp(scrollY / maxScroll); requestMochiFrame();
+  }, { passive: true });
+  window.addEventListener("resize", measureScene);
+  motionQuery.addEventListener("change", measureScene);
+  mobileQuery.addEventListener("change", measureScene);
+  new ResizeObserver(measureScene).observe(document.body);
+  measureScene();
 }
 
 function setMochiPoseOverride(assetFilename, poseLabel) {
   appState.mochiOverridePose = assetFilename;
+  requestMochiFrame();
   const stateImg = document.getElementById("mochi-layer-state");
   const poseHud = document.getElementById("hud-mochi-pose");
   if (stateImg && assetFilename) {
@@ -281,7 +328,8 @@ function syncMochiWithActiveCurve() {
   stateImg.src = `./assets/${targetFile}`;
   poseHud.textContent = targetFile.replace(".png", "").toUpperCase();
 
-  // Sync halo lighting with curve gate status using strict 5-color Mochi palette
+  requestMochiFrame();
+  // Status remains available separately from the scroll-driven scene lights.
   if (c.gate_status === "CATALYST_BOOST" || c.gate_status === "GRADUATE_APPROVED") {
     halo.dataset.tone = "cyan";
   } else if (c.gate_status === "RUG_SLASHED") {
