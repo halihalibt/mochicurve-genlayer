@@ -1,0 +1,8 @@
+{
+  "repo_slug": "halihalibt/mochicurve-genlayer",
+  "tag_name": "absent-mochicurve-tag-20261109",
+  "commit_count": 3,
+  "published": true,
+  "draft": false,
+  "body": "Negative tag-existence fixture: the claimed release tag does not exist. This manifest must deterministically trigger RUG_SLASHED without an LLM call."
+}
