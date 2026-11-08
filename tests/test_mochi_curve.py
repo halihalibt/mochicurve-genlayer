@@ -1,8 +1,8 @@
 # tests/test_mochi_curve.py
 # ==============================================================================
 # LOCAL MOCK SIMULATION SUITE — NOT ON-CHAIN GENLAYER CONSENSUS RESULTS
-# 本地模拟测试（非链上真实共识结果）：用于验证纯 Python SHA-256、联合曲线整数不变量、
-# 主备数据源规范化等价性、三种外部拉取状态（主源正常/主源失败走备源/双源失败回滚可重试）及矛盾环。
+# Local mock tests cover SHA-256, integer reserves, redundant sources,
+# independent adjudication, caller identity, cumulative thresholds and witnesses.
 # ==============================================================================
 
 import hashlib
@@ -82,7 +82,7 @@ from contracts.mochi_curve import (
 
 
 class TestMochiCurveLocalMock(unittest.TestCase):
-    """8 Local Mock Unit Tests (NOT on-chain consensus evidence)."""
+    """Local mock unit tests (NOT on-chain consensus evidence)."""
 
     def setUp(self):
         self.contract = MochiCurve()
@@ -111,6 +111,8 @@ class TestMochiCurveLocalMock(unittest.TestCase):
         curves = json.loads(self.contract.get_all_curves())
         self.assertEqual(len(curves), 3)
         for cid, c in curves.items():
+            self.assertEqual(c["origin"], "seed_demo")
+            self.assertEqual(c["cumulative_buy_volume"], c["curve_reserve"])
             r_eff = _curve_integral_reserve(
                 int(c["Supply"]),
                 int(c["base_price"]),

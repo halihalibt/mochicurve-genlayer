@@ -14,6 +14,6 @@ test_13_zero_position_removed_and_cumulative_not_decremented (tests.test_mochi_c
 test_14_independent_validator_rejects_conflicting_evidence (tests.test_mochi_curve.TestMochiCurveLocalMock.test_14_independent_validator_rejects_conflicting_evidence) ... ok
 
 ----------------------------------------------------------------------
-Ran 14 tests in 0.047s
+Ran 14 tests in 0.051s
 
 OK

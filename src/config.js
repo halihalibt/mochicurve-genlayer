@@ -1,9 +1,9 @@
-import { sha256, stringToBytes } from "viem";
+import { sha256, stringToBytes, keccak256 } from "viem";
 import { createAccount, createClient } from "genlayer-js";
 import { studionet } from "genlayer-js/chains";
 // src/config.js
 // Centralized Configuration, Exact Contract Seed Mirror, and Studionet RPC / Ephemeral Signer Adapter
-// Repository base path placeholder (mochicurve-genlayer) is centralized in APP_CONFIG below.
+// Repository base path and Studionet configuration are centralized below.
 
 export const APP_CONFIG = {
   REPO_NAME: "mochicurve-genlayer",
@@ -218,9 +218,14 @@ export function getOrCreateEphemeralTestAccount() {
   return { address: testAccount.address.toLowerCase(),
     label: `${testAccount.address.slice(0, 6)}...${testAccount.address.slice(-4)} (EPHEMERAL TEST ACCOUNT)` };
 }
-export function getTestSigningClient() {
+export function getTestSigningClient(onSignedTransaction) {
   if (!testAccount) throw new Error("ENABLE_TEMPORARY_TEST_ACCOUNT");
-  return createClient({ chain: studionet, endpoint: APP_CONFIG.RPC_URL, account: testAccount });
+  const account = { ...testAccount, signTransaction: async (...args) => {
+    const raw = await testAccount.signTransaction(...args);
+    onSignedTransaction?.(keccak256(raw));
+    return raw;
+  }};
+  return createClient({ chain: studionet, endpoint: APP_CONFIG.RPC_URL, account });
 }
 export async function verifyStableNetwork() {
   if (Number(await publicClient.request({ method: "eth_chainId" })) !== 61999) throw new Error("WRONG_NETWORK");

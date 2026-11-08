@@ -1,0 +1,16 @@
+{
+  "product": "MochiCurve",
+  "network": "Stable Studionet",
+  "chain_id": 61999,
+  "rpc": "https://studio.genlayer.com/api",
+  "contract_address": "0x0A96f7CB3636Dc46d517CEacb7b6E63b292b2632",
+  "contract_explorer": "https://explorer-studio.genlayer.com/address/0x0A96f7CB3636Dc46d517CEacb7b6E63b292b2632",
+  "application": "https://halihalibt.github.io/mochicurve-genlayer/",
+  "deployment_manifest": "evidence/deployment-manifest.json",
+  "deployment_receipt": "evidence/deployment-receipt.json",
+  "live_verification": "evidence/live-verification.json",
+  "local_tests": "evidence/local-tests.txt",
+  "limitations": "KNOWN_LIMITATIONS.md",
+  "reviewer_fast_path": "docs/reviewer-fast-path.md",
+  "seed_data": "Constructor seed verdicts are illustrative placeholders, not consensus evidence."
+}

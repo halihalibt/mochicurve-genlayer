@@ -6,6 +6,16 @@ An integer bonding curve market whose delivery verdict changes creator rewards, 
 
 All mGEN are nominal contract accounting units. No real cryptocurrency is transferred.
 
+## Deployed contract and evidence
+
+- Contract: [0x0A96f7CB3636Dc46d517CEacb7b6E63b292b2632](https://explorer-studio.genlayer.com/address/0x0A96f7CB3636Dc46d517CEacb7b6E63b292b2632).
+- Deployment: [0x8f4847b845bca91011588a3b5b4ffab21a469c892889cd08cc61c8f23809d67c](https://explorer-studio.genlayer.com/tx/0x8f4847b845bca91011588a3b5b4ffab21a469c892889cd08cc61c8f23809d67c), `FINALIZED`, `SUCCESS`.
+- [Evidence index](evidence.json), [business receipts and finalized readbacks](evidence/live-verification.json).
+- `curve-live-release`: live `GRADUATE_APPROVED`, scores 72 / 88 / 18; creator reward 27,044 mGEN. After selling 31 tokens, reserve is 32,800 while cumulative net buys remain 102,240. A contradiction witness preserves that audit.
+- `curve-live-missing-tag`: live `RUG_SLASHED` for a deliberately absent tag; 27,044 mGEN moved into the holder pool. Full redemption returned 102,240 reserve plus 27,044 floor bonus, leaving zero supply and no position entry.
+
+The raw audit receipts retain majority voting, including disagreement and idle votes. Successful consensus is not a claim of unanimous voting. BOOST arithmetic is covered by the separate local mock suite.
+
 ## Market and graduation
 
 A creator locks 25,000 mGEN and a SHA-256 catalyst commitment. Buying adds the reserve integral difference to `cumulative_buy_volume` and charges a separate 2% fee. **Cumulative net buys of 100,000 mGEN** permanently unlock the graduation gate. Selling reduces supply and reserves, but never reduces cumulative buy volume or relocks the gate.
@@ -72,4 +82,4 @@ Deployment uses `genlayer-js` 1.1.8 with an in-memory signing account and `eth_s
 
 The persistent MOCHI stage follows scroll from front to side to back using transforms and opacity. Reduced motion holds a static front view. Mobile layout uses touch controls and viewport-safe spacing. The frontend includes English and Chinese presentation; contract values remain English.
 
-GenLayerJS and Viem provide transaction encoding and signing. Their bundled license notices are preserved in `dist/app.js`. MOCHI assets are supplied with the project.
+GenLayerJS and Viem provide transaction encoding and signing. Their bundled license notices are preserved in `dist/app.js.LEGAL.txt`. MOCHI assets are supplied with the project.

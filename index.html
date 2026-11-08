@@ -186,7 +186,7 @@
             <div class="ephemeral-row">
               <span data-i18n="ephemeral_signer_label">Active Studionet Write Signer (Ephemeral Test Account):</span>
               <code id="ephemeral-Account-badge">Not enabled</code>
-              <button type="button" class="hud-pill-btn" id="btn-enable-test-account">Enable temporary test account</button>
+              <button type="button" class="hud-pill-btn" id="btn-enable-test-account" data-i18n="enable_test_account">Enable temporary test account</button>
               <span class="balance-pill"><span data-i18n="user_bal_label">Balance</span>: <strong id="user-mgen-balance">300,000</strong> mGEN</span>
             </div>
           </div>
@@ -227,7 +227,7 @@
               <input type="text" id="launch-repo" placeholder="genlayer-craft/neko-ai" />
               <input type="text" id="launch-manifesto" placeholder="Deliver v1.0 agent router with >=4 commits in genlayer-craft/neko-ai" />
               <input type="password" id="launch-secret-raw" placeholder="salt-01|secret-catalyst-v1" />
-              <button type="button" class="hud-pill-btn" id="btn-generate-commitment">Generate private salt and catalyst</button>
+              <button type="button" class="hud-pill-btn" id="btn-generate-commitment" data-i18n="generate_commitment">Generate private salt and catalyst</button>
                 <button type="button" id="btn-launch-curve" class="action-btn secondary-btn" data-i18n="btn_launch_submit">Commit & Launch Curve</button>
             </div>
           </details>
@@ -246,10 +246,10 @@
 
         <div class="mirror-config-card">
           <label class="mirror-label" for="input-primary-url" data-i18n="label_primary_mirror">Primary Source (GitHub Raw JSON Mirror)</label>
-          <input type="url" id="input-primary-url" class="url-input" readonly />
+          <input type="url" id="input-primary-url" class="url-input" />
 
           <label class="mirror-label" for="input-backup-url" data-i18n="label_backup_mirror">Backup Source (jsDelivr CDN Equivalent Mirror)</label>
-          <input type="url" id="input-backup-url" class="url-input" readonly />
+          <input type="url" id="input-backup-url" class="url-input" />
 
           <div class="rehearsal-preset-row">
             <span data-i18n="rehearsal_scenario_label">Local Mock Test Scenario (When No Live Contract Configured):</span>
@@ -331,7 +331,7 @@
               <code id="trust-timestamp">--</code>
             </div>
           </div>
-          <p id="seed-demo-notice" role="note"></p>
+          <p id="seed-demo-notice" role="note">Seed demo data — not consensus evidence</p>
           <div id="trust-feedback-banner" class="trust-feedback" role="status" aria-live="polite"></div>
         </aside>
       </div>

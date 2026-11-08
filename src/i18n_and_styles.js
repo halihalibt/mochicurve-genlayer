@@ -6,6 +6,8 @@ export const I18N_DICT = {
   en: {
     app_title: "MOCHICURVE // 61999",
     app_subtitle: "GenLayer Studionet Bonding Curve Cockpit",
+    enable_test_account: "Enable temporary test account",
+    generate_commitment: "Generate private salt and catalyst",
     hud_angle_label: "ORBIT",
     hud_state_label: "MOCHI STATE",
     hud_mode_label: "MODE",
@@ -34,7 +36,7 @@ export const I18N_DICT = {
     ph_reveal_secret: "Secret Catalyst (e.g. v1.0-mainnet-bridge-module)",
     btn_reveal: "Reveal Catalyst",
     wallet_read_label: "Injected Wallet (Connect & Read Only):",
-    wallet_not_connected: "Not Connected (Read-Only Seed Active)",
+    wallet_not_connected: "Not connected",
     btn_connect_wallet: "Connect OKX / EVM Wallet",
     wallet_honest_disclosure: "Disclosure: Injected EVM wallets (OKX, MetaMask, Rabby, Coinbase) are used strictly for connection and state reading. Studionet write operations default to the explicitly labeled in-browser ephemeral test account below (key stays in browser memory and is never disguised as your main wallet signature).",
     ephemeral_signer_label: "Active Studionet Write Signer (Ephemeral Test Account):",
@@ -80,6 +82,8 @@ export const I18N_DICT = {
   zh: {
     app_title: "MOCHICURVE // 61999",
     app_subtitle: "GenLayer Studionet 联合曲线交易舱",
+    enable_test_account: "启用临时测试账号",
+    generate_commitment: "生成私密盐与催化剂",
     hud_angle_label: "轨道视角",
     hud_state_label: "MOCHI 状态",
     hud_mode_label: "运行模式",
@@ -108,7 +112,7 @@ export const I18N_DICT = {
     ph_reveal_secret: "秘密催化剂 (例如 v1.0-mainnet-bridge-module)",
     btn_reveal: "揭晓催化剂",
     wallet_read_label: "注入式钱包 (仅连接与读取):",
-    wallet_not_connected: "未连接 (当前为只读种子态)",
+    wallet_not_connected: "未连接钱包",
     btn_connect_wallet: "连接 OKX / EVM 钱包",
     wallet_honest_disclosure: "申明：注入式 EVM 钱包（OKX、MetaMask、Rabby、Coinbase）仅用于连接与状态读取。Studionet 链上写入默认采用下方明确标注的浏览器内临时测试账号（私钥存留于浏览器内存，绝不伪装成您的主钱包签名）。",
     ephemeral_signer_label: "当前 Studionet 写入签名者 (临时测试账号):",
@@ -120,7 +124,7 @@ export const I18N_DICT = {
     btn_buy_tokens: "沿曲线买入",
     btn_sell_tokens: "卖出并领取底池分红",
     launch_drawer_title: "+ 发行新的联合曲线代币 (需锁定 25,000 mGEN 抵押金)",
-    btn_launch_submit: "提交并部署曲线",
+    btn_launch_submit: "提交承诺并发行曲线",
     st3_kicker: "03 // GENLAYER 毕业网关 (140° 后侧审阅)",
     st3_title: "双镜像 GitHub 发布版本仲裁",
     st3_desc: "当累计净买入达到 100,000 mGEN 时，验证者从主源（GitHub Raw）与备源（jsDelivr CDN）拉取 release_manifest.json，校验镜像一致性并通过 GitHub API 独立核验标签，再执行 CATALYST_BOOST、GRADUATE_APPROVED 或 RUG_SLASHED。",
@@ -131,12 +135,12 @@ export const I18N_DICT = {
     audit_card_title: "最新共识毕业裁决结果",
     audit_empty: "尚未执行共识审计。请将累计净买入推至 >= 100,000 mGEN 以解锁网关。",
     st4_kicker: "04 // 矛盾见证记录 (180° 背面核心)",
-    st4_title: "不可篡改状态与矛盾 Witness 记录",
-    st4_desc: "冲突的后置声明绝不会覆盖已终局的毕业裁决。合约将保留生效状态，并追加不可篡改的密码学矛盾 Witness 证据环。",
+    st4_title: "不可篡改状态与矛盾见证记录",
+    st4_desc: "冲突的后置声明绝不会覆盖已终局的毕业裁决。合约将保留生效状态，并追加不可篡改的密码学矛盾见证。",
     wit_form_title: "提交冲突的后置声明",
-    btn_record_witness: "记录 Witness",
+    btn_record_witness: "记录矛盾见证",
     wit_empty: "尚无矛盾声明记录。链上终局状态保持不变。",
-    trust_title: "Studionet 信任与终局表面",
+    trust_title: "Studionet 来源与交易状态",
     trust_network: "目标网络:",
     trust_rpc: "RPC 节点:",
     trust_contract: "合约地址:",
@@ -245,6 +249,7 @@ export function injectMochiStyles() {
   const style = document.createElement("style");
   style.id = "mochi-injected-styles";
   style.textContent = `
+    [hidden] { display: none !important; }
     :root {
       --mochi-purple: #C73AF2;
       --mochi-cyan: #22E8F2;
@@ -419,7 +424,7 @@ export function injectMochiStyles() {
       object-fit: contain;
       opacity: 0;
       transition: opacity 0.35s ease-in-out;
-      filter: drop-shadow(0 12px 24px rgba(0,0,0,0.5));
+      filter: drop-shadow(0 12px 24px rgba(18,33,71,0.5));
     }
 
     .mochi-sprite.is-visible {
@@ -567,7 +572,7 @@ export function injectMochiStyles() {
       border-radius: 18px;
       padding: 24px;
       backdrop-filter: blur(10px);
-      box-shadow: 0 16px 32px rgba(0,0,0,0.4);
+      box-shadow: 0 16px 32px rgba(18,33,71,0.4);
     }
 
     .card-header-row {
@@ -725,7 +730,7 @@ export function injectMochiStyles() {
     .warning-banner {
       font-size: 11px;
       color: #C73AF2;
-      background: rgba(255, 180, 171, 0.1);
+      background: rgba(199, 58, 242, 0.1);
       border-left: 3px solid #C73AF2;
       padding: 8px 10px;
       border-radius: 4px;
@@ -1120,6 +1125,15 @@ export function injectMochiStyles() {
     }
     @media (max-width: 860px) {
       .spatial-station { min-height: 100svh; padding-bottom: 130px !important; }
+      .station-left, .station-right, .spatial-station > *, .mirror-config-card, .trade-cockpit-card { min-width: 0; max-width: 100%; }
+      .cr-input-row, .wallet-row, .ephemeral-row, .sim-line, .cr-status-line, .wit-head, .verdict-banner, .chart-legend { flex-wrap: wrap; gap: 8px; }
+      .cr-input-row > input, .cr-input-row > select, .cr-input-row > button { flex: 1 1 100%; min-width: 0; width: 100%; }
+      .url-input, .rehearsal-preset-row select { width: 100%; min-width: 0; }
+      input, select { font-size: 16px !important; }
+      .full-span { grid-column: 1 / -1; }
+      code, .sim-line strong, .wit-head { overflow-wrap: anywhere; }
+      .hud-subtitle { font-size: 10px; }
+
       .trust-row { align-items: flex-start; gap: 12px; flex-wrap: wrap; }
       .trust-row code, .trust-row a { max-width: 100%; }
       .mochi-stage-layer { pointer-events: none; }
@@ -1129,12 +1143,12 @@ export function injectMochiStyles() {
       .hud-pill-btn { padding: 9px; min-height: 44px; }
       .orbit-card-top { flex-wrap: wrap; gap: 6px; }
       input, select, button { max-width: 100%; }
-      .mochi-rig, .mochi-halo { filter: none !important; }
+      .mochi-rig, .mochi-halo, .mochi-sprite { filter: none !important; }
     }
     /* Responsive Mobile Media Query */
     @media (max-width: 860px) {
       .spatial-station {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
         padding: 60px 24px;
       }
       .spatial-hud {
@@ -1153,7 +1167,7 @@ export function injectMochiStyles() {
         height: 118px;
       }
       .metrics-grid, .trade-btn-group, .audit-detail-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
       }
     }
   `;

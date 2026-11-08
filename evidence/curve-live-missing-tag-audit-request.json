@@ -1,0 +1,9 @@
+{
+  "curve_id": "curve-live-missing-tag",
+  "sender": "0x2c73aa5C3944Ad8F28D8245C189385C2f40f9898",
+  "contract_address": "0x0A96f7CB3636Dc46d517CEacb7b6E63b292b2632",
+  "primary_url": "https://raw.githubusercontent.com/halihalibt/mochicurve-genlayer/main/evidence/fixtures/missing-tag.json",
+  "backup_url": "https://cdn.jsdelivr.net/gh/halihalibt/mochicurve-genlayer@main/evidence/fixtures/missing-tag.json",
+  "broadcast_hash": "0x95e992ac7526da1b1ced5a336f53e08c716f2e00dbbee01271b1a295a547a2f7",
+  "tx_hash": "0x95e992ac7526da1b1ced5a336f53e08c716f2e00dbbee01271b1a295a547a2f7"
+}

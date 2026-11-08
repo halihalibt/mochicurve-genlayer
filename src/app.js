@@ -109,6 +109,7 @@ async function pollExistingTransaction(pending) {
         localStorage.removeItem(pendingKey); activeTransaction = null;
         setMochiPoseOverride("mochi-celebrate-jump.png", "FINALIZED_AND_READ_BACK");
         updateTrustSurface("FINALIZED", hash, I18N_DICT[appState.lang].msg_tx_finalized_ok);
+        if (appState.audioEnabled) playUiSound("finalized");
         renderAll(); break;
       }
       if (["CANCELED", "UNDETERMINED"].includes(status)) {
@@ -141,7 +142,13 @@ async function submitStudionetWriteOrRehearsal(methodName, args, rehearsalCallba
     if (Object.hasOwn(actorSlots, methodName)) args[actorSlots[methodName]] = appState.ephemeralSigner.address;
     appState.activeTraderAddress = appState.ephemeralSigner.address;
     updateTrustSurface("SUBMITTING", "", `Temporary test account ${appState.ephemeralSigner.address} is signing ${methodName}.`);
-    const hash = await getTestSigningClient().writeContract({ address: APP_CONFIG.CONTRACT_ADDRESS,
+    const signer = getTestSigningClient(signedHash => {
+      if (activeTransaction && activeTransaction.hash !== signedHash) throw new Error("Unresolved broadcast must be inspected first.");
+      activeTransaction = { hash: signedHash, methodName, contract: APP_CONFIG.CONTRACT_ADDRESS, chainId: 61999 };
+      localStorage.setItem(pendingKey, JSON.stringify(activeTransaction));
+      updateTrustSurface("BROADCASTING", signedHash, "A signed request is being sent. Its public hash has been retained for recovery.");
+    });
+    const hash = await signer.writeContract({ address: APP_CONFIG.CONTRACT_ADDRESS,
       functionName: methodName, args, value: 0n, consensusMaxRotations: 3 });
     const pending = { hash, methodName, contract: APP_CONFIG.CONTRACT_ADDRESS, chainId: 61999 };
     // Only public transaction metadata is persisted. Secrets and signing material stay in memory.
@@ -152,6 +159,7 @@ async function submitStudionetWriteOrRehearsal(methodName, args, rehearsalCallba
       ? "Tracking continues for the existing transaction. Do not submit again."
       : "Request failed. Check network connectivity and the temporary test account before retrying.");
     setMochiPoseOverride("mochi-point.png", "REQUEST_ERROR");
+    if (activeTransaction) await pollExistingTransaction(activeTransaction);
   } finally { writeInFlight = Boolean(activeTransaction); }
 }
 
@@ -209,7 +217,7 @@ function setupContinuousScrollScrub() {
       const shiftX = isMobile ? 0 : Math.sin(progress * Math.PI * 2) * 34;
       const shiftY = Math.cos(progress * Math.PI) * -14;
       const scale = isMobile ? 0.88 : 1 + Math.sin(progress * Math.PI) * 0.08;
-      const tiltY = (progress - 0.5) * 22;
+      const tiltY = isMobile ? 0 : (progress - 0.5) * 22;
       rig.style.transform = `translate3d(${shiftX.toFixed(1)}px, ${shiftY.toFixed(1)}px, 0) scale(${scale.toFixed(3)}) rotateY(${tiltY.toFixed(1)}deg)`;
       halo.style.transform = `scale(${(0.92 + Math.sin(progress * Math.PI) * 0.16).toFixed(3)})`;
       if (kineticTitle) {
@@ -480,7 +488,7 @@ function updateTrustSurface(statusText, txHash, feedbackMessage) {
 
 function renderAll() {
   const isLive = Boolean(APP_CONFIG.CONTRACT_ADDRESS);
-  document.getElementById("select-mock-scenario").closest(".form-group")?.toggleAttribute("hidden", isLive);
+  document.getElementById("select-mock-scenario").closest(".rehearsal-preset-row")?.toggleAttribute("hidden", isLive);
   document.getElementById("hud-chain-mode").textContent = isLive
     ? "LIVE_STUDIONET_61999"
     : "LOCAL_REHEARSAL_SEED";
@@ -548,7 +556,7 @@ function bindInteractions() {
         `${info.providerName}: ${info.address.slice(0, 6)}...${info.address.slice(-4)} (Chain ${info.chainId})`;
       updateTrustSurface("WALLET_READ_CONNECTED", "", `Connected ${info.providerName} for state reading.`);
     } catch (err) {
-      updateTrustSurface("WALLET_CONNECT_INFO", "", err.message);
+      updateTrustSurface("WALLET_CONNECT_INFO", "", appState.lang === "zh" ? "未检测到可用的注入式钱包，或连接请求未完成。可在 OKX 钱包浏览器中打开，或启用临时测试账号继续体验。" : "No injected wallet is available or the connection request was interrupted. Open in an EVM wallet browser, or enable the temporary test account.");
     }
   });
 
