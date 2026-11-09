@@ -29,7 +29,6 @@ const appState = {
   balances: structuredClone(INITIAL_SEED_STATE.balances),
   curves: structuredClone(INITIAL_SEED_STATE.curves),
   mochiOverridePose: null, // null = follow scroll scrub & curve state; string = transient action pose
-  scrollDeg: 0,
   reducedMotion: window.matchMedia("(prefers-reduced-motion: reduce)").matches,
   audioEnabled: false,
   audioManuallyDisabled: false,
@@ -171,23 +170,18 @@ function setupContinuousScrollScrub() {
   const rig = document.getElementById("mochi-actor-rig");
   const stage = document.getElementById("mochi-persistent-stage");
   const halo = document.getElementById("mochi-halo-ring");
-  const degLabel = document.getElementById("hud-orbit-deg");
-  const caption = document.getElementById("mochi-caption-pill");
   const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
   const mobileQuery = window.matchMedia("(max-width: 860px)");
   const turntable = document.createElement("div");
   turntable.className = "mochi-turntable";
   rig.insertBefore(turntable, document.getElementById("mochi-layer-front"));
   const stateSprite = document.getElementById("mochi-layer-state");
-  // Each frame is a real view. Decode before selecting; never fade the actor out.
-  const views = Array.from({ length: 13 }, (_, index) => {
-    const angle = index * 15;
-    const anchor = { 0: "front", 90: "side", 180: "back" }[angle];
-    const sprite = anchor ? document.getElementById(`mochi-layer-${anchor}`) : new Image();
+  // Reuse the three orientation views from the original nine-image character set.
+  const views = ["front", "side", "back"].map((name, index) => {
+    const sprite = document.getElementById(`mochi-layer-${name}`);
+    const angle = index * 90;
     sprite.className = "mochi-sprite";
-    sprite.alt = `MOCHI ${angle} degree view`;
     sprite.dataset.angle = String(angle);
-    if (!anchor) sprite.src = `./assets/mochi-turn-${String(angle).padStart(3, "0")}.png`;
     turntable.appendChild(sprite);
     const view = { angle, sprite, ready: false };
     sprite.decode().then(() => { view.ready = true; requestMochiFrame(); }).catch(() => {});
@@ -217,12 +211,15 @@ function setupContinuousScrollScrub() {
   const smooth = value => { const t = clamp(value); return t * t * (3 - 2 * t); };
   const mix = (a, b, t) => a + (b - a) * t;
   let current = 0, target = 0, frame = 0, previousTime = 0;
-  let width = innerWidth, height = innerHeight, maxScroll = 1;
+  const content = document.getElementById("spatial-scroll-world");
+  let maxScroll = 1;
+  const scrollPosition = () => mobileQuery.matches ? content.scrollTop : window.scrollY;
 
   function measureScene() {
-    width = innerWidth; height = innerHeight;
-    maxScroll = Math.max(1, document.documentElement.scrollHeight - height);
-    target = clamp(scrollY / maxScroll);
+    maxScroll = Math.max(1, mobileQuery.matches
+      ? content.scrollHeight - content.clientHeight
+      : document.documentElement.scrollHeight - innerHeight);
+    target = clamp(scrollPosition() / maxScroll);
     requestMochiFrame();
   }
 
@@ -238,22 +235,21 @@ function setupContinuousScrollScrub() {
     const p = reduced ? 0 : current;
     const yaw = p * 180;
     const pitch = mobile || reduced ? 0 : p <= 0.5
-      ? mix(0, -8, smooth(p * 2)) : mix(-8, 6, smooth((p - 0.5) * 2));
-    const scale = reduced ? 1 : mobile ? 0.88 : p <= 0.5
-      ? mix(0.85, 1.3, smooth(p * 2)) : mix(1.3, 1.05, smooth((p - 0.5) * 2));
-    // A single continuous path: no title measurements or positional snapping.
-    const x = mobile || reduced ? 0 : mix(width * 0.27, -width * 0.27, smooth(p));
+      ? mix(0, -12, smooth(p * 2)) : mix(-12, 8, smooth((p - 0.5) * 2));
+    const scale = reduced ? (mobile ? 0.85 : 1) : p <= 0.5
+      ? mix(0.85, mobile ? 1 : 1.5, smooth(p * 2))
+      : mix(mobile ? 1 : 1.5, mobile ? 0.9 : 1.15, smooth((p - 0.5) * 2));
+    // The stage stays centered; idle motion has no horizontal or scroll-driven offset.
     const float = reduced ? 0 : Math.sin(time / 900) * (mobile ? 4 : 8);
-    const y = (mobile || reduced ? 0 : Math.sin(p * Math.PI * 2) * height * 0.055) + float;
-    rig.style.transform = `translate3d(${x.toFixed(2)}px, ${y.toFixed(2)}px, 0) scale(${scale.toFixed(4)})`;
+    rig.style.transform = `translate3d(0, ${float.toFixed(2)}px, 0) scale(${scale.toFixed(4)})`;
 
     const readyViews = views.filter(view => view.ready);
-    const view = readyViews.reduce((nearest, candidate) =>
+    const view = reduced ? views[0] : readyViews.reduce((nearest, candidate) =>
       Math.abs(candidate.angle - yaw) < Math.abs(nearest.angle - yaw) ? candidate : nearest,
       readyViews[0] || views[0]);
-    // Residual yaw stays within +/-7.5 degrees once all frames are ready.
-    // Even during a failed download, clamping prevents an edge-on sliver.
-    const residual = reduced ? 0 : Math.max(-7.5, Math.min(7.5, yaw - view.angle));
+    // A bounded facet turn suggests depth without ever making the sprite edge-on.
+    // The logical orbit runs from front to back while each real view stays readable.
+    const residual = reduced ? 0 : Math.max(-22.5, Math.min(22.5, (yaw - view.angle) * 0.5));
     turntable.style.transform = `rotateX(${pitch.toFixed(3)}deg) rotateY(${residual.toFixed(3)}deg)`;
     const showState = !reduced && view.angle === 0 && Boolean(appState.mochiOverridePose)
       && stateSprite.complete && stateSprite.naturalWidth > 0;
@@ -266,45 +262,40 @@ function setupContinuousScrollScrub() {
     const weights = p <= 0.5 ? [1 - t, t, 0] : [0, 1 - t, t];
     lightLayers.forEach(([light, rim], index) => {
       light.style.opacity = String(weights[index]); rim.style.opacity = String(weights[index]);
-      light.style.transform = `translate3d(${(x * 0.25).toFixed(1)}px, ${(-y).toFixed(1)}px, 0) scale(${(1 + p * 0.18).toFixed(3)})`;
+      light.style.transform = `translate3d(0, ${(-float).toFixed(1)}px, 0) scale(${(1 + p * 0.18).toFixed(3)})`;
     });
     shade.style.opacity = String(reduced ? 0.18 : mix(0.28, 0.06, Math.sin(p * Math.PI)));
     halo.style.transform = `scale(${(0.92 + Math.sin(p * Math.PI) * 0.18).toFixed(3)})`;
-    const degrees = Math.round(yaw), tag = view.angle < 45 ? "FRONT" : view.angle < 105 ? "SIDE" : "BACK";
-    appState.scrollDeg = degrees;
-    degLabel.textContent = `${degrees}° ${tag}`;
-    caption.textContent = `${degrees}° ${tag}`;
     stage.dataset.yaw = yaw.toFixed(2); stage.dataset.pitch = pitch.toFixed(2);
     stage.dataset.scale = scale.toFixed(3); stage.dataset.progress = p.toFixed(5);
     stage.dataset.frameAngle = String(view.angle); stage.dataset.residual = residual.toFixed(3);
-    stage.dataset.x = x.toFixed(2); stage.dataset.float = float.toFixed(2);
+    stage.dataset.x = "0"; stage.dataset.float = float.toFixed(2);
     stage.dataset.target = target.toFixed(5); stage.dataset.readyFrames = String(readyViews.length);
     stage.dataset.motion = reduced ? "reduced" : mobile ? "mobile" : "desktop";
     if (!reduced && !document.hidden) requestMochiFrame();
     else previousTime = 0;
   }
   requestMochiFrame = () => { if (!frame) frame = requestAnimationFrame(renderFrame); };
-  window.addEventListener("scroll", () => {
-    target = clamp(scrollY / maxScroll); requestMochiFrame();
-  }, { passive: true });
+  const onScroll = () => { target = clamp(scrollPosition() / maxScroll); requestMochiFrame(); };
+  window.addEventListener("scroll", onScroll, { passive: true });
+  content.addEventListener("scroll", onScroll, { passive: true });
   window.addEventListener("resize", measureScene);
   motionQuery.addEventListener("change", measureScene);
   mobileQuery.addEventListener("change", measureScene);
   document.addEventListener("visibilitychange", () => { previousTime = 0; requestMochiFrame(); });
-  new ResizeObserver(measureScene).observe(document.body);
+  const resizeObserver = new ResizeObserver(measureScene);
+  resizeObserver.observe(document.body);
+  resizeObserver.observe(content);
+  document.querySelectorAll(".spatial-station").forEach(station => resizeObserver.observe(station));
   measureScene();
 }
 
-function setMochiPoseOverride(assetFilename, poseLabel) {
+function setMochiPoseOverride(assetFilename) {
   appState.mochiOverridePose = assetFilename;
   requestMochiFrame();
   const stateImg = document.getElementById("mochi-layer-state");
-  const poseHud = document.getElementById("hud-mochi-pose");
   if (stateImg && assetFilename) {
     stateImg.src = `./assets/${assetFilename}`;
-  }
-  if (poseHud && poseLabel) {
-    poseHud.textContent = poseLabel;
   }
   // Automatically release transient pose back to curve state after 4.5s unless still thinking
   if (assetFilename && assetFilename !== "mochi-thinking.png") {
@@ -321,15 +312,13 @@ function syncMochiWithActiveCurve() {
   const c = appState.curves[appState.activeCurveId];
   const stateImg = document.getElementById("mochi-layer-state");
   const halo = document.getElementById("mochi-halo-ring");
-  const poseHud = document.getElementById("hud-mochi-pose");
   if (!c || !stateImg) return;
 
   const targetFile = appState.mochiOverridePose || c.mochi_state || "mochi-float.png";
   stateImg.src = `./assets/${targetFile}`;
-  poseHud.textContent = targetFile.replace(".png", "").toUpperCase();
 
   requestMochiFrame();
-  // Status remains available separately from the scroll-driven scene lights.
+  // Curve state can tint the halo independently of the orientation views.
   if (c.gate_status === "CATALYST_BOOST" || c.gate_status === "GRADUATE_APPROVED") {
     halo.dataset.tone = "cyan";
   } else if (c.gate_status === "RUG_SLASHED") {

@@ -8,12 +8,10 @@ export const I18N_DICT = {
     app_subtitle: "GenLayer Studionet Bonding Curve Cockpit",
     enable_test_account: "Enable temporary test account",
     generate_commitment: "Generate private salt and catalyst",
-    hud_angle_label: "ORBIT",
-    hud_state_label: "MOCHI STATE",
     hud_mode_label: "MODE",
     btn_audio_off: "SFX: OFF",
     btn_audio_on: "SFX: ON",
-    st1_kicker: "01 // SPATIAL BONDING CURVE ORBIT (0° FRONT)",
+    st1_kicker: "01 // SPATIAL BONDING CURVE ORBIT",
     st1_headline: "TRADE THE CURVE. GRADUATE BY PROOF. SLASH THE RUG.",
     st1_lead: "Every token launches on an integer bonding curve with 25,000 mGEN locked creator collateral. Crossing 100,000 mGEN in cumulative net buys unlocks the GenLayer Graduation Gate: validators audit live GitHub deliverables to boost curve slope (+25%) or slash 100% of collateral into the holder Redemption Floor Pool.",
     meter_reserve_label: "Cumulative Net Buys vs. 100,000 mGEN Graduation Threshold",
@@ -23,7 +21,7 @@ export const I18N_DICT = {
     metric_floor_pool: "Redemption Floor Pool",
     metric_collateral: "Creator Collateral + Fee Escrow",
     metric_invariant: "Solvency Invariant R_eff == R",
-    st2_kicker: "02 // BONDING CURVE TRADING COCKPIT (90° SIDE PROFILE)",
+    st2_kicker: "02 // BONDING CURVE TRADING COCKPIT",
     st2_title: "Integer Curve Execution & Floor Redemption",
     st2_desc: "Scrub token delta to preview exact integer reserve integral costs, 2.00% fee escrow accumulation, and pro-rata Redemption Floor Pool bonuses upon selling.",
     chart_legend_formula: "Formula: R_eff(S) = B*S + (k*S^2)//2 - offset",
@@ -49,7 +47,7 @@ export const I18N_DICT = {
     btn_sell_tokens: "Sell & Claim Floor",
     launch_drawer_title: "+ Launch New Bonding Curve Token (Locks 25,000 mGEN Collateral)",
     btn_launch_submit: "Commit & Launch Curve",
-    st3_kicker: "03 // GENLAYER GRADUATION GATE (140° REAR-SIDE INSPECTION)",
+    st3_kicker: "03 // GENLAYER GRADUATION GATE",
     st3_title: "Dual-Mirror GitHub Release Adjudication",
     st3_desc: "Once cumulative net buys reach 100,000 mGEN, validators fetch release_manifest.json from Primary (GitHub Raw) and Backup (jsDelivr CDN) mirrors, compare canonical manifests, independently verify the claimed GitHub tag, and execute CATALYST_BOOST, GRADUATE_APPROVED, or RUG_SLASHED.",
     label_primary_mirror: "Primary Source (GitHub Raw JSON Mirror)",
@@ -58,7 +56,7 @@ export const I18N_DICT = {
     btn_trigger_gate: "Trigger Consensus Graduation Audit",
     audit_card_title: "Latest Consensus Graduation Verdict",
     audit_empty: "No consensus audit executed yet. Reach cumulative net buys >= 100,000 mGEN to unlock gate.",
-    st4_kicker: "04 // CONTRADICTION WITNESS LOG (180° BACK CORE)",
+    st4_kicker: "04 // CONTRADICTION WITNESS LOG",
     st4_title: "Immutable State & Contradiction Witnesses",
     st4_desc: "Conflicting post-audit declarations never overwrite a finalized graduation verdict. Instead, the contract preserves the active state and appends a cryptographic contradiction witness.",
     wit_form_title: "Submit Conflicting Post-Audit Claim",
@@ -84,12 +82,10 @@ export const I18N_DICT = {
     app_subtitle: "GenLayer Studionet 联合曲线交易舱",
     enable_test_account: "启用临时测试账号",
     generate_commitment: "生成私密盐与催化剂",
-    hud_angle_label: "轨道视角",
-    hud_state_label: "MOCHI 状态",
     hud_mode_label: "运行模式",
     btn_audio_off: "音效: 关闭",
     btn_audio_on: "音效: 开启",
-    st1_kicker: "01 // 空间联合曲线轨道 (0° 正面)",
+    st1_kicker: "01 // 空间联合曲线轨道",
     st1_headline: "沿曲线交易，让交付决定毕业。",
     st1_lead: "所有代币均在整数联合曲线发行，并锁定 25,000 mGEN 创作者抵押金。累计净买入达到 100,000 mGEN 即触发 GenLayer 毕业网关：验证者独立拉取 GitHub 交付物，共识决定上调斜率 (+25%) 或是将 100% 抵押金罚没注入持币人托底赎回池。",
     meter_reserve_label: "累计净买入 / 100,000 mGEN 毕业门槛",
@@ -99,7 +95,7 @@ export const I18N_DICT = {
     metric_floor_pool: "托底赎回池 (Floor Pool)",
     metric_collateral: "创作者抵押 + 手续费托管",
     metric_invariant: "偿付不变量 R_eff == R",
-    st2_kicker: "02 // 联合曲线交易舱 (90° 侧面剖面)",
+    st2_kicker: "02 // 联合曲线交易舱",
     st2_title: "整数曲线执行与底池赎回",
     st2_desc: "拖动滑块预览整数储备积分成本、2.00% 手续费托管提取，以及卖出时按持仓比例获得的托底池分红。",
     chart_legend_formula: "公式: R_eff(S) = B*S + (k*S^2)//2 - offset",
@@ -125,7 +121,7 @@ export const I18N_DICT = {
     btn_sell_tokens: "卖出并领取底池分红",
     launch_drawer_title: "+ 发行新的联合曲线代币 (需锁定 25,000 mGEN 抵押金)",
     btn_launch_submit: "提交承诺并发行曲线",
-    st3_kicker: "03 // GENLAYER 毕业网关 (140° 后侧审阅)",
+    st3_kicker: "03 // GENLAYER 毕业网关",
     st3_title: "双镜像 GitHub 发布版本仲裁",
     st3_desc: "当累计净买入达到 100,000 mGEN 时，验证者从主源（GitHub Raw）与备源（jsDelivr CDN）拉取 release_manifest.json，校验镜像一致性并通过 GitHub API 独立核验标签，再执行 CATALYST_BOOST、GRADUATE_APPROVED 或 RUG_SLASHED。",
     label_primary_mirror: "主数据源 (GitHub Raw JSON 镜像)",
@@ -134,7 +130,7 @@ export const I18N_DICT = {
     btn_trigger_gate: "触发共识毕业审计",
     audit_card_title: "最新共识毕业裁决结果",
     audit_empty: "尚未执行共识审计。请将累计净买入推至 >= 100,000 mGEN 以解锁网关。",
-    st4_kicker: "04 // 矛盾见证记录 (180° 背面核心)",
+    st4_kicker: "04 // 矛盾见证记录",
     st4_title: "不可篡改状态与矛盾见证记录",
     st4_desc: "冲突的后置声明绝不会覆盖已终局的毕业裁决。合约将保留生效状态，并追加不可篡改的密码学矛盾见证。",
     wit_form_title: "提交冲突的后置声明",
@@ -258,6 +254,7 @@ export function injectMochiStyles() {
       --mochi-silver: #B9B7C9;
       --bg-dark: #122147;
       --card-bg: #122147;
+      --mochi-stage-size: clamp(160px, 20vw, 400px);
       --border-glow: rgba(34, 232, 242, 0.35);
     }
 
@@ -383,8 +380,8 @@ export function injectMochiStyles() {
     .mochi-stage-layer {
       position: fixed; top: 50%; left: 50%;
       transform: translate(-50%, -50%);
-      width: clamp(300px, 32vw, 460px); aspect-ratio: 1;
-      pointer-events: none; z-index: 20;
+      width: var(--mochi-stage-size); aspect-ratio: 1;
+      pointer-events: none; z-index: 8;
       perspective: 850px; perspective-origin: 50% 42%;
     }
     .mochi-rig {
@@ -426,20 +423,6 @@ export function injectMochiStyles() {
     }
     .mochi-sprite.is-visible { opacity: 1; }
 
-    .mochi-caption-pill {
-      position: absolute;
-      bottom: -10px;
-      background: rgba(18, 33, 71, 0.85);
-      border: 1px solid var(--mochi-cyan);
-      color: var(--mochi-cyan);
-      padding: 4px 12px;
-      border-radius: 12px;
-      font-size: 10px;
-      font-weight: 800;
-      letter-spacing: 1px;
-      backdrop-filter: blur(6px);
-    }
-
     /* Spatial Scroll World */
     .spatial-world {
       margin-top: 72px;
@@ -448,10 +431,10 @@ export function injectMochiStyles() {
 
     .spatial-station {
       min-height: 100vh;
-      padding: 140px 64px;
+      padding: 140px clamp(24px, 3.3vw, 64px);
       display: grid;
       grid-template-columns: minmax(0,1fr) minmax(0,1fr);
-      column-gap: clamp(64px, 9vw, 160px);
+      column-gap: calc(var(--mochi-stage-size) * 1.5 + 40px);
       row-gap: 48px;
       align-items: center;
       border-bottom: 0;
@@ -465,14 +448,14 @@ export function injectMochiStyles() {
       z-index: auto;
     }
 
-    /* The complete actor passes in front of headings and cards without backdrop ghosts. */
+    /* Opaque reading surfaces flank a clear central actor lane. Only decorative headings sit behind it. */
     .station-column > * { position: relative; z-index: 12; }
     .station-column > .kinetic-headline, .station-column > .station-title { z-index: 2; }
     @media (min-width: 861px) {
       .station-01 .station-right { align-self: end; }
     }
     .station-lead, .station-desc {
-      background: rgba(18,33,71,0.88); border-radius: 12px;
+      background: var(--card-bg); border-radius: 12px;
       padding: 14px 16px;
     }
     .station-02 .station-title, .station-03 .station-title {
@@ -576,7 +559,7 @@ export function injectMochiStyles() {
       border: 1px solid rgba(34, 232, 242, 0.25);
       border-radius: 18px;
       padding: 24px;
-      backdrop-filter: blur(10px);
+      backdrop-filter: none;
       box-shadow: 0 16px 32px rgba(18,33,71,0.4);
     }
 
@@ -1130,58 +1113,65 @@ export function injectMochiStyles() {
       .mochi-rig, .mochi-turntable { transform-style: flat; }
       *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
     }
-    @media (max-width: 860px) {
-      .spatial-station { min-height: 100svh; padding-bottom: 130px !important; }
-      .station-left, .station-right, .spatial-station > *, .mirror-config-card, .trade-cockpit-card { min-width: 0; max-width: 100%; }
-      .cr-input-row, .wallet-row, .ephemeral-row, .sim-line, .cr-status-line, .wit-head, .verdict-banner, .chart-legend { flex-wrap: wrap; gap: 8px; }
-      .cr-input-row > input, .cr-input-row > select, .cr-input-row > button { flex: 1 1 100%; min-width: 0; width: 100%; }
-      .url-input, .rehearsal-preset-row select { width: 100%; min-width: 0; }
-      input, select { font-size: 16px !important; }
-      .full-span { grid-column: 1 / -1; }
-      code, .sim-line strong, .wit-head { overflow-wrap: anywhere; }
-      .hud-subtitle { font-size: 10px; }
-
-      .trust-row { align-items: flex-start; gap: 12px; flex-wrap: wrap; }
-      .trust-row code, .trust-row a { max-width: 100%; }
-      .mochi-stage-layer { pointer-events: none; }
-      .spatial-hud { height: auto; min-height: 72px; gap: 8px; }
-      .hud-brand { min-width: 0; }
-      .hud-controls { gap: 6px; }
-      .hud-pill-btn { padding: 9px; min-height: 44px; }
-      .orbit-card-top { flex-wrap: wrap; gap: 6px; }
-      input, select, button { max-width: 100%; }
-      .mochi-rig, .mochi-halo, .mochi-sprite { filter: none !important; }
+    .station-column, .station-column > *, .metrics-grid > *, .card-header-row > * { min-width: 0; }
+    .station-column { overflow-wrap: anywhere; }
+    .station-left > .kinetic-headline, .station-left > .station-title {
+      width: calc(100% + var(--mochi-stage-size) * 0.45); max-width: none;
     }
-    /* Responsive Mobile Media Query */
+    .orbit-card-top, .orbit-card-metrics, .card-header-row, .wallet-row,
+    .ephemeral-row, .cr-input-row, .sim-line, .cr-status-line, .trust-row,
+    .wit-head, .verdict-banner, .chart-legend { flex-wrap: wrap; gap: 8px; }
+    input, select, button, summary { max-width: 100%; min-width: 0; }
+    button, summary, code, a { overflow-wrap: anywhere; }
+    .url-input, .rehearsal-preset-row select { width: 100%; min-width: 0; }
+    .cr-input-row > input, .cr-input-row > select, .cr-input-row > button { flex: 1 1 100%; width: 100%; }
+    .trust-row code, .trust-row a { max-width: 100%; }
+    @media (min-width: 861px) and (max-width: 1200px) {
+      .telemetry-card, .cockpit-trade-card, .mirror-config-card, .audit-verdict-card,
+      .witness-form-card, .trust-surface-card { padding: 16px; }
+      .metrics-grid, .trade-btn-group, .audit-detail-grid { grid-template-columns: minmax(0, 1fr); }
+      .station-02 .station-title, .station-03 .station-title { font-size: 46px; }
+      .hud-subtitle { max-width: 250px; }
+    }
     @media (max-width: 860px) {
-      .spatial-station {
-        grid-template-columns: minmax(0, 1fr);
-        padding: 60px 24px;
-      }
+      :root { --mochi-stage-size: clamp(104px, 18vw, 140px); }
+      html, body { height: 100%; overflow: hidden; }
       .spatial-hud {
-        padding: 0 16px;
+        display: grid; grid-template-columns: minmax(0, 1fr) auto;
+        height: auto; min-height: 92px; padding: 10px 12px; gap: 6px 8px;
       }
-      .hud-scroll-telemetry {
-        display: none;
+      .hud-brand { min-width: 0; gap: 6px; }
+      .hud-title { font-size: 11px; letter-spacing: 0.4px; }
+      .hud-subtitle { font-size: 9px; line-height: 1.25; max-width: 210px; }
+      .hud-controls { grid-column: 2; grid-row: 1 / 3; gap: 5px; }
+      .hud-pill-btn { padding: 8px; font-size: 10px; min-height: 44px; }
+      .hud-scroll-telemetry { display: flex; grid-column: 1; gap: 0; }
+      .telemetry-chip { padding: 3px 7px; font-size: 9px; max-width: 100%; }
+      .telemetry-chip strong { margin-left: 3px; }
+      .mochi-stage-layer { top: 50%; left: 50%; perspective: none; }
+      .mochi-rig, .mochi-turntable { transform-style: flat; }
+      .mochi-rig, .mochi-halo, .mochi-sprite { filter: none !important; }
+      /* A separate scroll pane keeps single-column controls below the centered actor. */
+      .spatial-world {
+        position: fixed; top: calc(50% + var(--mochi-stage-size) / 2 + 18px);
+        left: 0; right: 0; bottom: 0; margin: 0;
+        overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain;
+        scrollbar-gutter: stable; scroll-padding: 16px;
       }
-      .mochi-stage-layer {
-        perspective: none;
-        top: auto; bottom: 0; left: auto; right: 6px; transform: none;
-        width: 118px;
-        height: 150px;
+      .spatial-station {
+        grid-template-columns: minmax(0, 1fr); padding: 24px 16px 36px;
+        min-height: auto; gap: 24px;
       }
-      .mochi-rig { width: 118px; height: 118px; transform-style: flat; }
-      .mochi-turntable { transform-style: flat; }
-      .mochi-sprite { width: 118px; height: 118px; }
-      .station-02 .station-title, .station-03 .station-title {
-        font-size: 36px; line-height: 1.08; letter-spacing: -0.03em; max-width: none;
-      }
-      .station-lead, .station-desc { padding: 0; background: none; }
+      .station-left, .station-right, .spatial-station > * { min-width: 0; max-width: 100%; }
+      .station-left > .kinetic-headline, .station-left > .station-title { width: auto; }
+      .station-02 .station-title, .station-03 .station-title { font-size: 34px; line-height: 1.08; letter-spacing: -0.03em; }
+      .kinetic-headline { font-size: 32px; }
+      .metrics-grid, .trade-btn-group, .audit-detail-grid { grid-template-columns: minmax(0, 1fr); }
+      .telemetry-card, .cockpit-trade-card, .mirror-config-card, .audit-verdict-card,
+      .witness-form-card, .trust-surface-card { padding: 16px; }
+      .full-span { grid-column: 1 / -1; }
+      input, select { font-size: 16px !important; }
       .scene-light { inset: 0; }
-
-      .metrics-grid, .trade-btn-group, .audit-detail-grid {
-        grid-template-columns: minmax(0, 1fr);
-      }
     }
   `;
   document.head.appendChild(style);

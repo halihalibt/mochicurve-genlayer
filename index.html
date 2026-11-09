@@ -19,14 +19,6 @@
     </div>
 
     <div class="hud-scroll-telemetry" aria-live="polite">
-      <span class="telemetry-chip">
-        <span data-i18n="hud_angle_label">ORBIT</span>:
-        <strong id="hud-orbit-deg">0° FRONT</strong>
-      </span>
-      <span class="telemetry-chip">
-        <span data-i18n="hud_state_label">MOCHI STATE</span>:
-        <strong id="hud-mochi-pose">FLOAT_IDLE</strong>
-      </span>
       <span class="telemetry-chip" id="hud-mode-chip">
         <span data-i18n="hud_mode_label">MODE</span>:
         <strong id="hud-chain-mode">PREVIEW_SEED</strong>
@@ -47,22 +39,21 @@
   <div id="mochi-persistent-stage" class="mochi-stage-layer" aria-hidden="true">
     <div id="mochi-actor-rig" class="mochi-rig">
       <div id="mochi-halo-ring" class="mochi-halo"></div>
-      <!-- Continuous 3-view rotation layers (0° front, 90° side, 180° back) -->
-      <img id="mochi-layer-front" class="mochi-sprite is-visible" src="./assets/mochi-front.png" alt="MOCHI 0 deg front view" />
-      <img id="mochi-layer-side" class="mochi-sprite" src="./assets/mochi-side.png" alt="MOCHI 90 deg side view" />
-      <img id="mochi-layer-back" class="mochi-sprite" src="./assets/mochi-back.png" alt="MOCHI 180 deg back view" />
+      <!-- Front, side and back views; state poses share the same stage -->
+      <img id="mochi-layer-front" class="mochi-sprite is-visible" src="./assets/mochi-front.png" alt="MOCHI front view" />
+      <img id="mochi-layer-side" class="mochi-sprite" src="./assets/mochi-side.png" alt="MOCHI side view" />
+      <img id="mochi-layer-back" class="mochi-sprite" src="./assets/mochi-back.png" alt="MOCHI back view" />
       <!-- Real-time state override layer (float / point / thinking / celebrate) -->
       <img id="mochi-layer-state" class="mochi-sprite is-state-active" src="./assets/mochi-float.png" alt="MOCHI active state" />
-      <div id="mochi-caption-pill" class="mochi-caption-pill">0° // MOCHI_FLOAT</div>
     </div>
   </div>
 
   <!-- Continuous Spatial Narrative & Trading World -->
   <main id="spatial-scroll-world" class="spatial-world">
-    <!-- STATION 01 (0° Front): Curve Orbit Selector & Live Solvency Telemetry -->
+    <!-- STATION 01: Curve Orbit Selector & Live Solvency Telemetry -->
     <section class="spatial-station station-01" data-station="0" data-angle="0">
       <div class="station-column station-left">
-        <div class="station-kicker" data-i18n="st1_kicker">01 // SPATIAL BONDING CURVE ORBIT (0° FRONT)</div>
+        <div class="station-kicker" data-i18n="st1_kicker">01 // SPATIAL BONDING CURVE ORBIT</div>
         <h1 class="kinetic-headline" id="kinetic-title" data-i18n="st1_headline">
           TRADE THE CURVE. GRADUATE BY PROOF. SLASH THE RUG.
         </h1>
@@ -124,10 +115,10 @@
       </div>
     </section>
 
-    <!-- STATION 02 (90° Side): Interactive Bonding Curve Trading Cockpit & Commit-Reveal -->
+    <!-- STATION 02: Interactive Bonding Curve Trading Cockpit & Commit-Reveal -->
     <section class="spatial-station station-02" data-station="1" data-angle="90">
       <div class="station-column station-left">
-        <div class="station-kicker" data-i18n="st2_kicker">02 // BONDING CURVE TRADING COCKPIT (90° SIDE PROFILE)</div>
+        <div class="station-kicker" data-i18n="st2_kicker">02 // BONDING CURVE TRADING COCKPIT</div>
         <h2 class="station-title" data-i18n="st2_title">Integer Curve Execution & Floor Redemption</h2>
         <p class="station-desc" data-i18n="st2_desc">
           Scrub token delta to preview exact integer reserve integral costs, 2.00% fee escrow accumulation, and pro-rata Redemption Floor Pool bonuses upon selling.
@@ -235,10 +226,10 @@
       </div>
     </section>
 
-    <!-- STATION 03 (135°–180° Back Transition): Subjective Graduation Gate & Dual-Mirror Audit -->
+    <!-- STATION 03: Subjective Graduation Gate & Dual-Mirror Audit -->
     <section class="spatial-station station-03" data-station="2" data-angle="140">
       <div class="station-column station-left">
-        <div class="station-kicker" data-i18n="st3_kicker">03 // GENLAYER GRADUATION GATE (140° REAR-SIDE INSPECTION)</div>
+        <div class="station-kicker" data-i18n="st3_kicker">03 // GENLAYER GRADUATION GATE</div>
         <h2 class="station-title" data-i18n="st3_title">Dual-Mirror GitHub Release Adjudication</h2>
         <p class="station-desc" data-i18n="st3_desc">
           Once cumulative_buy_volume >= 100,000 mGEN, validators fetch release_manifest.json from Primary (GitHub Raw) and Backup (jsDelivr CDN) mirrors, compare canonical manifests, independently verify the claimed GitHub tag, and execute CATALYST_BOOST, GRADUATE_APPROVED, or RUG_SLASHED.
@@ -275,10 +266,10 @@
       </div>
     </section>
 
-    <!-- STATION 04 (180° Back Core): Contradiction Witness Log & Trust Surface -->
+    <!-- STATION 04: Contradiction Witness Log & Trust Surface -->
     <section class="spatial-station station-04" data-station="3" data-angle="180">
       <div class="station-column station-left">
-        <div class="station-kicker" data-i18n="st4_kicker">04 // CONTRADICTION WITNESS LOG (180° BACK CORE)</div>
+        <div class="station-kicker" data-i18n="st4_kicker">04 // CONTRADICTION WITNESS LOG</div>
         <h2 class="station-title" data-i18n="st4_title">Immutable State & Contradiction Witnesses</h2>
         <p class="station-desc" data-i18n="st4_desc">
           Conflicting post-audit declarations never overwrite a finalized graduation verdict. Instead, the contract preserves the active state and appends a cryptographic contradiction witness.
@@ -338,6 +329,6 @@
     </section>
   </main>
 
-  <script type="module" src="./dist/app.js"></script>
+  <script type="module" src="./dist/app.js?v=a1e8b73b597b354a"></script>
 </body>
 </html>
