@@ -1,0 +1,7 @@
+[
+  {
+    "status": "FINALIZED",
+    "observed_at": "2026-11-09T17:51:24.498Z",
+    "note": "recovered after runner crash; tx finalized before the crash (see run log)"
+  }
+]

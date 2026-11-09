@@ -1,0 +1,62 @@
+{
+  "curves": {
+    "curve-v2-graduate": {
+      "curve_id": "curve-v2-graduate",
+      "name": "Mochi Release v2",
+      "ticker": "$MREL",
+      "creator": "0xfd3489bc3e1943405594e5509105422e20aa87f4",
+      "expected_repo_slug": "halihalibt/mochicurve-genlayer",
+      "manifesto_text": "Deliver verifiable v1.0 release tag, GenVM bonding curve module, scroll-driven frontend, mock tests and Studionet deploy scripts in halihalibt/mochicurve-genlayer.",
+      "manifesto_hash": "9f7b3096b01cc788877b8d9c95485530f6e4663f651489828bd186fc37334fc6",
+      "secret_catalyst_commitment": "ad48207cbb28ec9f3fbcfb658276d9bd61e24361a486d3af5e35e8e9c563e152",
+      "revealed_secret_catalyst": "",
+      "Supply": 71,
+      "base_price": 20,
+      "slope_k": 40,
+      "virtual_slope_offset": 0,
+      "curve_reserve": 102240,
+      "cumulative_buy_volume": 102240,
+      "origin": "user_created",
+      "graduation_threshold": 100000,
+      "creator_collateral": 25000,
+      "fee_escrow_pool": 2044,
+      "redemption_floor_pool": 0,
+      "floor_multiplier_bps": 10000,
+      "spot_price": 2860,
+      "gate_status": "VERDICT_PENDING",
+      "mochi_state": "mochi-point.png",
+      "positions": {
+        "0xa58639519e93ae2e09f0a8ac9d427605f56122df": 71
+      },
+      "pending_verdict": {
+        "api_commit_count": "3",
+        "authenticity_score": "90",
+        "code_bytes": "806935",
+        "code_file_count": "12",
+        "code_ok": "true",
+        "commit_sha": "c6430a1a8d380cf4384e7c516b45ec28b50bd410",
+        "completeness_score": "85",
+        "count_ok": "true",
+        "evidence_hash": "40032eb15d437320172516860d0d5176da9fc014c971ad980c3b0d58fa69be8d",
+        "manifest_commit_count": "3",
+        "overdelivery_bonus": "0",
+        "sha_match": "true",
+        "source_used": "primary",
+        "status": "OK",
+        "tag_exists": "true",
+        "tag_name": "v1.0.0",
+        "tags_url": "https://api.github.com/repos/halihalibt/mochicurve-genlayer/git/ref/tags/v1.0.0",
+        "tree_digest": "6dc24f37255498f815df7f438b8fff785cabfd2b45c50543b98e29c38bb1a137",
+        "verdict": "GRADUATE_APPROVED"
+      },
+      "pending_challenges": [],
+      "last_audit": null,
+      "contradiction_witnesses": []
+    }
+  },
+  "ledger_totals": {
+    "total_received_units": "129284",
+    "total_withdrawn_units": "0"
+  },
+  "contract_balance_wei": "129284000000000000000"
+}

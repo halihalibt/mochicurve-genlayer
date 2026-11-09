@@ -1,0 +1,19 @@
+test_01_pure_sha256_matches_stdlib_vectors (tests.test_mochi_curve.TestMochiCurveLocalMock.test_01_pure_sha256_matches_stdlib_vectors) ... ok
+test_02_seed_curves_solvency_invariant (tests.test_mochi_curve.TestMochiCurveLocalMock.test_02_seed_curves_solvency_invariant) ... ok
+test_03_threshold_graduation_trigger_and_guard (tests.test_mochi_curve.TestMochiCurveLocalMock.test_03_threshold_graduation_trigger_and_guard) ... ok
+test_04_primary_and_backup_canonical_equivalence (tests.test_mochi_curve.TestMochiCurveLocalMock.test_04_primary_and_backup_canonical_equivalence) ... ok
+test_05_consensus_primary_ok_catalyst_boost_invariant (tests.test_mochi_curve.TestMochiCurveLocalMock.test_05_consensus_primary_ok_catalyst_boost_invariant) ... ok
+test_06_consensus_primary_fail_backup_ok_rug_slashed_and_floor_sell (tests.test_mochi_curve.TestMochiCurveLocalMock.test_06_consensus_primary_fail_backup_ok_rug_slashed_and_floor_sell) ... ok
+test_07_consensus_both_sources_fail_reverts_before_write_and_retryable (tests.test_mochi_curve.TestMochiCurveLocalMock.test_07_consensus_both_sources_fail_reverts_before_write_and_retryable) ... ok
+test_08_commit_reveal_and_contradiction_witness_immutability (tests.test_mochi_curve.TestMochiCurveLocalMock.test_08_commit_reveal_and_contradiction_witness_immutability) ... ok
+test_09_cumulative_gate_survives_sell_and_audit (tests.test_mochi_curve.TestMochiCurveLocalMock.test_09_cumulative_gate_survives_sell_and_audit) ... ok
+test_10_missing_tag_slashes_without_llm (tests.test_mochi_curve.TestMochiCurveLocalMock.test_10_missing_tag_slashes_without_llm) ... ok
+test_11_tag_api_failure_keeps_state_byte_identical (tests.test_mochi_curve.TestMochiCurveLocalMock.test_11_tag_api_failure_keeps_state_byte_identical) ... ok
+test_12_identity_binding_rejects_impersonation_before_write (tests.test_mochi_curve.TestMochiCurveLocalMock.test_12_identity_binding_rejects_impersonation_before_write) ... ok
+test_13_zero_position_removed_and_cumulative_not_decremented (tests.test_mochi_curve.TestMochiCurveLocalMock.test_13_zero_position_removed_and_cumulative_not_decremented) ... ok
+test_14_independent_validator_rejects_conflicting_evidence (tests.test_mochi_curve.TestMochiCurveLocalMock.test_14_independent_validator_rejects_conflicting_evidence) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 0.051s
+
+OK

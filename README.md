@@ -4,28 +4,33 @@
 
 An integer bonding curve market whose delivery verdict changes creator rewards, curve slope and holder redemption pools. Runs exclusively on **GenLayer Stable Studionet**, chain **61999**, RPC `https://studio.genlayer.com/api`.
 
-All mGEN are nominal contract accounting units. No real cryptocurrency is transferred.
+All money is real testnet GEN (faucet-funded). 1 accounting unit = 0.001 GEN. Launches attach 25 GEN of creator collateral; buys attach GEN; sells, rewards and slashes become withdrawable credits pulled with `withdraw`. There is no simulated ledger and no protocol subsidy.
 
 ## Deployed contract and evidence
 
-- Contract: [0x0A96f7CB3636Dc46d517CEacb7b6E63b292b2632](https://explorer-studio.genlayer.com/address/0x0A96f7CB3636Dc46d517CEacb7b6E63b292b2632).
-- Deployment: [0x8f4847b845bca91011588a3b5b4ffab21a469c892889cd08cc61c8f23809d67c](https://explorer-studio.genlayer.com/tx/0x8f4847b845bca91011588a3b5b4ffab21a469c892889cd08cc61c8f23809d67c), `FINALIZED`, `SUCCESS`.
+- Contract: [0xf3C716d9ff7FB529cd08e2fD15413E75Ebc1B742](https://explorer-studio.genlayer.com/address/0xf3C716d9ff7FB529cd08e2fD15413E75Ebc1B742).
+- Deployment: [0x5dbcd6a288efc2d7a72a5d159860d5588cca3f28c0290912f0de80f77e311cc3](https://explorer-studio.genlayer.com/tx/0x5dbcd6a288efc2d7a72a5d159860d5588cca3f28c0290912f0de80f77e311cc3), `FINALIZED`, `SUCCESS`. Source SHA-256 `e46c1b914df184eaec2f7a92498c45c434a0bd14a6ae58bca3d52332444eec69` matches `contracts/mochi_curve.py`.
 - [Evidence index](evidence.json), [business receipts and finalized readbacks](evidence/live-verification.json).
-- `curve-live-release`: live `GRADUATE_APPROVED`, scores 72 / 88 / 18; creator reward 27,044 mGEN. After selling 31 tokens, reserve is 32,800 while cumulative net buys remain 102,240. A contradiction witness preserves that audit.
-- `curve-live-missing-tag`: live `RUG_SLASHED` for a deliberately absent tag; 27,044 mGEN moved into the holder pool. Full redemption returned 102,240 reserve plus 27,044 floor bonus, leaving zero supply and no position entry.
+- `curve-v2-graduate`: live `GRADUATE_APPROVED`, scores 85 / 90 / 0; creator withdrew 27.044 GEN. After selling 31 tokens, reserve is 32,800 while cumulative net buys remain 102,240. A contradiction witness preserves that audit.
+- `curve-v2-rug`: live `RUG_SLASHED` for a README-only repo with a false manifest (API commits 1 vs claimed 12, 0 code files, all anchors false). A challenge blocked execution first; re-evaluation cleared it. Full redemption returned 102.240 reserve plus 27.044 floor bonus, leaving zero supply and no position entry.
+- `curve-v2-boost`: live `CATALYST_BOOST`, scores 88 / 92 / 78; slope k 40 → 50 with a virtual offset preserving solvency; creator withdrew 27.044 GEN.
+- A stranger calling `evaluate_graduation_gate` reverts (`contract_error exit_code 1`); only the curve creator can evaluate or execute.
+- GEN conservation holds exactly: EOA balances + contract balance sum to 30,000 GEN (3 × 10,000 faucet GEN); contract balance 135.04 GEN equals received 387.852 GEN minus withdrawn 252.812 GEN.
 
-The raw audit receipts retain majority voting, including disagreement and idle votes. Successful consensus is not a claim of unanimous voting. BOOST arithmetic is covered by the separate local mock suite.
+The raw audit receipts retain majority voting, including disagreement and idle votes. Successful consensus is not a claim of unanimous voting.
+
+The v1 contract (`0x0A96f7CB3636Dc46d517CEacb7b6E63b292b2632`) is superseded; its evidence is archived under `evidence/v1/`.
 
 ## Market and graduation
 
-A creator locks 25,000 mGEN and a SHA-256 catalyst commitment. Buying adds the reserve integral difference to `cumulative_buy_volume` and charges a separate 2% fee. **Cumulative net buys of 100,000 mGEN** permanently unlock the graduation gate. Selling reduces supply and reserves, but never reduces cumulative buy volume or relocks the gate.
+A creator locks 25 GEN and a SHA-256 catalyst commitment. Buying adds the reserve integral difference to `cumulative_buy_volume` and charges a separate 2% fee. **Cumulative net buys of 100 GEN** permanently unlock the graduation gate. Selling reduces supply and reserves, but never reduces cumulative buy volume or relocks the gate.
 
-The three constructor curves carry `origin: "seed_demo"`. Their prefilled verdicts, scores and witnesses are **Seed demo data — not consensus evidence**. Only newly created curves with their own successful finalized audit receipts qualify as consensus evidence.
+The v2 constructor starts empty. Local rehearsal seed curves carry `origin: "seed_demo"`. Their prefilled verdicts, scores and witnesses are **Seed demo data — not consensus evidence**. Only newly created curves with their own successful finalized audit receipts qualify as consensus evidence.
 
 | Verdict | Enforced consequence |
 | --- | --- |
-| `GRADUATE_APPROVED` | Return creator collateral and fee escrow to the creator. |
-| `CATALYST_BOOST` | Increase slope by 25%, preserve the reserve integral using a virtual offset, release creator rewards and add 15,000 nominal mGEN to the holder pool. |
+| `GRADUATE_APPROVED` | Return creator collateral and fee escrow to the creator as a withdrawable credit. |
+| `CATALYST_BOOST` | Increase slope by 25%, preserve the reserve integral using a virtual offset, release creator rewards. No subsidy is added. |
 | `RUG_SLASHED` | Transfer 100% of creator collateral and fee escrow into the holder pool; disable further buying. |
 
 Supply `S`, base price `B` and slope `k` use integer arithmetic:
@@ -38,11 +43,11 @@ Supply `S`, base price `B` and slope `k` use integer arithmetic:
 
 Each validator independently fetches the primary GitHub Raw manifest and its jsDelivr mirror. Either mirror can supply the canonical payload; if both succeed, their canonical hashes must agree. If both fail or disagree, execution aborts before state changes.
 
-Every validator then checks the exact claimed tag through the GitHub Git References API (`/repos/{owner}/{repo}/git/ref/tags/{tag}`). A missing tag, repository mismatch, unpublished manifest or self-reported commit count below two deterministically causes `RUG_SLASHED`, without calling an LLM. Network errors, rate limits and invalid API responses abort before writes and leave the gate retryable.
+The manifest is only a pointer. Validators then anchor it against the GitHub API: the tag's commit SHA (annotated tags resolved through the tag object) must match the manifest's `commit_sha`; the commit count is recomputed from the commits API and the manifest count must be within it and at least 2; the repository tree at that SHA must contain at least 3 real code files totalling at least 1000 bytes. `deliverable_digest` is computed from the fetched tree, not the manifest body. A missing tag, repository mismatch, unpublished manifest, SHA mismatch, insufficient commits or too little code deterministically causes `RUG_SLASHED`, without calling an LLM. Network errors, rate limits and invalid API responses abort before writes and leave the gate retryable.
 
-Only after those checks pass does each validator independently assess semantic completeness, consistency and over-delivery. LLM scores cannot override a deterministic slash. Validators require identical evidence hashes, tag existence and verdict; score differences of at most 20 are accepted within that same verdict. Scores and source metadata travel in the returned consensus payload, never through mutable closure side effects.
+Only after those checks pass does each validator independently assess semantic completeness, consistency and over-delivery against the fetched file tree. LLM scores cannot override a deterministic slash. Validators require identical evidence hashes, tag existence and verdict; score differences of at most 20 are accepted within that same verdict. Scores and source metadata travel in the returned consensus payload, never through mutable closure side effects.
 
-`commit_count` remains manifest self-reporting. Tag existence is independently checked; binaries and commit history are not independently executed or verified.
+Evaluation is two-step and sender-bound. `evaluate_graduation_gate` requires the sender to be the curve creator and writes only a `pending_verdict`; no money moves. Any non-creator can challenge it with a different claimed verdict, and `execute_verdict` refuses while a challenge is open. Re-evaluation supersedes the pending verdict and clears challenges. `reveal_secret_catalyst` is likewise creator-bound. There is no clock source, so the challenge window has no expiry.
 
 Finalized verdicts cannot be replaced. A contradictory claim appends a caller-attributed witness while retaining the active verdict. Launch, buy, sell and witness attribution are checked against `gl.message.sender_address`.
 

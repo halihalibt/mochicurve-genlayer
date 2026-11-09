@@ -22,6 +22,30 @@
       "kwparams": {},
       "readonly": false,
       "ret": "string",
+      "payable": true
+    },
+    "challenge_pending_verdict": {
+      "params": [
+        [
+          "curve_id",
+          "string"
+        ],
+        [
+          "challenger",
+          "string"
+        ],
+        [
+          "claimed_verdict",
+          "string"
+        ],
+        [
+          "reason",
+          "string"
+        ]
+      ],
+      "kwparams": {},
+      "readonly": false,
+      "ret": "string",
       "payable": false
     },
     "evaluate_graduation_gate": {
@@ -37,6 +61,26 @@
         [
           "backup_url",
           "string"
+        ],
+        [
+          "evaluator",
+          "string"
+        ]
+      ],
+      "kwparams": {},
+      "readonly": false,
+      "ret": "string",
+      "payable": false
+    },
+    "execute_verdict": {
+      "params": [
+        [
+          "curve_id",
+          "string"
+        ],
+        [
+          "executor",
+          "string"
         ]
       ],
       "kwparams": {},
@@ -45,6 +89,12 @@
       "payable": false
     },
     "get_all_curves": {
+      "params": [],
+      "kwparams": {},
+      "readonly": true,
+      "ret": "string"
+    },
+    "get_ledger_totals": {
       "params": [],
       "kwparams": {},
       "readonly": true,
@@ -95,7 +145,7 @@
       "kwparams": {},
       "readonly": false,
       "ret": "string",
-      "payable": false
+      "payable": true
     },
     "record_contradiction_claim": {
       "params": [
@@ -134,6 +184,10 @@
         [
           "secret_catalyst",
           "string"
+        ],
+        [
+          "revealer",
+          "string"
         ]
       ],
       "kwparams": {},
@@ -156,6 +210,13 @@
           "string"
         ]
       ],
+      "kwparams": {},
+      "readonly": false,
+      "ret": "string",
+      "payable": false
+    },
+    "withdraw": {
+      "params": [],
       "kwparams": {},
       "readonly": false,
       "ret": "string",

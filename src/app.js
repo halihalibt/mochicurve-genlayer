@@ -6,6 +6,8 @@ import {
   INITIAL_SEED_STATE,
   calcCurveIntegralReserve,
   calcSpotPrice,
+  fmtGen,
+  unitsToWei,
   sha256HexBrowser,
   getOrCreateEphemeralTestAccount,
   connectInjectedEvmWallet,
@@ -69,11 +71,17 @@ async function refreshCurvesFromChainIfConfigured() {
   const rawCurves = await publicClient.readContract({ address: APP_CONFIG.CONTRACT_ADDRESS,
     functionName: "get_all_curves", args: [], transactionHashVariant: "latest-final" });
   appState.curves = typeof rawCurves === "string" ? JSON.parse(rawCurves) : rawCurves;
-  if (!appState.curves[appState.activeCurveId]) appState.activeCurveId = Object.keys(appState.curves)[0];
+  const ids = Object.keys(appState.curves);
+  if (!appState.curves[appState.activeCurveId]) appState.activeCurveId = ids[0] || null;
   if (appState.activeTraderAddress) {
-    const balance = await publicClient.readContract({ address: APP_CONFIG.CONTRACT_ADDRESS,
+    // get_user_balance is the pull-payment credit owed (units), not a wallet balance.
+    const withdrawable = await publicClient.readContract({ address: APP_CONFIG.CONTRACT_ADDRESS,
       functionName: "get_user_balance", args: [appState.activeTraderAddress], transactionHashVariant: "latest-final" });
-    appState.balances[appState.activeTraderAddress] = Number(balance);
+    appState.balances[appState.activeTraderAddress] = Number(withdrawable);
+    try {
+      const walletWei = await publicClient.getBalance({ address: appState.activeTraderAddress });
+      appState.walletGenWei = walletWei;
+    } catch { appState.walletGenWei = null; }
   }
   document.getElementById("trust-timestamp").textContent = new Date().toISOString();
   return true;
@@ -120,7 +128,7 @@ async function pollExistingTransaction(pending) {
   } finally { writeInFlight = Boolean(activeTransaction); if (!writeInFlight) setMochiPoseOverride("mochi-point.png", "READY"); }
 }
 
-async function submitStudionetWriteOrRehearsal(methodName, args, rehearsalCallback) {
+async function submitStudionetWriteOrRehearsal(methodName, args, rehearsalCallback, value = 0n) {
   if (writeInFlight) { updateTrustSurface("TRANSACTION_IN_PROGRESS", activeTransaction?.hash || "", "Wait for the existing transaction to finish."); return; }
   setMochiPoseOverride("mochi-thinking.png", "THINKING_CONSENSUS");
   if (!APP_CONFIG.CONTRACT_ADDRESS) {
@@ -137,10 +145,12 @@ async function submitStudionetWriteOrRehearsal(methodName, args, rehearsalCallba
     writeInFlight = true;
     await verifyStableNetwork();
     // Signer attribution is explicit; never submit another wallet's address as owner.
-    const actorSlots = { launch_curve: 3, buy_tokens: 2, sell_tokens: 2, record_contradiction_claim: 1 };
+    // v2: evaluate/execute/reveal take the creator as their actor argument.
+    const actorSlots = { launch_curve: 3, buy_tokens: 2, sell_tokens: 2, reveal_secret_catalyst: 3,
+      evaluate_graduation_gate: 3, execute_verdict: 1, challenge_pending_verdict: 1, record_contradiction_claim: 1 };
     if (Object.hasOwn(actorSlots, methodName)) args[actorSlots[methodName]] = appState.ephemeralSigner.address;
     appState.activeTraderAddress = appState.ephemeralSigner.address;
-    updateTrustSurface("SUBMITTING", "", `Temporary test account ${appState.ephemeralSigner.address} is signing ${methodName}.`);
+    updateTrustSurface("SUBMITTING", "", `Temporary test account ${appState.ephemeralSigner.address} is signing ${methodName}${value > 0n ? ` with ${(Number(value) / 1e18).toFixed(3)} GEN` : ""}.`);
     const signer = getTestSigningClient(signedHash => {
       if (activeTransaction && activeTransaction.hash !== signedHash) throw new Error("Unresolved broadcast must be inspected first.");
       activeTransaction = { hash: signedHash, methodName, contract: APP_CONFIG.CONTRACT_ADDRESS, chainId: 61999 };
@@ -148,7 +158,7 @@ async function submitStudionetWriteOrRehearsal(methodName, args, rehearsalCallba
       updateTrustSurface("BROADCASTING", signedHash, "A signed request is being sent. Its public hash has been retained for recovery.");
     });
     const hash = await signer.writeContract({ address: APP_CONFIG.CONTRACT_ADDRESS,
-      functionName: methodName, args, value: 0n, consensusMaxRotations: 3 });
+      functionName: methodName, args, value, consensusMaxRotations: 3 });
     const pending = { hash, methodName, contract: APP_CONFIG.CONTRACT_ADDRESS, chainId: 61999 };
     // Only public transaction metadata is persisted. Secrets and signing material stay in memory.
     localStorage.setItem(pendingKey, JSON.stringify(pending));
@@ -334,7 +344,12 @@ function syncMochiWithActiveCurve() {
 function renderCurveSelector() {
   const listEl = document.getElementById("curve-selector-list");
   listEl.innerHTML = "";
-  Object.values(appState.curves).forEach((curve) => {
+  const curves = Object.values(appState.curves);
+  if (curves.length === 0) {
+    listEl.innerHTML = `<p class="empty-state">${I18N_DICT[appState.lang].curves_empty}</p>`;
+    return;
+  }
+  curves.forEach((curve) => {
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = `orbit-curve-card ${curve.curve_id === appState.activeCurveId ? "is-selected" : ""}`;
@@ -349,7 +364,7 @@ function renderCurveSelector() {
       ${curve.origin === "seed_demo" ? `<p class="seed-demo-badge">Seed demo data — not consensus evidence</p>` : ""}
       <div class="orbit-card-metrics">
         <span>S: ${curve.Supply}</span>
-        <span>R: ${curve.curve_reserve.toLocaleString()} mGEN | Net buys: ${curve.cumulative_buy_volume.toLocaleString()} (${pct}%)</span>
+        <span>R: ${fmtGen(curve.curve_reserve)} | Net buys: ${fmtGen(curve.cumulative_buy_volume)} (${pct}%)</span>
         <span>k: ${curve.slope_k}</span>
       </div>
     `;
@@ -365,7 +380,17 @@ function renderCurveSelector() {
 
 function renderActiveCurveTelemetryAndChart() {
   const c = appState.curves[appState.activeCurveId];
-  if (!c) return;
+  if (!c) {
+    document.getElementById("active-curve-ticker").textContent = "—";
+    document.getElementById("active-curve-status").textContent = "NO_CURVE";
+    document.getElementById("active-curve-name").textContent = I18N_DICT[appState.lang].curves_empty;
+    document.getElementById("active-curve-manifesto").textContent = "";
+    document.getElementById("meter-reserve-text").textContent = "";
+    document.getElementById("meter-reserve-fill").style.transform = "scaleX(0)";
+    updateTradeSimulation();
+    renderGraduationGateAndWitnesses(null);
+    return;
+  }
 
   document.getElementById("active-curve-ticker").textContent = c.ticker;
   document.getElementById("active-curve-status").textContent = c.gate_status;
@@ -374,7 +399,7 @@ function renderActiveCurveTelemetryAndChart() {
 
   const pct = Math.min(100, Math.floor((c.cumulative_buy_volume * 100) / c.graduation_threshold));
   document.getElementById("meter-reserve-text").textContent =
-    `${c.cumulative_buy_volume.toLocaleString()} / ${c.graduation_threshold.toLocaleString()} mGEN (${pct}%)`;
+    `${fmtGen(c.cumulative_buy_volume)} / ${fmtGen(c.graduation_threshold)} (${pct}%)`;
   document.getElementById("meter-reserve-fill").style.transform = `scaleX(${(pct / 100).toFixed(3)})`;
 
   const rEff = calcCurveIntegralReserve(c.Supply, c.base_price, c.slope_k, c.virtual_slope_offset);
@@ -382,13 +407,13 @@ function renderActiveCurveTelemetryAndChart() {
   const floorMult = (Number(c.floor_multiplier_bps) / 10000).toFixed(4);
 
   document.getElementById("metric-val-supply").textContent = String(c.Supply);
-  document.getElementById("metric-val-spot").textContent = `${c.spot_price.toLocaleString()} mGEN`;
+  document.getElementById("metric-val-spot").textContent = fmtGen(c.spot_price);
   document.getElementById("metric-val-slope").textContent = `k=${c.slope_k} / off=${c.virtual_slope_offset.toLocaleString()}`;
-  document.getElementById("metric-val-floor").textContent = `${c.redemption_floor_pool.toLocaleString()} mGEN (${floorMult}x)`;
+  document.getElementById("metric-val-floor").textContent = `${fmtGen(c.redemption_floor_pool)} (${floorMult}x)`;
   document.getElementById("metric-val-collateral").textContent =
-    `${(Number(c.creator_collateral) + Number(c.fee_escrow_pool)).toLocaleString()} mGEN`;
+    fmtGen(Number(c.creator_collateral) + Number(c.fee_escrow_pool));
   document.getElementById("metric-val-invariant").textContent =
-    invariantOk ? `VERIFIED (${rEff.toLocaleString()})` : `MISMATCH (${rEff})`;
+    invariantOk ? `VERIFIED (${fmtGen(rEff)})` : `MISMATCH (${fmtGen(rEff)})`;
 
   // Commit-Reveal status
   document.getElementById("cr-commitment-code").textContent = `${c.secret_catalyst_commitment.slice(0, 22)}...`;
@@ -414,7 +439,7 @@ function renderActiveCurveTelemetryAndChart() {
   dot.setAttribute("cx", curX.toFixed(1));
   dot.setAttribute("cy", curY.toFixed(1));
   document.getElementById("chart-cursor-readout").textContent =
-    `S=${c.Supply} | R=${c.curve_reserve.toLocaleString()} mGEN`;
+    `S=${c.Supply} | R=${fmtGen(c.curve_reserve)}`;
 
   updateTradeSimulation();
   renderGraduationGateAndWitnesses(c);
@@ -425,6 +450,23 @@ function updateTradeSimulation() {
   const c = appState.curves[appState.activeCurveId];
   const delta = Number(document.getElementById("input-trade-amount").value || 1);
   document.getElementById("trade-amount-display").textContent = `${delta} Tokens`;
+  const withdrawableEl = document.getElementById("user-withdrawable");
+  const withdrawBtn = document.getElementById("btn-withdraw");
+  const userBal = appState.balances[appState.activeTraderAddress] ?? 0;
+  if (withdrawableEl) withdrawableEl.textContent = fmtGen(userBal);
+  if (withdrawBtn) withdrawBtn.disabled = userBal <= 0;
+  const walletEl = document.getElementById("user-wallet-gen");
+  if (walletEl) {
+    walletEl.textContent = appState.walletGenWei == null ? "—" : `${(Number(appState.walletGenWei) / 1e18).toFixed(3)} GEN`;
+  }
+  if (!c) {
+    document.getElementById("sim-buy-val").textContent = "—";
+    document.getElementById("sim-sell-val").textContent = "—";
+    document.getElementById("user-token-position").textContent = "0 Tokens";
+    document.getElementById("btn-buy-tokens").disabled = true;
+    document.getElementById("btn-sell-tokens").disabled = true;
+    return;
+  }
 
   const s0 = Number(c.Supply);
   const b = Number(c.base_price);
@@ -432,12 +474,12 @@ function updateTradeSimulation() {
   const vOff = Number(c.virtual_slope_offset);
   const r0 = calcCurveIntegralReserve(s0, b, k, vOff);
 
-  // Buy simulation
+  // Buy simulation (units; the real call attaches the same amount in GEN)
   const rBuy = calcCurveIntegralReserve(s0 + delta, b, k, vOff);
   const buyDeltaR = rBuy - r0;
   const buyFee = Math.floor((buyDeltaR * APP_CONFIG.TRADE_FEE_BPS) / APP_CONFIG.BPS_SCALE);
   const totalBuyCost = buyDeltaR + buyFee;
-  document.getElementById("sim-buy-val").textContent = `${totalBuyCost.toLocaleString()} mGEN`;
+  document.getElementById("sim-buy-val").textContent = fmtGen(totalBuyCost);
 
   // Sell simulation
   const sellAmt = Math.min(delta, s0);
@@ -446,18 +488,28 @@ function updateTradeSimulation() {
   const floorBonus = s0 > 0 ? Math.floor((Number(c.redemption_floor_pool) * sellAmt) / s0) : 0;
   const totalSellPayout = sellRefund + floorBonus;
   document.getElementById("sim-sell-val").textContent =
-    `${totalSellPayout.toLocaleString()} mGEN (Floor Bonus: +${floorBonus.toLocaleString()})`;
+    `${fmtGen(totalSellPayout)} (Floor Bonus: +${fmtGen(floorBonus)})`;
 
-  const userBal = appState.balances[appState.activeTraderAddress] ?? 300000;
   const held = c.positions[appState.activeTraderAddress] ?? 0;
-  document.getElementById("user-mgen-balance").textContent = userBal.toLocaleString();
   document.getElementById("user-token-position").textContent = `${held} Tokens`;
 
   const buyBtn = document.getElementById("btn-buy-tokens");
   buyBtn.disabled = c.gate_status === "RUG_SLASHED";
+  document.getElementById("btn-sell-tokens").disabled = held < delta;
 }
 
 function renderGraduationGateAndWitnesses(c) {
+  const auditBody = document.getElementById("audit-verdict-body");
+  const pendingBox = document.getElementById("pending-verdict-box");
+  const execBtn = document.getElementById("btn-execute-verdict");
+  const challengeBtn = document.getElementById("btn-challenge-verdict");
+  if (!c) {
+    if (auditBody) auditBody.innerHTML = `<p class="empty-state">${I18N_DICT[appState.lang].audit_empty}</p>`;
+    if (pendingBox) pendingBox.hidden = true;
+    const witList = document.getElementById("witness-list-container");
+    if (witList) witList.innerHTML = `<p class="empty-state">${I18N_DICT[appState.lang].wit_empty}</p>`;
+    return;
+  }
   const pUrl = `https://raw.githubusercontent.com/${c.expected_repo_slug}/main/release_manifest.json`;
   const bUrl = `https://cdn.jsdelivr.net/gh/${c.expected_repo_slug}@main/release_manifest.json`;
   if (document.getElementById("input-primary-url").dataset.curve !== c.curve_id) {
@@ -466,7 +518,24 @@ function renderGraduationGateAndWitnesses(c) {
     document.getElementById("input-primary-url").dataset.curve = c.curve_id;
   }
 
-  const auditBody = document.getElementById("audit-verdict-body");
+  // Pending verdict (step 1 of 2): shown with Execute / Challenge actions.
+  if (c.pending_verdict) {
+    const p = c.pending_verdict;
+    const challenges = c.pending_challenges || [];
+    pendingBox.hidden = false;
+    document.getElementById("pending-verdict-text").innerHTML =
+      `<strong>${escapeHtml(p.verdict)}</strong> — ${I18N_DICT[appState.lang].pending_note} ` +
+      `Tag ${escapeHtml(p.tag_name)} / SHA ${escapeHtml((p.commit_sha || "").slice(0, 10))}… / ` +
+      `API commits ${escapeHtml(p.api_commit_count)} / code files ${escapeHtml(p.code_file_count)} (${escapeHtml(p.code_bytes)} bytes) / ` +
+      `Scores ${escapeHtml(p.completeness_score)}/${escapeHtml(p.authenticity_score)}/${escapeHtml(p.overdelivery_bonus)}` +
+      (challenges.length ? `<br/>${I18N_DICT[appState.lang].pending_challenges}: ${challenges.length} — ${I18N_DICT[appState.lang].pending_blocked}` : "");
+    const isCreator = appState.ephemeralSigner && appState.ephemeralSigner.address === c.creator;
+    if (execBtn) execBtn.disabled = !isCreator || challenges.length > 0;
+    if (challengeBtn) challengeBtn.disabled = isCreator;
+  } else if (pendingBox) {
+    pendingBox.hidden = true;
+  }
+
   if (!c.last_audit) {
     auditBody.innerHTML = `<p class="empty-state">${I18N_DICT[appState.lang].audit_empty}</p>`;
   } else {
@@ -474,13 +543,14 @@ function renderGraduationGateAndWitnesses(c) {
     auditBody.innerHTML = `
       <div class="verdict-banner verdict-${escapeHtml(a.verdict.toLowerCase())}">
         <strong>${escapeHtml(a.verdict)}</strong>
-        <span>Source: ${escapeHtml(a.source_used.toUpperCase())}</span>
+        <span>Source: ${escapeHtml((a.source_used || "").toUpperCase())}</span>
       </div>
       <div class="audit-detail-grid">
-        <div><span>Tag / Commits:</span> <strong>${escapeHtml(a.tag_name || "v1.0")} / ${escapeHtml(a.commit_count || "0")}</strong></div>
+        <div><span>Tag / API Commits / Code Files:</span> <strong>${escapeHtml(a.tag_name || "v1.0")} / ${escapeHtml(a.api_commit_count || a.commit_count || "0")} / ${escapeHtml(a.code_file_count || "0")}</strong></div>
+        <div><span>Anchors (SHA / Count / Code):</span> <strong>${escapeHtml(a.sha_match || "?")} / ${escapeHtml(a.count_ok || "?")} / ${escapeHtml(a.code_ok || "?")}</strong></div>
         <div><span>Scores (Comp/Auth/Bonus):</span> <strong>${escapeHtml(a.completeness_score)} / ${escapeHtml(a.authenticity_score)} / ${escapeHtml(a.overdelivery_bonus)}</strong></div>
-        <div><span>Slashed to Floor:</span> <strong>${Number(a.slashed_amount).toLocaleString()} mGEN</strong></div>
-        <div><span>Catalyst Boost Added:</span> <strong>${Number(a.boost_subsidy_added).toLocaleString()} mGEN (k=${Number(a.new_slope_k)})</strong></div>
+        <div><span>Slashed to Floor:</span> <strong>${fmtGen(Number(a.slashed_amount || 0))}</strong></div>
+        <div><span>New Slope k:</span> <strong>${Number(a.new_slope_k)}</strong></div>
         <div class="full-span"><span>Canonical Evidence SHA-256:</span> <code>${escapeHtml(a.evidence_hash)}</code></div>
       </div>
     `;
@@ -599,19 +669,17 @@ function bindInteractions() {
 
   document.getElementById("btn-buy-tokens").addEventListener("click", () => {
     const c = appState.curves[appState.activeCurveId];
+    if (!c) return;
     const amt = Number(document.getElementById("input-trade-amount").value || 1);
+    const s0 = Number(c.Supply);
+    const r0 = calcCurveIntegralReserve(s0, c.base_price, c.slope_k, c.virtual_slope_offset);
+    const r1 = calcCurveIntegralReserve(s0 + amt, c.base_price, c.slope_k, c.virtual_slope_offset);
+    const deltaR = r1 - r0;
+    const fee = Math.floor((deltaR * APP_CONFIG.TRADE_FEE_BPS) / APP_CONFIG.BPS_SCALE);
+    const costUnits = deltaR + fee;
     submitStudionetWriteOrRehearsal("buy_tokens", [c.curve_id, amt, appState.activeTraderAddress], async () => {
       if (c.gate_status === "RUG_SLASHED") throw new Error("CURVE_SLASHED_BUY_DISABLED");
-      const s0 = Number(c.Supply);
       const s1 = s0 + amt;
-      const r0 = calcCurveIntegralReserve(s0, c.base_price, c.slope_k, c.virtual_slope_offset);
-      const r1 = calcCurveIntegralReserve(s1, c.base_price, c.slope_k, c.virtual_slope_offset);
-      const deltaR = r1 - r0;
-      const fee = Math.floor((deltaR * APP_CONFIG.TRADE_FEE_BPS) / APP_CONFIG.BPS_SCALE);
-      const cost = deltaR + fee;
-      const bal = appState.balances[appState.activeTraderAddress] ?? 300000;
-      if (bal < cost) throw new Error("INSUFFICIENT_BALANCE");
-      appState.balances[appState.activeTraderAddress] = bal - cost;
       c.Supply = s1;
       c.curve_reserve = r1;
       c.cumulative_buy_volume += deltaR;
@@ -623,11 +691,12 @@ function bindInteractions() {
         c.mochi_state = "mochi-point.png";
       }
       return "mochi-celebrate-expr.png";
-    });
+    }, unitsToWei(costUnits));
   });
 
   document.getElementById("btn-sell-tokens").addEventListener("click", () => {
     const c = appState.curves[appState.activeCurveId];
+    if (!c) return;
     const amt = Number(document.getElementById("input-trade-amount").value || 1);
     submitStudionetWriteOrRehearsal("sell_tokens", [c.curve_id, amt, appState.activeTraderAddress], async () => {
       const held = c.positions[appState.activeTraderAddress] || 0;
@@ -644,6 +713,7 @@ function bindInteractions() {
       c.spot_price = calcSpotPrice(s1, c.base_price, c.slope_k);
       c.positions[appState.activeTraderAddress] = held - amt;
       if (c.positions[appState.activeTraderAddress] === 0) delete c.positions[appState.activeTraderAddress];
+      // v2: sell proceeds become a withdrawable credit; pull them with Withdraw.
       appState.balances[appState.activeTraderAddress] =
         (appState.balances[appState.activeTraderAddress] || 0) + refund + bonus;
       c.floor_multiplier_bps = 10000 + Math.floor((c.redemption_floor_pool * 10000) / Math.max(1, r1));
@@ -651,11 +721,21 @@ function bindInteractions() {
     });
   });
 
+  document.getElementById("btn-withdraw").addEventListener("click", () => {
+    submitStudionetWriteOrRehearsal("withdraw", [], async () => {
+      const owed = appState.balances[appState.activeTraderAddress] || 0;
+      if (owed <= 0) throw new Error("NO_WITHDRAWABLE_BALANCE");
+      appState.balances[appState.activeTraderAddress] = 0;
+      return "mochi-celebrate-jump.png";
+    });
+  });
+
   document.getElementById("btn-reveal-catalyst").addEventListener("click", () => {
     const c = appState.curves[appState.activeCurveId];
+    if (!c) return;
     const salt = document.getElementById("input-reveal-salt").value.trim();
     const secret = document.getElementById("input-reveal-secret").value.trim();
-    submitStudionetWriteOrRehearsal("reveal_secret_catalyst", [c.curve_id, salt, secret], async () => {
+    submitStudionetWriteOrRehearsal("reveal_secret_catalyst", [c.curve_id, salt, secret, appState.activeTraderAddress], async () => {
       const digest = await sha256HexBrowser(`${salt}|${secret}`);
       if (digest !== c.secret_catalyst_commitment) {
         throw new Error("COMMITMENT_MISMATCH_BEFORE_WRITE");
@@ -665,13 +745,59 @@ function bindInteractions() {
     });
   });
 
+  // v2 two-step graduation: evaluate writes a PENDING verdict; execute applies it.
+  async function applyPendingVerdictRehearsal(c, pUrl, bUrl) {
+    const p = c.pending_verdict;
+    if (!p) throw new Error("NO_PENDING_VERDICT");
+    if ((c.pending_challenges || []).length > 0) throw new Error("PENDING_CHALLENGE_BLOCKS_EXECUTION");
+    if (p.verdict === "RUG_SLASHED") {
+      const slashed = Number(c.creator_collateral) + Number(c.fee_escrow_pool);
+      c.creator_collateral = 0;
+      c.fee_escrow_pool = 0;
+      c.redemption_floor_pool += slashed;
+      c.gate_status = "RUG_SLASHED";
+      c.mochi_state = "mochi-point.png";
+      c.last_audit = { ...p, slashed_amount: String(slashed), boost_subsidy_added: "0", new_slope_k: String(c.slope_k) };
+      c.pending_verdict = null;
+      c.pending_challenges = [];
+      c.floor_multiplier_bps = 10000 + Math.floor((c.redemption_floor_pool * 10000) / Math.max(1, c.curve_reserve));
+      return "mochi-point.png";
+    }
+    const creatorReward = Number(c.creator_collateral) + Number(c.fee_escrow_pool);
+    c.creator_collateral = 0;
+    c.fee_escrow_pool = 0;
+    appState.balances[c.creator] = (Number(appState.balances[c.creator]) || 0) + creatorReward;
+    if (p.verdict === "CATALYST_BOOST") {
+      const kNew = Math.floor((c.slope_k * 125) / 100);
+      const rawNew = c.base_price * c.Supply + Math.floor((kNew * c.Supply * c.Supply) / 2);
+      c.virtual_slope_offset = rawNew - c.curve_reserve;
+      c.slope_k = kNew;
+      c.spot_price = calcSpotPrice(c.Supply, c.base_price, kNew);
+      c.gate_status = "CATALYST_BOOST";
+      c.mochi_state = "mochi-celebrate-jump.png";
+      c.last_audit = { ...p, slashed_amount: "0", boost_subsidy_added: "0", new_slope_k: String(kNew) };
+      c.pending_verdict = null;
+      c.pending_challenges = [];
+      c.floor_multiplier_bps = 10000 + Math.floor((c.redemption_floor_pool * 10000) / Math.max(1, c.curve_reserve));
+      return "mochi-celebrate-jump.png";
+    }
+    c.gate_status = "GRADUATE_APPROVED";
+    c.mochi_state = "mochi-celebrate-expr.png";
+    c.last_audit = { ...p, slashed_amount: "0", boost_subsidy_added: "0", new_slope_k: String(c.slope_k) };
+    c.pending_verdict = null;
+    c.pending_challenges = [];
+    c.floor_multiplier_bps = 10000 + Math.floor((c.redemption_floor_pool * 10000) / Math.max(1, c.curve_reserve));
+    return "mochi-celebrate-expr.png";
+  }
+
   document.getElementById("btn-evaluate-gate").addEventListener("click", () => {
     const c = appState.curves[appState.activeCurveId];
+    if (!c) return;
     const pUrl = document.getElementById("input-primary-url").value;
     const bUrl = document.getElementById("input-backup-url").value;
     const scenario = document.getElementById("select-mock-scenario").value;
 
-    submitStudionetWriteOrRehearsal("evaluate_graduation_gate", [c.curve_id, pUrl, bUrl], async () => {
+    submitStudionetWriteOrRehearsal("evaluate_graduation_gate", [c.curve_id, pUrl, bUrl, appState.activeTraderAddress], async () => {
       if (["GRADUATE_APPROVED", "CATALYST_BOOST", "RUG_SLASHED"].includes(c.gate_status)) {
         throw new Error("FINALIZED_VERDICT_IMMUTABLE");
       }
@@ -681,92 +807,58 @@ function bindInteractions() {
       if (scenario === "BOTH_FAIL") {
         throw new Error("EXTERNAL_FETCH_FAILED_BOTH_SOURCES_PENDING_RETRY");
       }
-      if (scenario === "BACKUP_SLASH") {
-        const slashed = Number(c.creator_collateral) + Number(c.fee_escrow_pool);
-        c.creator_collateral = 0;
-        c.fee_escrow_pool = 0;
-        c.redemption_floor_pool += slashed;
-        c.gate_status = "RUG_SLASHED";
-        c.mochi_state = "mochi-point.png";
-        c.floor_multiplier_bps = 10000 + Math.floor((c.redemption_floor_pool * 10000) / Math.max(1, c.curve_reserve));
-        const evHash = await sha256HexBrowser(`${c.expected_repo_slug}|none|1|false|placeholder readme`);
-        c.last_audit = {
-          verdict: "RUG_SLASHED",
-          source_used: "backup",
-          primary_url: pUrl,
-          backup_url: bUrl,
-          evidence_hash: evHash,
-          tag_name: "none",
-          commit_count: "1",
-          completeness_score: "20",
-          authenticity_score: "20",
-          overdelivery_bonus: "0",
-          slashed_amount: String(slashed),
-          boost_subsidy_added: "0",
-          new_slope_k: String(c.slope_k)
-        };
-        return "mochi-point.png";
-      }
-      // [Fix 2] GRADUATE_APPROVED rehearsal branch matching contract logic
-      if (scenario === "GRADUATE_APPROVED") {
-        const creatorReward = Number(c.creator_collateral) + Number(c.fee_escrow_pool);
-        c.creator_collateral = 0;
-        c.fee_escrow_pool = 0;
-        appState.balances[c.creator] = (Number(appState.balances[c.creator]) || 0) + creatorReward;
-        c.gate_status = "GRADUATE_APPROVED";
-        c.mochi_state = "mochi-celebrate-expr.png";
-        c.floor_multiplier_bps = 10000 + Math.floor((c.redemption_floor_pool * 10000) / Math.max(1, c.curve_reserve));
-        const evHash = await sha256HexBrowser(`${c.expected_repo_slug}|v1.0.0|6|true|verified standard release manifest`);
-        c.last_audit = {
-          verdict: "GRADUATE_APPROVED",
-          source_used: "primary",
-          primary_url: pUrl,
-          backup_url: bUrl,
-          evidence_hash: evHash,
-          tag_name: "v1.0.0",
-          commit_count: "6",
-          completeness_score: "70",
-          authenticity_score: "70",
-          overdelivery_bonus: "50",
-          slashed_amount: "0",
-          boost_subsidy_added: "0",
-          new_slope_k: String(c.slope_k)
-        };
-        return "mochi-celebrate-expr.png";
-      }
-      // [Fix 1] Default PRIMARY_BOOST: credit creatorReward to appState.balances[c.creator] before zeroing
-      const kNew = Math.floor((c.slope_k * 125) / 100);
-      const rawNew = c.base_price * c.Supply + Math.floor((kNew * c.Supply * c.Supply) / 2);
-      c.virtual_slope_offset = rawNew - c.curve_reserve;
-      c.slope_k = kNew;
-      c.spot_price = calcSpotPrice(c.Supply, c.base_price, kNew);
-      const subsidy = Number(c.protocol_catalyst_pool);
-      c.protocol_catalyst_pool = 0;
-      c.redemption_floor_pool += subsidy;
-      const creatorReward = Number(c.creator_collateral) + Number(c.fee_escrow_pool);
-      c.creator_collateral = 0;
-      c.fee_escrow_pool = 0;
-      appState.balances[c.creator] = (Number(appState.balances[c.creator]) || 0) + creatorReward;
-      c.gate_status = "CATALYST_BOOST";
-      c.mochi_state = "mochi-celebrate-jump.png";
-      c.floor_multiplier_bps = 10000 + Math.floor((c.redemption_floor_pool * 10000) / Math.max(1, c.curve_reserve));
-      const evHash = await sha256HexBrowser(`${c.expected_repo_slug}|v1.2.0|9|true|verified release manifest`);
-      c.last_audit = {
-        verdict: "CATALYST_BOOST",
-        source_used: "primary",
-        primary_url: pUrl,
-        backup_url: bUrl,
-        evidence_hash: evHash,
-        tag_name: "v1.2.0",
-        commit_count: "9",
-        completeness_score: "95",
-        authenticity_score: "90",
-        overdelivery_bonus: "90",
-        slashed_amount: "0",
-        boost_subsidy_added: String(subsidy),
-        new_slope_k: String(kNew)
+      const base = {
+        status: "OK", source_used: "primary", primary_url: pUrl, backup_url: bUrl,
+        tag_name: "v1.0.0", commit_sha: "c6430a1a8d380cf4384e7c516b45ec28b50bd410",
+        tag_exists: "true", api_commit_count: "3", manifest_commit_count: "3",
+        code_file_count: "12", code_bytes: "806935", sha_match: "true", count_ok: "true", code_ok: "true",
       };
-      return "mochi-celebrate-jump.png";
+      if (scenario === "BACKUP_SLASH") {
+        const evHash = await sha256HexBrowser(`${c.expected_repo_slug}|none|1|false|placeholder readme`);
+        c.pending_verdict = { ...base, verdict: "RUG_SLASHED", source_used: "backup", tag_name: "none",
+          commit_sha: "", tag_exists: "false", api_commit_count: "0", manifest_commit_count: "1",
+          code_file_count: "0", code_bytes: "0", sha_match: "false", count_ok: "false", code_ok: "false",
+          evidence_hash: evHash, completeness_score: "20", authenticity_score: "20", overdelivery_bonus: "0" };
+      } else if (scenario === "GRADUATE_APPROVED") {
+        const evHash = await sha256HexBrowser(`${c.expected_repo_slug}|v1.0.0|3|12|806935|tree`);
+        c.pending_verdict = { ...base, verdict: "GRADUATE_APPROVED",
+          evidence_hash: evHash, completeness_score: "70", authenticity_score: "70", overdelivery_bonus: "50" };
+      } else {
+        const evHash = await sha256HexBrowser(`${c.expected_repo_slug}|v1.2.0|3|12|806935|tree`);
+        c.pending_verdict = { ...base, verdict: "CATALYST_BOOST", tag_name: "v1.2.0",
+          evidence_hash: evHash, completeness_score: "95", authenticity_score: "90", overdelivery_bonus: "90" };
+      }
+      c.pending_challenges = [];
+      c.gate_status = "VERDICT_PENDING";
+      return "mochi-thinking.png";
+    });
+  });
+
+  document.getElementById("btn-execute-verdict").addEventListener("click", () => {
+    const c = appState.curves[appState.activeCurveId];
+    if (!c) return;
+    const pUrl = document.getElementById("input-primary-url").value;
+    const bUrl = document.getElementById("input-backup-url").value;
+    submitStudionetWriteOrRehearsal("execute_verdict", [c.curve_id, appState.activeTraderAddress], async () => {
+      return applyPendingVerdictRehearsal(c, pUrl, bUrl);
+    });
+  });
+
+  document.getElementById("btn-challenge-verdict").addEventListener("click", () => {
+    const c = appState.curves[appState.activeCurveId];
+    if (!c) return;
+    const reason = document.getElementById("input-challenge-reason").value.trim() || "Pending verdict disputed; re-check before execution.";
+    const claimed = document.getElementById("input-challenge-verdict").value;
+    submitStudionetWriteOrRehearsal("challenge_pending_verdict", [c.curve_id, appState.activeTraderAddress, claimed, reason], async () => {
+      if (!c.pending_verdict) throw new Error("NO_PENDING_VERDICT");
+      if (claimed === c.pending_verdict.verdict) throw new Error("CLAIM_NOT_CONTRADICTORY");
+      c.pending_challenges = c.pending_challenges || [];
+      c.pending_challenges.push({
+        challenge_id: `chg-${c.curve_id}-${c.pending_challenges.length + 1}`,
+        challenger: appState.activeTraderAddress, claimed_verdict: claimed,
+        pending_verdict: c.pending_verdict.verdict, reason,
+      });
+      return "mochi-point.png";
     });
   });
 
@@ -816,6 +908,7 @@ function bindInteractions() {
     // Hash only is submitted during launch.
     const cHash = (await sha256HexBrowser(rawSecret)).trim().toLowerCase();
 
+    // v2: the 25 GEN creator collateral is paid with the launch transaction.
     submitStudionetWriteOrRehearsal(
       "launch_curve",
       [cid, name, ticker, appState.activeTraderAddress, repo, manifesto, cHash],
@@ -845,7 +938,6 @@ function bindInteractions() {
           origin: "local_rehearsal",
           graduation_threshold: APP_CONFIG.GRADUATION_BUY_VOLUME_THRESHOLD,
           creator_collateral: APP_CONFIG.DEFAULT_CREATOR_COLLATERAL,
-          protocol_catalyst_pool: 15000,
           fee_escrow_pool: 0,
           redemption_floor_pool: 0,
           floor_multiplier_bps: 10000,
@@ -854,11 +946,14 @@ function bindInteractions() {
           mochi_state: "mochi-float.png",
           positions: {},
           last_audit: null,
+          pending_verdict: null,
+          pending_challenges: [],
           contradiction_witnesses: []
         };
         appState.activeCurveId = cid;
         return "mochi-celebrate-jump.png";
-      }
+      },
+      unitsToWei(APP_CONFIG.DEFAULT_CREATOR_COLLATERAL)
     );
   });
 }

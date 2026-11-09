@@ -1,0 +1,40 @@
+{
+  "curves": {
+    "curve-v2-graduate": {
+      "curve_id": "curve-v2-graduate",
+      "name": "Mochi Release v2",
+      "ticker": "$MREL",
+      "creator": "0xfd3489bc3e1943405594e5509105422e20aa87f4",
+      "expected_repo_slug": "halihalibt/mochicurve-genlayer",
+      "manifesto_text": "Deliver verifiable v1.0 release tag, GenVM bonding curve module, scroll-driven frontend, mock tests and Studionet deploy scripts in halihalibt/mochicurve-genlayer.",
+      "manifesto_hash": "9f7b3096b01cc788877b8d9c95485530f6e4663f651489828bd186fc37334fc6",
+      "secret_catalyst_commitment": "ad48207cbb28ec9f3fbcfb658276d9bd61e24361a486d3af5e35e8e9c563e152",
+      "revealed_secret_catalyst": "",
+      "Supply": 0,
+      "base_price": 20,
+      "slope_k": 40,
+      "virtual_slope_offset": 0,
+      "curve_reserve": 0,
+      "cumulative_buy_volume": 0,
+      "origin": "user_created",
+      "graduation_threshold": 100000,
+      "creator_collateral": 25000,
+      "fee_escrow_pool": 0,
+      "redemption_floor_pool": 0,
+      "floor_multiplier_bps": 10000,
+      "spot_price": 20,
+      "gate_status": "TRADING_OPEN",
+      "mochi_state": "mochi-float.png",
+      "positions": {},
+      "pending_verdict": null,
+      "pending_challenges": [],
+      "last_audit": null,
+      "contradiction_witnesses": []
+    }
+  },
+  "ledger_totals": {
+    "total_received_units": "25000",
+    "total_withdrawn_units": "0"
+  },
+  "contract_balance_wei": "25000000000000000000"
+}

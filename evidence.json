@@ -1,16 +1,19 @@
 {
-  "product": "MochiCurve",
-  "network": "Stable Studionet",
-  "chain_id": 61999,
-  "rpc": "https://studio.genlayer.com/api",
-  "contract_address": "0x0A96f7CB3636Dc46d517CEacb7b6E63b292b2632",
-  "contract_explorer": "https://explorer-studio.genlayer.com/address/0x0A96f7CB3636Dc46d517CEacb7b6E63b292b2632",
   "application": "https://halihalibt.github.io/mochicurve-genlayer/",
+  "chain_id": 61999,
+  "contract_address": "0xf3C716d9ff7FB529cd08e2fD15413E75Ebc1B742",
+  "contract_explorer": "https://explorer-studio.genlayer.com/address/0xf3C716d9ff7FB529cd08e2fD15413E75Ebc1B742",
   "deployment_manifest": "evidence/deployment-manifest.json",
   "deployment_receipt": "evidence/deployment-receipt.json",
+  "limitations": "KNOWN_LIMITATIONS.md",
   "live_verification": "evidence/live-verification.json",
   "local_tests": "evidence/local-tests.txt",
-  "limitations": "KNOWN_LIMITATIONS.md",
+  "network": "Stable Studionet",
+  "product": "MochiCurve",
   "reviewer_fast_path": "docs/reviewer-fast-path.md",
-  "seed_data": "Constructor seed verdicts are illustrative placeholders, not consensus evidence."
+  "rpc": "https://studio.genlayer.com/api",
+  "seed_data": "The v2 constructor starts empty. Local rehearsal seed curves are illustrative placeholders, not consensus evidence.",
+  "superseded_v1_contract": "0x0A96f7CB3636Dc46d517CEacb7b6E63b292b2632",
+  "superseded_v1_evidence": "evidence/v1/",
+  "version": "2"
 }

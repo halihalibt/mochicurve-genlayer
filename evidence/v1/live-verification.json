@@ -1,0 +1,133 @@
+{
+  "network": "Stable Studionet",
+  "chain_id": 61999,
+  "contract_address": "0x0A96f7CB3636Dc46d517CEacb7b6E63b292b2632",
+  "origin": "user_created",
+  "transactions": [
+    {
+      "label": "01-launch",
+      "curve_id": "curve-live-release",
+      "tx_hash": "0xa056c85dfe03a0e2ca2c67d7b738fe7763cddb1d396d5417bab2da685b6b420f",
+      "status": "FINALIZED",
+      "execution_result": "SUCCESS",
+      "receipt": "01-launch-receipt.json",
+      "readback": "01-launch-readback.json",
+      "readback_variant": "latest-final"
+    },
+    {
+      "label": "02-buy-40",
+      "tx_hash": "0x39eeac32ac995ade7582b0e4819249462857ed8893b9dce16a07cc76f87b23fe",
+      "status": "FINALIZED",
+      "execution_result": "SUCCESS",
+      "receipt": "02-buy-40-receipt.json",
+      "readback": "02-buy-40-readback.json",
+      "observations": "02-buy-40-observations.json",
+      "curve_id": "curve-live-release",
+      "readback_variant": "latest-final"
+    },
+    {
+      "label": "03-buy-31",
+      "tx_hash": "0xd0801257cddeaaefbcef054502e5ac1991461b4cb461c5e34c43b5ee8751db2c",
+      "status": "FINALIZED",
+      "execution_result": "SUCCESS",
+      "receipt": "03-buy-31-receipt.json",
+      "readback": "03-buy-31-readback.json",
+      "observations": "03-buy-31-observations.json",
+      "curve_id": "curve-live-release",
+      "readback_variant": "latest-final"
+    },
+    {
+      "label": "04-graduation",
+      "tx_hash": "0xb903c6ea360fd4abe8c3ec8a770a348df4e84898e8524f39f7cc37958f0054a8",
+      "status": "FINALIZED",
+      "execution_result": "SUCCESS",
+      "receipt": "04-graduation-receipt.json",
+      "readback": "04-graduation-readback.json",
+      "observations": "04-graduation-observations.json",
+      "curve_id": "curve-live-release",
+      "readback_variant": "latest-final"
+    },
+    {
+      "label": "05-sell",
+      "curve_id": "curve-live-release",
+      "readback_variant": "latest-final",
+      "readback_captured_at": "2026-11-08T19:47:31.897Z",
+      "tx_hash": "0x36c4064626135147c41544909b912a912f7dd2a547b7e502546e2c09359d1811",
+      "status": "FINALIZED",
+      "execution_result": "SUCCESS",
+      "receipt": "05-sell-receipt.json",
+      "readback": "05-sell-readback.json",
+      "observations": "05-sell-observations.json"
+    },
+    {
+      "label": "06-witness",
+      "curve_id": "curve-live-release",
+      "readback_variant": "latest-final",
+      "readback_captured_at": "2026-11-08T19:49:46.143Z",
+      "tx_hash": "0xccc6d2948b4ef9ab5ef9fc17fa05b68c0629199da77c33ec5b2081ec58f2ff57",
+      "status": "FINALIZED",
+      "execution_result": "SUCCESS",
+      "receipt": "06-witness-receipt.json",
+      "readback": "06-witness-readback.json",
+      "observations": "06-witness-observations.json"
+    },
+    {
+      "label": "07-tag-launch",
+      "curve_id": "curve-live-missing-tag",
+      "readback_variant": "latest-final",
+      "readback_captured_at": "2026-11-08T19:50:18.441Z",
+      "tx_hash": "0xb4ad23f4f01f9c5516aebf49b1e1979758bbc309bc693705b965497b45a61c34",
+      "status": "FINALIZED",
+      "execution_result": "SUCCESS",
+      "receipt": "07-tag-launch-receipt.json",
+      "readback": "07-tag-launch-readback.json",
+      "observations": "07-tag-launch-observations.json"
+    },
+    {
+      "label": "08-tag-buy",
+      "curve_id": "curve-live-missing-tag",
+      "readback_variant": "latest-final",
+      "readback_captured_at": "2026-11-08T19:53:34.249Z",
+      "tx_hash": "0x03869f6c6c68dbb853ef7757856241b2c5dc97775f6917133c602977e83985e4",
+      "status": "FINALIZED",
+      "execution_result": "SUCCESS",
+      "receipt": "08-tag-buy-receipt.json",
+      "readback": "08-tag-buy-readback.json",
+      "observations": "08-tag-buy-observations.json"
+    },
+    {
+      "label": "09-tag-audit",
+      "curve_id": "curve-live-missing-tag",
+      "readback_variant": "latest-final",
+      "readback_captured_at": "2026-11-08T19:53:43.147Z",
+      "tx_hash": "0x95e992ac7526da1b1ced5a336f53e08c716f2e00dbbee01271b1a295a547a2f7",
+      "status": "FINALIZED",
+      "execution_result": "SUCCESS",
+      "receipt": "09-tag-audit-receipt.json",
+      "readback": "09-tag-audit-readback.json",
+      "observations": "09-tag-audit-observations.json"
+    },
+    {
+      "label": "10-floor-sell",
+      "curve_id": "curve-live-missing-tag",
+      "readback_variant": "latest-final",
+      "readback_captured_at": "2026-11-08T19:55:38.813Z",
+      "tx_hash": "0xfb122af44b8350684141172c5b9ecf26ed64c6c7f6b233da68a92f9c0bf16660",
+      "status": "FINALIZED",
+      "execution_result": "SUCCESS",
+      "receipt": "10-floor-sell-receipt.json",
+      "readback": "10-floor-sell-readback.json",
+      "observations": "10-floor-sell-observations.json"
+    }
+  ],
+  "curve_ids": [
+    "curve-live-release",
+    "curve-live-missing-tag"
+  ],
+  "readback_scope": "Readbacks were captured from latest-final after the referenced transaction finalized; they can include later finalized transactions. The exact per-transaction return and lifecycle are retained in each raw receipt.",
+  "coverage": {
+    "browser": "Launch, buy, approve audit, sell and witness; Pages launch, buy and full floor redemption",
+    "script": "Missing-tag deterministic audit with an independent in-memory account",
+    "local_mock": "BOOST reserve invariant, API-error rollback, hash vectors and impersonation rejection"
+  }
+}

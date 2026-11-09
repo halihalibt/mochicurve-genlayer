@@ -14,11 +14,15 @@ export const APP_CONFIG = {
   EXPLORER_URL: "https://explorer-studio.genlayer.com",
   // Leave empty ("") until deployed on Studionet; when empty, UI enforces honest Local Rehearsal mode
   // and NEVER fakes a FINALIZED status or fake transaction hash.
-  CONTRACT_ADDRESS: "0x0A96f7CB3636Dc46d517CEacb7b6E63b292b2632",
+  CONTRACT_ADDRESS: "0xf3C716d9ff7FB529cd08e2fD15413E75Ebc1B742",
   GRADUATION_BUY_VOLUME_THRESHOLD: 100000,
   DEFAULT_BASE_PRICE: 20,
   DEFAULT_SLOPE_K: 40,
   DEFAULT_CREATOR_COLLATERAL: 25000,
+  // v2 money: 1 accounting unit = 10^15 wei = 0.001 GEN. Threshold 100,000 units = 100 GEN;
+  // creator collateral 25,000 units = 25 GEN. All on-chain amounts are real testnet GEN.
+  WEI_PER_UNIT: 10n ** 15n,
+  GEN_PER_UNIT: 0.001,
   TRADE_FEE_BPS: 200,
   BPS_SCALE: 10000,
   // Fixed 5-color palette from MOCHI Character Design Specification
@@ -50,6 +54,17 @@ export async function sha256HexBrowser(message) {
   const hashBuffer = await crypto.subtle.digest("SHA-256", msgUint8);
   const hashArray = Array.from(new Uint8Array(hashBuffer));
   return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+// Units (0.001 GEN each) -> GEN display string, e.g. 102240 -> "102.240 GEN".
+export function fmtGen(units) {
+  const u = BigInt(Math.trunc(Number(units) || 0));
+  const whole = u / 1000n;
+  const frac = (u % 1000n).toString().padStart(3, "0");
+  return `${whole.toLocaleString("en-US")}.${frac} GEN`;
+}
+export function unitsToWei(units) {
+  return BigInt(Math.trunc(Number(units) || 0)) * APP_CONFIG.WEI_PER_UNIT;
 }
 
 // Deterministic integer curve math matching contracts/mochi_curve.py 100%
@@ -95,7 +110,6 @@ export const INITIAL_SEED_STATE = {
       origin: "seed_demo",
       graduation_threshold: 100000,
       creator_collateral: 25000,
-      protocol_catalyst_pool: 15000,
       fee_escrow_pool: 2044,
       redemption_floor_pool: 0,
       floor_multiplier_bps: 10000,
@@ -104,6 +118,8 @@ export const INITIAL_SEED_STATE = {
       mochi_state: "mochi-float.png",
       positions: { "0x71C...89A1": 31, "0xA4B...33F2": 40 },
       last_audit: null,
+      pending_verdict: null,
+      pending_challenges: [],
       contradiction_witnesses: []
     },
     "curve-cyber-paw": {
@@ -126,7 +142,6 @@ export const INITIAL_SEED_STATE = {
       origin: "seed_demo",
       graduation_threshold: 100000,
       creator_collateral: 0,
-      protocol_catalyst_pool: 0,
       fee_escrow_pool: 0,
       redemption_floor_pool: 15000,
       floor_multiplier_bps: 11157,
@@ -149,6 +164,8 @@ export const INITIAL_SEED_STATE = {
         boost_subsidy_added: "15000",
         new_slope_k: "50"
       },
+      pending_verdict: null,
+      pending_challenges: [],
       contradiction_witnesses: [
         {
           witness_id: "wit-cpaw-01",
@@ -182,7 +199,6 @@ export const INITIAL_SEED_STATE = {
       origin: "seed_demo",
       graduation_threshold: 100000,
       creator_collateral: 0,
-      protocol_catalyst_pool: 15000,
       fee_escrow_pool: 0,
       redemption_floor_pool: 27280,
       floor_multiplier_bps: 12392,
@@ -205,6 +221,8 @@ export const INITIAL_SEED_STATE = {
         boost_subsidy_added: "0",
         new_slope_k: "40"
       },
+      pending_verdict: null,
+      pending_challenges: [],
       contradiction_witnesses: []
     }
   }
