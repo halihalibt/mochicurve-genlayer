@@ -176,15 +176,12 @@ function setupContinuousScrollScrub() {
   turntable.className = "mochi-turntable";
   rig.insertBefore(turntable, document.getElementById("mochi-layer-front"));
   const stateSprite = document.getElementById("mochi-layer-state");
-  // Real front-to-back views at fifteen-degree intervals; reuse existing PNGs.
-  const views = Array.from({ length: 13 }, (_, index) => {
-    const angle = index * 15;
-    const anchor = { 0: "front", 90: "side", 180: "back" }[angle];
-    const sprite = anchor ? document.getElementById(`mochi-layer-${anchor}`) : new Image();
-    sprite.className = angle === 0 ? "mochi-sprite is-visible" : "mochi-sprite";
-    sprite.alt = "MOCHI turn view";
+  // Reuse the three orientation views from the original nine-image character set.
+  const views = ["front", "side", "back"].map((name, index) => {
+    const sprite = document.getElementById(`mochi-layer-${name}`);
+    const angle = index * 90;
+    sprite.className = "mochi-sprite";
     sprite.dataset.angle = String(angle);
-    if (!anchor) sprite.src = `./assets/mochi-turn-${String(angle).padStart(3, "0")}.png`;
     turntable.appendChild(sprite);
     const view = { angle, sprite, ready: false };
     sprite.decode().then(() => { view.ready = true; requestMochiFrame(); }).catch(() => {});
@@ -243,15 +240,16 @@ function setupContinuousScrollScrub() {
       ? mix(0.85, mobile ? 1 : 1.5, smooth(p * 2))
       : mix(mobile ? 1 : 1.5, mobile ? 0.9 : 1.15, smooth((p - 0.5) * 2));
     // The stage stays centered; idle motion has no horizontal or scroll-driven offset.
-    const float = reduced ? 0 : Math.sin(time * 2 * Math.PI / 3000) * (mobile ? 8 : 10);
+    const float = reduced ? 0 : Math.sin(time / 900) * (mobile ? 4 : 8);
     rig.style.transform = `translate3d(0, ${float.toFixed(2)}px, 0) scale(${scale.toFixed(4)})`;
 
     const readyViews = views.filter(view => view.ready);
     const view = reduced ? views[0] : readyViews.reduce((nearest, candidate) =>
       Math.abs(candidate.angle - yaw) < Math.abs(nearest.angle - yaw) ? candidate : nearest,
       readyViews[0] || views[0]);
-    // Only the small residual between adjacent real views is simulated in CSS.
-    const residual = reduced ? 0 : Math.max(-7.5, Math.min(7.5, yaw - view.angle));
+    // A bounded facet turn suggests depth without ever making the sprite edge-on.
+    // The logical orbit runs from front to back while each real view stays readable.
+    const residual = reduced ? 0 : Math.max(-22.5, Math.min(22.5, (yaw - view.angle) * 0.5));
     turntable.style.transform = `rotateX(${pitch.toFixed(3)}deg) rotateY(${residual.toFixed(3)}deg)`;
     const showState = !reduced && view.angle === 0 && Boolean(appState.mochiOverridePose)
       && stateSprite.complete && stateSprite.naturalWidth > 0;

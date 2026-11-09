@@ -390,11 +390,11 @@ export function injectMochiStyles() {
       transform-style: preserve-3d; will-change: transform;
     }
     .mochi-turntable {
-      position: absolute; inset: 0; z-index: 1;
+      position: absolute; inset: 0;
       transform-style: preserve-3d; will-change: transform;
     }
     .mochi-halo {
-      position: absolute; inset: 3%; border-radius: 50%; z-index: 0;
+      position: absolute; inset: 3%; border-radius: 50%;
       will-change: transform; pointer-events: none;
     }
     .halo-light {
