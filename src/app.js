@@ -170,8 +170,6 @@ let requestMochiFrame = () => {};
 function setupContinuousScrollScrub() {
   const rig = document.getElementById("mochi-actor-rig");
   const stage = document.getElementById("mochi-persistent-stage");
-  const sprites = ["front", "side", "back", "state"].map(view =>
-    document.getElementById(`mochi-layer-${view}`));
   const halo = document.getElementById("mochi-halo-ring");
   const degLabel = document.getElementById("hud-orbit-deg");
   const caption = document.getElementById("mochi-caption-pill");
@@ -179,10 +177,25 @@ function setupContinuousScrollScrub() {
   const mobileQuery = window.matchMedia("(max-width: 860px)");
   const turntable = document.createElement("div");
   turntable.className = "mochi-turntable";
-  rig.insertBefore(turntable, sprites[0]);
-  sprites.forEach(sprite => turntable.appendChild(sprite));
+  rig.insertBefore(turntable, document.getElementById("mochi-layer-front"));
+  const stateSprite = document.getElementById("mochi-layer-state");
+  // Each frame is a real view. Decode before selecting; never fade the actor out.
+  const views = Array.from({ length: 13 }, (_, index) => {
+    const angle = index * 15;
+    const anchor = { 0: "front", 90: "side", 180: "back" }[angle];
+    const sprite = anchor ? document.getElementById(`mochi-layer-${anchor}`) : new Image();
+    sprite.className = "mochi-sprite";
+    sprite.alt = `MOCHI ${angle} degree view`;
+    sprite.dataset.angle = String(angle);
+    if (!anchor) sprite.src = `./assets/mochi-turn-${String(angle).padStart(3, "0")}.png`;
+    turntable.appendChild(sprite);
+    const view = { angle, sprite, ready: false };
+    sprite.decode().then(() => { view.ready = true; requestMochiFrame(); }).catch(() => {});
+    return view;
+  });
+  turntable.appendChild(stateSprite);
 
-  // Layered palette lights blend by opacity; no per-frame color or filter paints.
+  // Three distinct palette lights interpolate across the entire scroll range.
   const atmosphere = document.createElement("div");
   atmosphere.className = "mochi-atmosphere";
   atmosphere.setAttribute("aria-hidden", "true");
@@ -204,17 +217,11 @@ function setupContinuousScrollScrub() {
   const smooth = value => { const t = clamp(value); return t * t * (3 - 2 * t); };
   const mix = (a, b, t) => a + (b - a) * t;
   let current = 0, target = 0, frame = 0, previousTime = 0;
-  let width = innerWidth, height = innerHeight, maxScroll = 1, passes = [];
+  let width = innerWidth, height = innerHeight, maxScroll = 1;
 
   function measureScene() {
     width = innerWidth; height = innerHeight;
     maxScroll = Math.max(1, document.documentElement.scrollHeight - height);
-    passes = [...document.querySelectorAll(".station-02 .station-title, .station-03 .station-title")]
-      .map(title => {
-        const rect = title.getBoundingClientRect();
-        return { progress: (rect.top + scrollY + rect.height / 2 - height / 2) / maxScroll,
-          x: rect.left + rect.width / 2 - width / 2 };
-      });
     target = clamp(scrollY / maxScroll);
     requestMochiFrame();
   }
@@ -223,65 +230,57 @@ function setupContinuousScrollScrub() {
     frame = 0;
     const reduced = motionQuery.matches, mobile = mobileQuery.matches;
     appState.reducedMotion = reduced;
-    const dt = previousTime ? Math.min(32, time - previousTime) : 16.67;
+    const dt = previousTime ? Math.max(0, time - previousTime) : 16.67;
     previousTime = time;
-    // Frame-rate independent 110ms camera response, with no scroll interception.
-    current = reduced ? 0 : current + (target - current) * (1 - Math.exp(-dt / 110));
+    // 300ms exponential response keeps the same inertia at different frame rates.
+    current = reduced ? target : current + (target - current) * (1 - Math.exp(-dt / 300));
     if (Math.abs(target - current) < 0.00002) current = target;
     const p = reduced ? 0 : current;
-    const yaw = mobile || reduced ? 0 : p * 180;
+    const yaw = p * 180;
     const pitch = mobile || reduced ? 0 : p <= 0.5
-      ? mix(0, -12, smooth(p * 2)) : mix(-12, 8, smooth((p - 0.5) * 2));
+      ? mix(0, -8, smooth(p * 2)) : mix(-8, 6, smooth((p - 0.5) * 2));
     const scale = reduced ? 1 : mobile ? 0.88 : p <= 0.5
-      ? mix(0.85, 1.5, smooth(p * 2)) : mix(1.5, 1.15, smooth((p - 0.5) * 2));
-    let x = mobile || reduced ? 0 : mix(width * 0.27, -width * 0.27, smooth(p));
-    const y = mobile || reduced ? 0 : Math.sin(p * Math.PI * 2) * height * 0.055;
-    let foreground = 0;
-    if (!mobile && !reduced) {
-      for (const pass of passes) {
-        const weight = 1 - smooth(Math.abs(p - pass.progress) / (height * 0.62 / maxScroll));
-        if (weight > foreground) { foreground = weight; x = mix(x, pass.x, weight); }
-      }
-    }
+      ? mix(0.85, 1.3, smooth(p * 2)) : mix(1.3, 1.05, smooth((p - 0.5) * 2));
+    // A single continuous path: no title measurements or positional snapping.
+    const x = mobile || reduced ? 0 : mix(width * 0.27, -width * 0.27, smooth(p));
+    const float = reduced ? 0 : Math.sin(time / 900) * (mobile ? 4 : 8);
+    const y = (mobile || reduced ? 0 : Math.sin(p * Math.PI * 2) * height * 0.055) + float;
     rig.style.transform = `translate3d(${x.toFixed(2)}px, ${y.toFixed(2)}px, 0) scale(${scale.toFixed(4)})`;
-    turntable.style.transform = `rotateX(${pitch.toFixed(3)}deg) rotateY(${yaw.toFixed(3)}deg)`;
 
-    // Each texture is a facet of the turn. A short hinge makes the outgoing
-    // and incoming facets edge-on at 45/135 degrees. Never overlap textures.
-    const view = mobile || reduced ? 0 : yaw < 45 ? 0 : yaw < 135 ? 1 : 2;
-    const boundary = view === 0 ? 45 : view === 2 ? 135 : yaw < 90 ? 45 : 135;
-    let hinge = 0;
-    if (!mobile && !reduced) {
-      if (view > 0 && yaw < view * 90 - 40)
-        hinge = -45 * (1 - smooth((yaw - (view * 90 - 45)) / 5));
-      if (view < 2 && yaw > view * 90 + 40)
-        hinge = 45 * smooth((yaw - (view * 90 + 40)) / 5);
-    }
-    const alpha = mobile || reduced ? 1 : clamp(Math.abs(yaw - boundary) / 0.9);
-    const showState = !reduced && view === 0 && Boolean(appState.mochiOverridePose);
-    const selected = showState ? 3 : view;
-    sprites.forEach((sprite, index) => {
-      sprite.style.opacity = index === selected ? String(alpha) : "0";
-      sprite.style.transform = `rotateY(${-view * 90 + hinge}deg)`;
+    const readyViews = views.filter(view => view.ready);
+    const view = readyViews.reduce((nearest, candidate) =>
+      Math.abs(candidate.angle - yaw) < Math.abs(nearest.angle - yaw) ? candidate : nearest,
+      readyViews[0] || views[0]);
+    // Residual yaw stays within +/-7.5 degrees once all frames are ready.
+    // Even during a failed download, clamping prevents an edge-on sliver.
+    const residual = reduced ? 0 : Math.max(-7.5, Math.min(7.5, yaw - view.angle));
+    turntable.style.transform = `rotateX(${pitch.toFixed(3)}deg) rotateY(${residual.toFixed(3)}deg)`;
+    const showState = !reduced && view.angle === 0 && Boolean(appState.mochiOverridePose)
+      && stateSprite.complete && stateSprite.naturalWidth > 0;
+    views.forEach(candidate => {
+      candidate.sprite.style.opacity = !showState && candidate === view ? "1" : "0";
     });
-    const weights = p <= 0.5 ? [1 - smooth(p * 2), smooth(p * 2), 0]
-      : [0, 1 - smooth((p - 0.5) * 2), smooth((p - 0.5) * 2)];
+    stateSprite.style.opacity = showState ? "1" : "0";
+
+    const t = smooth(p <= 0.5 ? p * 2 : (p - 0.5) * 2);
+    const weights = p <= 0.5 ? [1 - t, t, 0] : [0, 1 - t, t];
     lightLayers.forEach(([light, rim], index) => {
       light.style.opacity = String(weights[index]); rim.style.opacity = String(weights[index]);
       light.style.transform = `translate3d(${(x * 0.25).toFixed(1)}px, ${(-y).toFixed(1)}px, 0) scale(${(1 + p * 0.18).toFixed(3)})`;
     });
-    shade.style.opacity = String(reduced ? 0.18 : mix(0.38, 0.08, Math.sin(p * Math.PI)));
+    shade.style.opacity = String(reduced ? 0.18 : mix(0.28, 0.06, Math.sin(p * Math.PI)));
     halo.style.transform = `scale(${(0.92 + Math.sin(p * Math.PI) * 0.18).toFixed(3)})`;
-    const degrees = Math.round(yaw), tag = ["FRONT", "SIDE", "BACK"][view];
+    const degrees = Math.round(yaw), tag = view.angle < 45 ? "FRONT" : view.angle < 105 ? "SIDE" : "BACK";
     appState.scrollDeg = degrees;
     degLabel.textContent = `${degrees}° ${tag}`;
     caption.textContent = `${degrees}° ${tag}`;
-    // Public visual telemetry is also useful when checking device fallbacks.
     stage.dataset.yaw = yaw.toFixed(2); stage.dataset.pitch = pitch.toFixed(2);
     stage.dataset.scale = scale.toFixed(3); stage.dataset.progress = p.toFixed(5);
-    stage.dataset.foreground = foreground.toFixed(3);
+    stage.dataset.frameAngle = String(view.angle); stage.dataset.residual = residual.toFixed(3);
+    stage.dataset.x = x.toFixed(2); stage.dataset.float = float.toFixed(2);
+    stage.dataset.target = target.toFixed(5); stage.dataset.readyFrames = String(readyViews.length);
     stage.dataset.motion = reduced ? "reduced" : mobile ? "mobile" : "desktop";
-    if (!reduced && current !== target) requestMochiFrame();
+    if (!reduced && !document.hidden) requestMochiFrame();
     else previousTime = 0;
   }
   requestMochiFrame = () => { if (!frame) frame = requestAnimationFrame(renderFrame); };
@@ -291,6 +290,7 @@ function setupContinuousScrollScrub() {
   window.addEventListener("resize", measureScene);
   motionQuery.addEventListener("change", measureScene);
   mobileQuery.addEventListener("change", measureScene);
+  document.addEventListener("visibilitychange", () => { previousTime = 0; requestMochiFrame(); });
   new ResizeObserver(measureScene).observe(document.body);
   measureScene();
 }

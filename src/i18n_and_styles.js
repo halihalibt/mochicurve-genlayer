@@ -257,7 +257,7 @@ export function injectMochiStyles() {
       --mochi-lavender: #F3F1FA;
       --mochi-silver: #B9B7C9;
       --bg-dark: #122147;
-      --card-bg: rgba(18, 33, 71, 0.72);
+      --card-bg: #122147;
       --border-glow: rgba(34, 232, 242, 0.35);
     }
 
@@ -371,21 +371,20 @@ export function injectMochiStyles() {
     }
     .scene-light, .scene-shade { position: absolute; inset: -12%; will-change: transform, opacity; }
     .scene-light-cyan {
-      background: radial-gradient(ellipse at 72% 42%, rgba(34,232,242,0.32), transparent 62%);
+      background: radial-gradient(ellipse at 72% 42%, rgba(34,232,242,0.55), transparent 72%);
     }
     .scene-light-violet {
-      background: radial-gradient(ellipse at 48% 48%, rgba(199,58,242,0.28), transparent 65%),
-        radial-gradient(ellipse at 62% 25%, rgba(34,232,242,0.15), transparent 52%);
+      background: radial-gradient(ellipse at 48% 48%, rgba(112,72,242,0.60), transparent 72%);
     }
     .scene-light-magenta {
-      background: radial-gradient(ellipse at 26% 58%, rgba(199,58,242,0.46), transparent 64%);
+      background: radial-gradient(ellipse at 26% 58%, rgba(242,58,194,0.60), transparent 72%);
     }
     .scene-shade { background: var(--mochi-navy); will-change: opacity; }
     .mochi-stage-layer {
       position: fixed; top: 50%; left: 50%;
       transform: translate(-50%, -50%);
       width: clamp(300px, 32vw, 460px); aspect-ratio: 1;
-      pointer-events: none; z-index: 8;
+      pointer-events: none; z-index: 20;
       perspective: 850px; perspective-origin: 50% 42%;
     }
     .mochi-rig {
@@ -410,18 +409,18 @@ export function injectMochiStyles() {
       box-shadow: inset 0 0 60px rgba(34,232,242,0.24), 0 0 70px rgba(34,232,242,0.16);
     }
     .halo-light-violet {
-      background: radial-gradient(circle, rgba(199,58,242,0.23), rgba(34,232,242,0.07) 50%, transparent 72%);
-      box-shadow: inset 0 0 60px rgba(199,58,242,0.3);
+      background: radial-gradient(circle, rgba(112,72,242,0.36), rgba(112,72,242,0.10) 50%, transparent 72%);
+      box-shadow: inset 0 0 60px rgba(112,72,242,0.3);
     }
     .halo-light-magenta {
-      background: radial-gradient(circle, rgba(199,58,242,0.38), transparent 72%);
-      box-shadow: inset 0 0 60px rgba(199,58,242,0.35), 0 0 80px rgba(199,58,242,0.22);
+      background: radial-gradient(circle, rgba(242,58,194,0.38), transparent 72%);
+      box-shadow: inset 0 0 60px rgba(242,58,194,0.35), 0 0 80px rgba(242,58,194,0.22);
     }
     .mochi-sprite {
       position: absolute; inset: 0; width: 100%; height: 100%;
       object-fit: contain; opacity: 0; backface-visibility: hidden;
       will-change: transform, opacity;
-      /* Texture changes are controlled by the edge-on hinge, never a CSS crossfade. */
+      /* Exactly one decoded view is opaque; residual perspective never approaches edge-on. */
       transition: none;
       filter: drop-shadow(0 16px 22px rgba(18,33,71,0.45));
     }
@@ -466,7 +465,7 @@ export function injectMochiStyles() {
       z-index: auto;
     }
 
-    /* Headings sit behind MOCHI. Reading copy and controls sit in front. */
+    /* The complete actor passes in front of headings and cards without backdrop ghosts. */
     .station-column > * { position: relative; z-index: 12; }
     .station-column > .kinetic-headline, .station-column > .station-title { z-index: 2; }
     @media (min-width: 861px) {
@@ -535,7 +534,7 @@ export function injectMochiStyles() {
     }
 
     .orbit-curve-card.is-selected {
-      background: rgba(199, 58, 242, 0.18);
+      background: #302454;
       border-color: var(--mochi-purple);
       box-shadow: 0 0 24px rgba(199, 58, 242, 0.35);
     }
