@@ -1152,7 +1152,7 @@ export function injectMochiStyles() {
       .hud-subtitle { max-width: 250px; }
     }
     @media (max-width: 860px) {
-      :root { --mochi-stage-size: clamp(104px, 18vw, 140px); }
+      :root { --mochi-stage-size: clamp(72px, 16vw, 88px); }
       html, body { height: 100%; overflow: hidden; }
       .spatial-hud {
         display: grid; grid-template-columns: minmax(0, 1fr) auto;
@@ -1166,12 +1166,17 @@ export function injectMochiStyles() {
       .hud-scroll-telemetry { display: flex; grid-column: 1; gap: 0; }
       .telemetry-chip { padding: 3px 7px; font-size: 9px; max-width: 100%; }
       .telemetry-chip strong { margin-left: 3px; }
-      .mochi-stage-layer { top: 50%; left: 50%; perspective: none; }
+      /* Mobile: dock MOCHI just below the HUD instead of dead-centre.
+         Dead-centre left the scroll pane only ~40% of the screen, so the
+         actor's empty zone blocked the content that should be readable.
+         The stage stays fixed and scroll-scrubbed; only its size and
+         anchor change on small screens. Desktop is untouched. */
+      .mochi-stage-layer { top: 168px; left: 50%; perspective: none; }
       .mochi-rig, .mochi-turntable { transform-style: flat; }
       .mochi-rig, .mochi-halo, .mochi-sprite { filter: none !important; }
       /* A separate scroll pane keeps single-column controls below the centered actor. */
       .spatial-world {
-        position: fixed; top: calc(50% + var(--mochi-stage-size) / 2 + 18px);
+        position: fixed; top: calc(168px + var(--mochi-stage-size) / 2 + 14px);
         left: 0; right: 0; bottom: 0; margin: 0;
         overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain;
         scrollbar-gutter: stable; scroll-padding: 16px;
