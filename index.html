@@ -21,7 +21,7 @@
     <div class="hud-scroll-telemetry" aria-live="polite">
       <span class="telemetry-chip" id="hud-mode-chip">
         <span data-i18n="hud_mode_label">MODE</span>:
-        <strong id="hud-chain-mode">PREVIEW_SEED</strong>
+        <strong id="hud-chain-mode">未确认</strong>
       </span>
     </div>
 
@@ -69,18 +69,18 @@
         <!-- Live Curve Reserve & Threshold Gauge -->
         <div class="telemetry-card">
           <div class="card-header-row">
-            <span class="badge-ticker" id="active-curve-ticker">$MPRIME</span>
-            <span class="badge-status" id="active-curve-status">GATE_UNLOCKED</span>
+            <span class="badge-ticker" id="active-curve-ticker">—</span>
+            <span class="badge-status" id="active-curve-status">未确认</span>
           </div>
-          <h2 class="card-curve-title" id="active-curve-name">Mochi Prime</h2>
+          <h2 class="card-curve-title" id="active-curve-name">—</h2>
           <p class="card-manifesto" id="active-curve-manifesto"></p>
 
           <div class="threshold-meter-box">
             <div class="meter-labels">
               <span data-i18n="meter_reserve_label">Cumulative Net Buys vs. 100 GEN Graduation Threshold</span>
-              <strong id="meter-reserve-text">102.240 / 100 GEN (102%)</strong>
+              <strong id="meter-reserve-text">—</strong>
             </div>
-            <div class="meter-track" role="progressbar" aria-valuemin="0" aria-valuemax="100000" aria-valuenow="102240">
+            <div class="meter-track" role="progressbar" aria-valuemin="0" aria-valuemax="100000" aria-valuenow="0">
               <div class="meter-fill" id="meter-reserve-fill"></div>
             </div>
           </div>
@@ -88,27 +88,27 @@
           <div class="metrics-grid">
             <div class="metric-item">
               <span class="metric-label" data-i18n="metric_supply">Circulating Supply (S)</span>
-              <strong class="metric-val" id="metric-val-supply">71</strong>
+              <strong class="metric-val" id="metric-val-supply">—</strong>
             </div>
             <div class="metric-item">
               <span class="metric-label" data-i18n="metric_spot">Spot Price P(S)</span>
-              <strong class="metric-val" id="metric-val-spot">2.860 GEN</strong>
+              <strong class="metric-val" id="metric-val-spot">—</strong>
             </div>
             <div class="metric-item">
               <span class="metric-label" data-i18n="metric_slope">Slope k / Offset</span>
-              <strong class="metric-val" id="metric-val-slope">k=40 / 0</strong>
+              <strong class="metric-val" id="metric-val-slope">—</strong>
             </div>
             <div class="metric-item">
               <span class="metric-label" data-i18n="metric_floor_pool">Redemption Floor Pool</span>
-              <strong class="metric-val highlight-cyan" id="metric-val-floor">0.000 GEN (1.0000x)</strong>
+              <strong class="metric-val" id="metric-val-floor">—</strong>
             </div>
             <div class="metric-item">
               <span class="metric-label" data-i18n="metric_collateral">Creator Collateral + Fee Escrow</span>
-              <strong class="metric-val" id="metric-val-collateral">27.044 GEN</strong>
+              <strong class="metric-val" id="metric-val-collateral">—</strong>
             </div>
             <div class="metric-item">
               <span class="metric-label" data-i18n="metric_invariant">Solvency Invariant R_eff == R</span>
-              <strong class="metric-val highlight-purple" id="metric-val-invariant">VERIFIED (102,240)</strong>
+              <strong class="metric-val" id="metric-val-invariant">未确认</strong>
             </div>
           </div>
         </div>
@@ -134,7 +134,7 @@
           </svg>
           <div class="chart-legend">
             <span data-i18n="chart_legend_formula">Formula: R_eff(S) = B*S + (k*S^2)//2 - offset</span>
-            <span id="chart-cursor-readout">S=71 | R=102.240 GEN</span>
+            <span id="chart-cursor-readout">—</span>
           </div>
         </div>
 
@@ -167,7 +167,7 @@
             <div class="wallet-row">
               <div>
                 <span class="wallet-label" data-i18n="wallet_read_label">Injected Wallet (Connect & Read Only):</span>
-                <strong id="connected-wallet-addr" data-i18n="wallet_not_connected">Not Connected (Read-Only Seed Active)</strong>
+                <strong id="connected-wallet-addr" data-i18n="wallet_not_connected">Not Connected</strong>
               </div>
               <button type="button" id="btn-connect-wallet" class="hud-pill-btn" data-i18n="btn_connect_wallet">Connect OKX / EVM Wallet</button>
             </div>
@@ -178,7 +178,7 @@
               <span data-i18n="ephemeral_signer_label">Active Studionet Write Signer (Ephemeral Test Account):</span>
               <code id="ephemeral-Account-badge">Not enabled</code>
               <button type="button" class="hud-pill-btn" id="btn-enable-test-account" data-i18n="enable_test_account">Enable temporary test account</button>
-              <span class="balance-pill"><span data-i18n="user_bal_label">Withdrawable</span>: <strong id="user-withdrawable">0.000 GEN</strong></span>
+              <span class="balance-pill"><span data-i18n="user_bal_label">Withdrawable</span>: <strong id="user-withdrawable">—</strong></span>
               <span class="balance-pill"><span data-i18n="wallet_gen_label">Wallet GEN</span>: <strong id="user-wallet-gen">—</strong></span>
               <button type="button" class="hud-pill-btn" id="btn-withdraw" data-i18n="btn_withdraw">Withdraw</button>
             </div>
@@ -193,11 +193,11 @@
             <div class="trade-sim-breakdown">
               <div class="sim-line">
                 <span data-i18n="sim_buy_cost">Est. Buy Cost (Integral ΔR + 2% Fee):</span>
-                <strong id="sim-buy-val">15.096 GEN</strong>
+                <strong id="sim-buy-val">—</strong>
               </div>
               <div class="sim-line">
                 <span data-i18n="sim_sell_payout">Est. Sell Payout (Integral ΔR + Pro-Rata Floor Bonus):</span>
-                <strong id="sim-sell-val" class="highlight-cyan">13.800 GEN (Floor Bonus: +0.000 GEN)</strong>
+                <strong id="sim-sell-val">—</strong>
               </div>
               <div class="sim-line">
                 <span data-i18n="sim_holder_pos">Your Current Position in Curve:</span>
@@ -243,16 +243,6 @@
 
           <label class="mirror-label" for="input-backup-url" data-i18n="label_backup_mirror">Backup Source (jsDelivr CDN Equivalent Mirror)</label>
           <input type="url" id="input-backup-url" class="url-input" />
-
-          <div class="rehearsal-preset-row">
-            <span data-i18n="rehearsal_scenario_label">Local Mock Test Scenario (When No Live Contract Configured):</span>
-            <select id="select-mock-scenario">
-              <option value="PRIMARY_BOOST">1. Primary OK -> CATALYST_BOOST (+25% k, no protocol subsidy)</option>
-              <option value="BACKUP_SLASH">2. Primary Fail / Backup OK -> RUG_SLASHED (Slash 100% Collateral)</option>
-              <option value="BOTH_FAIL">3. Both Sources Fail -> Revert Before Write (Stay GATE_UNLOCKED)</option>
-              <option value="GRADUATE_APPROVED">4. Primary OK -> GRADUATE_APPROVED (Release Collateral, Keep Slope k)</option>
-            </select>
-          </div>
 
           <button type="button" id="btn-evaluate-gate" class="action-btn primary-btn" data-i18n="btn_trigger_gate">
             Trigger Consensus Graduation Audit
@@ -326,7 +316,7 @@
             </div>
             <div class="trust-row">
               <span data-i18n="trust_contract">Contract Address:</span>
-              <code id="trust-contract-addr">Unconfigured (Local Seed Rehearsal Mode — Non-On-Chain)</code>
+              <code id="trust-contract-addr">—</code>
             </div>
             <div class="trust-row">
               <span data-i18n="trust_tx_status">Latest Transaction Status:</span>
@@ -341,13 +331,13 @@
               <code id="trust-timestamp">--</code>
             </div>
           </div>
-          <p id="seed-demo-notice" role="note">Seed demo data — not consensus evidence</p>
+          <p id="seed-demo-notice" role="note"></p>
           <div id="trust-feedback-banner" class="trust-feedback" role="status" aria-live="polite"></div>
         </aside>
       </div>
     </section>
   </main>
 
-  <script type="module" src="./dist/app.js?v=82f7e87af593357a"></script>
+  <script type="module" src="./dist/app.js?v=127a6e3985152e7e"></script>
 </body>
 </html>

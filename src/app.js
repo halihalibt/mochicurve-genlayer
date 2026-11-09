@@ -595,7 +595,7 @@ function updateTrustSurface(statusText, txHash, feedbackMessage) {
 
 function renderAll() {
   const isLive = Boolean(APP_CONFIG.CONTRACT_ADDRESS);
-  document.getElementById("select-mock-scenario").closest(".rehearsal-preset-row")?.toggleAttribute("hidden", isLive);
+  document.getElementById("select-mock-scenario")?.closest(".rehearsal-preset-row")?.toggleAttribute("hidden", isLive);
   document.getElementById("hud-chain-mode").textContent = isLive
     ? "LIVE_STUDIONET_61999"
     : "LOCAL_REHEARSAL_SEED";
@@ -795,7 +795,7 @@ function bindInteractions() {
     if (!c) return;
     const pUrl = document.getElementById("input-primary-url").value;
     const bUrl = document.getElementById("input-backup-url").value;
-    const scenario = document.getElementById("select-mock-scenario").value;
+    const scenario = document.getElementById("select-mock-scenario")?.value ?? "PRIMARY_BOOST";
 
     submitStudionetWriteOrRehearsal("evaluate_graduation_gate", [c.curve_id, pUrl, bUrl, appState.activeTraderAddress], async () => {
       if (["GRADUATE_APPROVED", "CATALYST_BOOST", "RUG_SLASHED"].includes(c.gate_status)) {
