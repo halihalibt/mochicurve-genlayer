@@ -5,6 +5,7 @@
   "scripts": {
     "build": "esbuild src/app.js --bundle --minify --legal-comments=linked --format=esm --platform=browser --target=es2022 --outfile=dist/app.js",
     "test": "python3 -m unittest tests/test_mochi_curve.py -v",
+    "evidence:v2": "node scripts/rescue-evidence.mjs",
     "dev": "node scripts/serve.mjs"
   },
   "keywords": [],

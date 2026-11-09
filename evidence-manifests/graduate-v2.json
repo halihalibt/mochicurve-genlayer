@@ -1,0 +1,9 @@
+{
+  "repo_slug": "halihalibt/mochicurve-genlayer",
+  "tag_name": "v1.0.0",
+  "commit_sha": "c6430a1a8d380cf4384e7c516b45ec28b50bd410",
+  "commit_count": 3,
+  "published": true,
+  "draft": false,
+  "body": "v1.0.0 delivers the integer bonding curve contract, the scroll-driven MOCHI frontend, mock tests and Studionet deploy scripts as specified."
+}
