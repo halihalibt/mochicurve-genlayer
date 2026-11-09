@@ -6,6 +6,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>MochiCurve — Spatial Bonding Curve & Consensus Graduation Gate</title>
   <meta name="description" content="On-chain Meme & AI token bonding curve launchpad with GenLayer subjective graduation gate and anti-rug redemption floor pool." />
+  <link rel="preload" as="image" href="./assets/mochi-front.png" fetchpriority="high" />
+  <style id="mochi-critical-styles">
+    /* Size and layer the first view before the application bundle arrives. */
+    body { background: #122147; color: #F3F1FA; }
+    .mochi-stage-layer { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: clamp(160px, 20vw, 400px); aspect-ratio: 1; pointer-events: none; z-index: 8; }
+    .mochi-rig { position: relative; width: 100%; height: 100%; transform: translate3d(0, 0, 0) scale(0.85); }
+    .mochi-turntable { position: absolute; inset: 0; z-index: 1; }
+    .mochi-halo { position: absolute; inset: 3%; z-index: 0; }
+    .mochi-sprite { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; opacity: 0; }
+    .mochi-sprite.is-visible { opacity: 1; }
+    @media (max-width: 860px) { .mochi-stage-layer { width: clamp(104px, 18vw, 140px); } }
+  </style>
 </head>
 <body>
   <!-- Top Spatial Telemetry Bar (No generic navbar; integrated cockpit HUD) -->
@@ -39,8 +51,8 @@
   <div id="mochi-persistent-stage" class="mochi-stage-layer" aria-hidden="true">
     <div id="mochi-actor-rig" class="mochi-rig">
       <div id="mochi-halo-ring" class="mochi-halo"></div>
-      <!-- Front, side and back views; state poses share the same stage -->
-      <img id="mochi-layer-front" class="mochi-sprite is-visible" src="./assets/mochi-front.png" alt="MOCHI front view" />
+      <!-- Anchor views for the thirteen-frame turn; state poses share the same stage -->
+      <img id="mochi-layer-front" fetchpriority="high" width="1254" height="1254" class="mochi-sprite is-visible" src="./assets/mochi-front.png" alt="MOCHI front view" />
       <img id="mochi-layer-side" class="mochi-sprite" src="./assets/mochi-side.png" alt="MOCHI side view" />
       <img id="mochi-layer-back" class="mochi-sprite" src="./assets/mochi-back.png" alt="MOCHI back view" />
       <!-- Real-time state override layer (float / point / thinking / celebrate) -->
@@ -329,6 +341,6 @@
     </section>
   </main>
 
-  <script type="module" src="./dist/app.js?v=a1e8b73b597b354a"></script>
+  <script type="module" src="./dist/app.js?v=b3f229454ee96ad5"></script>
 </body>
 </html>
