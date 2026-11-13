@@ -1,0 +1,47 @@
+{
+  "curves": {
+    "v3-rug-expiry": {
+      "curve_id": "v3-rug-expiry",
+      "name": "v3-rug-expiry",
+      "ticker": "$MCV3",
+      "creator": "0x2bd615b142077a79fc1a64136ff59760bf178b46",
+      "expected_repo_slug": "halihalibt/mochicurve-rug-demo",
+      "manifesto_text": "Deliver a real verifiable software release with multiple code files and functional commits.",
+      "manifesto_hash": "2bdb9af35d99c13795b489fe8596a815891772a36c59f817f0f5f2ecf94f3e37",
+      "secret_catalyst_commitment": "edf7ee0104d0261897f8dc50d6a5e99f2f13a6c18188c9d5230fa596bdd28a51",
+      "revealed_secret_catalyst": "",
+      "Supply": 0,
+      "base_price": 20,
+      "slope_k": 40,
+      "virtual_slope_offset": 0,
+      "curve_reserve": 0,
+      "cumulative_buy_volume": 0,
+      "origin": "user_created",
+      "graduation_threshold": 100000,
+      "creator_collateral": 25000,
+      "fee_escrow_pool": 0,
+      "redemption_floor_pool": 0,
+      "floor_multiplier_bps": 10000,
+      "spot_price": 20,
+      "gate_status": "TRADING_OPEN",
+      "mochi_state": "mochi-float.png",
+      "positions": {},
+      "pending_verdict": null,
+      "pending_challenges": [],
+      "challenge_used": false,
+      "review_used": false,
+      "verdict_deadline": 0,
+      "evaluation_primary_url": "",
+      "evaluation_backup_url": "",
+      "last_audit": null,
+      "contradiction_witnesses": []
+    }
+  },
+  "ledger_totals": {
+    "total_received_units": "25000",
+    "total_withdrawn_units": "0"
+  },
+  "contract_balance_wei": "25000000000000000000",
+  "readback_variant": "latest-final",
+  "captured_at": "2026-11-13T09:24:37.153Z"
+}

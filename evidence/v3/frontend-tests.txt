@@ -1,10 +1,14 @@
-✔ public finalized-state reads never query balances for a demo or absent wallet (8.720397ms)
-✔ valid connected address receives balance and withdrawable-credit reads (1.709414ms)
-ℹ tests 2
+✔ real finalized majority-agree leader succeeds despite cancelled validator receipt (3.051337ms)
+✔ real finalized contract-error receipt remains a failed execution despite agreement (1.852435ms)
+✔ pending and undetermined outcomes never pass a successful leader alone (0.306613ms)
+✔ missing, ambiguous or failed leader receipts fail closed (0.290614ms)
+✔ public finalized-state reads never query balances for a demo or absent wallet (11.959046ms)
+✔ valid connected address receives balance and withdrawable-credit reads (1.993861ms)
+ℹ tests 6
 ℹ suites 0
-ℹ pass 2
+ℹ pass 6
 ℹ fail 0
 ℹ cancelled 0
 ℹ skipped 0
 ℹ todo 0
-ℹ duration_ms 178.47733
+ℹ duration_ms 199.069133

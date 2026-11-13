@@ -1,6 +1,8 @@
 // src/app.js
 // Spatial Scroll-Scrubbed MOCHI Controller, Bonding Curve Integer Simulator & Studionet Lifecycle Engine
 
+import { finalizedExecutionSucceeded } from "./finality.js";
+
 import {
   APP_CONFIG,
   INITIAL_SEED_STATE,
@@ -88,9 +90,7 @@ async function refreshCurvesFromChainIfConfigured() {
 }
 
 function transactionSucceeded(tx) {
-  const raw = tx.consensus_data?.leader_receipt;
-  const leaders = Array.isArray(raw) ? raw : raw ? [raw] : [];
-  return leaders.length > 0 && leaders.every(r => r.execution_result === "SUCCESS");
+  return finalizedExecutionSucceeded(tx);
 }
 
 async function pollExistingTransaction(pending) {

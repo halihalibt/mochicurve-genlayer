@@ -110,6 +110,7 @@ async function transaction(label, who, method, args, value=0n, expectedError='')
   writeFileSync(`${OUT}/${label}-receipt.json`,json(tx)+'\n');
   rec.receipt=`${label}-receipt.json`;rec.execution_result=finalSuccess(tx)?'SUCCESS':'ERROR';save();publicIndex();
   assert.equal(tx.statusName,'FINALIZED',`${label} not finalized; resume existing hash`);
+  assert.equal(tx.result_name,'MAJORITY_AGREE',`${label} lacks consensus acceptance`);
   const rb=await snapshot();writeFileSync(`${OUT}/${label}-readback.json`,json(rb)+'\n');
   rec.readback=`${label}-readback.json`; rec.readback_variant='latest-final';
   if(expectedError) {

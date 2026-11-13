@@ -1,0 +1,477 @@
+{
+  "network": "Stable Studionet",
+  "chain_id": 61999,
+  "rpc": "https://studio.genlayer.com/api",
+  "source_sha256": "9e47037e0e388789baea4ba432ae41cd7678952d6e42fe6db7c3c9d600e33482",
+  "contract_address": "0x47767c833bC218e193177bC39F79235CCA639200",
+  "origin": "user_created",
+  "phase": "WAITING_FOR_REAL_DEADLINES",
+  "transactions": [
+    {
+      "label": "v3-rug-expiry-01-launch",
+      "actor": "creator",
+      "method": "launch_curve",
+      "args": [
+        "v3-rug-expiry",
+        "v3-rug-expiry",
+        "$MCV3",
+        "0x2BD615B142077A79fc1a64136FF59760bf178B46",
+        "halihalibt/mochicurve-rug-demo",
+        "Deliver a real verifiable software release with multiple code files and functional commits.",
+        "edf7ee0104d0261897f8dc50d6a5e99f2f13a6c18188c9d5230fa596bdd28a51"
+      ],
+      "value_wei": "25000000000000000000",
+      "expected_error": "",
+      "broadcast_hash": "0x1226852b4cc01d5a152888dcae7183e8b3f58d02ae1a3329d4cd6e6ed5cf43d0",
+      "tx_hash": "0x1226852b4cc01d5a152888dcae7183e8b3f58d02ae1a3329d4cd6e6ed5cf43d0",
+      "status": "FINALIZED",
+      "receipt": "v3-rug-expiry-01-launch-receipt.json",
+      "execution_result": "SUCCESS",
+      "readback": "v3-rug-expiry-01-launch-readback.json",
+      "readback_variant": "latest-final",
+      "verified": true
+    },
+    {
+      "label": "v3-rug-expiry-02-buy",
+      "actor": "buyer",
+      "method": "buy_tokens",
+      "args": [
+        "v3-rug-expiry",
+        71,
+        "0x5cc2E082831E4D81Adb665Cd17662e925a3421AE"
+      ],
+      "value_wei": "104284000000000000000",
+      "expected_error": "",
+      "broadcast_hash": "0x9d6df7667b37472f9aaddfbdcc7e40cf1702db59a55cae474769dd2407d5f6dd",
+      "tx_hash": "0x9d6df7667b37472f9aaddfbdcc7e40cf1702db59a55cae474769dd2407d5f6dd",
+      "status": "FINALIZED",
+      "receipt": "v3-rug-expiry-02-buy-receipt.json",
+      "execution_result": "SUCCESS",
+      "readback": "v3-rug-expiry-02-buy-readback.json",
+      "readback_variant": "latest-final",
+      "verified": true
+    },
+    {
+      "label": "v3-rug-expiry-03-evaluate",
+      "actor": "creator",
+      "method": "evaluate_graduation_gate",
+      "args": [
+        "v3-rug-expiry",
+        "https://raw.githubusercontent.com/halihalibt/mochicurve-rug-demo/main/release_manifest.json",
+        "https://cdn.jsdelivr.net/gh/halihalibt/mochicurve-rug-demo@main/release_manifest.json",
+        "0x2BD615B142077A79fc1a64136FF59760bf178B46"
+      ],
+      "value_wei": "0",
+      "expected_error": "",
+      "broadcast_hash": "0x48374f7652a201f5c7580531fc44ecfb69896dd81716d7ff5698adf33f015184",
+      "tx_hash": "0x48374f7652a201f5c7580531fc44ecfb69896dd81716d7ff5698adf33f015184",
+      "status": "FINALIZED",
+      "receipt": "v3-rug-expiry-03-evaluate-receipt.json",
+      "execution_result": "SUCCESS",
+      "readback": "v3-rug-expiry-03-evaluate-readback.json",
+      "readback_variant": "latest-final",
+      "verified": true
+    },
+    {
+      "label": "v3-rug-expiry-04-challenge",
+      "actor": "buyer",
+      "method": "challenge_pending_verdict",
+      "args": [
+        "v3-rug-expiry",
+        "0x5cc2E082831E4D81Adb665Cd17662e925a3421AE",
+        "GRADUATE_APPROVED",
+        "Request independent review of delivery before applying the pending slash."
+      ],
+      "value_wei": "0",
+      "expected_error": "",
+      "broadcast_hash": "0x0cd61460796b09081747944eef8825278817b3be543e589b989a460bf9fdea23",
+      "tx_hash": "0x0cd61460796b09081747944eef8825278817b3be543e589b989a460bf9fdea23",
+      "status": "FINALIZED",
+      "receipt": "v3-rug-expiry-04-challenge-receipt.json",
+      "execution_result": "SUCCESS",
+      "readback": "v3-rug-expiry-04-challenge-readback.json",
+      "readback_variant": "latest-final",
+      "verified": true
+    },
+    {
+      "label": "v3-rug-expiry-05-sybil-rejected",
+      "actor": "stranger",
+      "method": "challenge_pending_verdict",
+      "args": [
+        "v3-rug-expiry",
+        "0x6FD7846ca3A640DEEE45c97312A08eB5251e807a",
+        "GRADUATE_APPROVED",
+        "Second identity cannot extend the deadline."
+      ],
+      "value_wei": "0",
+      "expected_error": "CHALLENGE_LIMIT_REACHED",
+      "broadcast_hash": "0x716b477b003e97e205cb17a330c369328be350c832a85f982bb15f5a3a5ad206",
+      "tx_hash": "0x716b477b003e97e205cb17a330c369328be350c832a85f982bb15f5a3a5ad206",
+      "status": "FINALIZED",
+      "receipt": "v3-rug-expiry-05-sybil-rejected-receipt.json",
+      "execution_result": "ERROR",
+      "readback": "v3-rug-expiry-05-sybil-rejected-readback.json",
+      "readback_variant": "latest-final",
+      "verified": true
+    },
+    {
+      "label": "v3-rug-expiry-06-early-execute-rejected",
+      "actor": "stranger",
+      "method": "execute_verdict",
+      "args": [
+        "v3-rug-expiry",
+        "0x6FD7846ca3A640DEEE45c97312A08eB5251e807a"
+      ],
+      "value_wei": "0",
+      "expected_error": "VERDICT_WINDOW_OPEN",
+      "broadcast_hash": "0x3f0f4a382a7876e9f7f43b9a2ff5265f245b7c0da60a8e116e362a52b3614b0c",
+      "tx_hash": "0x3f0f4a382a7876e9f7f43b9a2ff5265f245b7c0da60a8e116e362a52b3614b0c",
+      "status": "FINALIZED",
+      "receipt": "v3-rug-expiry-06-early-execute-rejected-receipt.json",
+      "execution_result": "ERROR",
+      "readback": "v3-rug-expiry-06-early-execute-rejected-readback.json",
+      "readback_variant": "latest-final",
+      "verified": true
+    },
+    {
+      "label": "v3-rug-review-01-launch",
+      "actor": "creator",
+      "method": "launch_curve",
+      "args": [
+        "v3-rug-review",
+        "v3-rug-review",
+        "$MCV3",
+        "0x2BD615B142077A79fc1a64136FF59760bf178B46",
+        "halihalibt/mochicurve-rug-demo",
+        "Deliver production code, tagged release and substantive functional implementation with automated tests.",
+        "8da02b2b172e8e70be978959cc09059760553cd5cb22c89b3724663563499a2a"
+      ],
+      "value_wei": "25000000000000000000",
+      "expected_error": "",
+      "broadcast_hash": "0xc37b89f418f2a6c9cebada8f14162a698ae5597b75474624f019049bc2c4e0bd",
+      "tx_hash": "0xc37b89f418f2a6c9cebada8f14162a698ae5597b75474624f019049bc2c4e0bd",
+      "status": "FINALIZED",
+      "receipt": "v3-rug-review-01-launch-receipt.json",
+      "execution_result": "SUCCESS",
+      "readback": "v3-rug-review-01-launch-readback.json",
+      "readback_variant": "latest-final",
+      "verified": true
+    },
+    {
+      "label": "v3-rug-review-02-buy",
+      "actor": "buyer",
+      "method": "buy_tokens",
+      "args": [
+        "v3-rug-review",
+        71,
+        "0x5cc2E082831E4D81Adb665Cd17662e925a3421AE"
+      ],
+      "value_wei": "104284000000000000000",
+      "expected_error": "",
+      "broadcast_hash": "0x00f2e96b075a00b5d3aa277ab71ea84568f7814e4883c4c98ccb1ccfc21aadfc",
+      "tx_hash": "0x00f2e96b075a00b5d3aa277ab71ea84568f7814e4883c4c98ccb1ccfc21aadfc",
+      "status": "FINALIZED",
+      "receipt": "v3-rug-review-02-buy-receipt.json",
+      "execution_result": "SUCCESS",
+      "readback": "v3-rug-review-02-buy-readback.json",
+      "readback_variant": "latest-final",
+      "verified": true
+    },
+    {
+      "label": "v3-rug-review-03-evaluate",
+      "actor": "creator",
+      "method": "evaluate_graduation_gate",
+      "args": [
+        "v3-rug-review",
+        "https://raw.githubusercontent.com/halihalibt/mochicurve-rug-demo/main/release_manifest.json",
+        "https://cdn.jsdelivr.net/gh/halihalibt/mochicurve-rug-demo@main/release_manifest.json",
+        "0x2BD615B142077A79fc1a64136FF59760bf178B46"
+      ],
+      "value_wei": "0",
+      "expected_error": "",
+      "broadcast_hash": "0x077c0bf6f8465363d1bb977f5f24465a9c027a864bd84a0882e9bd7414ff723d",
+      "tx_hash": "0x077c0bf6f8465363d1bb977f5f24465a9c027a864bd84a0882e9bd7414ff723d",
+      "status": "FINALIZED",
+      "receipt": "v3-rug-review-03-evaluate-receipt.json",
+      "execution_result": "SUCCESS",
+      "readback": "v3-rug-review-03-evaluate-readback.json",
+      "readback_variant": "latest-final",
+      "verified": true
+    },
+    {
+      "label": "v3-rug-review-04-challenge",
+      "actor": "buyer",
+      "method": "challenge_pending_verdict",
+      "args": [
+        "v3-rug-review",
+        "0x5cc2E082831E4D81Adb665Cd17662e925a3421AE",
+        "GRADUATE_APPROVED",
+        "Request independent review of delivery before applying the pending slash."
+      ],
+      "value_wei": "0",
+      "expected_error": "",
+      "broadcast_hash": "0x43bb4d71b129d678c3de77fcc8e4b3c9f0be5935b9edae28fd357ba94a50be44",
+      "tx_hash": "0x43bb4d71b129d678c3de77fcc8e4b3c9f0be5935b9edae28fd357ba94a50be44",
+      "status": "FINALIZED",
+      "receipt": "v3-rug-review-04-challenge-receipt.json",
+      "execution_result": "SUCCESS",
+      "readback": "v3-rug-review-04-challenge-readback.json",
+      "readback_variant": "latest-final",
+      "verified": true
+    },
+    {
+      "label": "v3-rug-review-05-sybil-rejected",
+      "actor": "stranger",
+      "method": "challenge_pending_verdict",
+      "args": [
+        "v3-rug-review",
+        "0x6FD7846ca3A640DEEE45c97312A08eB5251e807a",
+        "GRADUATE_APPROVED",
+        "Second identity cannot extend the deadline."
+      ],
+      "value_wei": "0",
+      "expected_error": "CHALLENGE_LIMIT_REACHED",
+      "broadcast_hash": "0x34ff22eed1749873e81ab025d796a17bcb553b2a5781fbf7359ba3b0e9753c9e",
+      "tx_hash": "0x34ff22eed1749873e81ab025d796a17bcb553b2a5781fbf7359ba3b0e9753c9e",
+      "status": "FINALIZED",
+      "receipt": "v3-rug-review-05-sybil-rejected-receipt.json",
+      "execution_result": "ERROR",
+      "readback": "v3-rug-review-05-sybil-rejected-readback.json",
+      "readback_variant": "latest-final",
+      "verified": true
+    },
+    {
+      "label": "v3-rug-review-06-early-execute-rejected",
+      "actor": "stranger",
+      "method": "execute_verdict",
+      "args": [
+        "v3-rug-review",
+        "0x6FD7846ca3A640DEEE45c97312A08eB5251e807a"
+      ],
+      "value_wei": "0",
+      "expected_error": "VERDICT_WINDOW_OPEN",
+      "broadcast_hash": "0xe340bb246b5cedc3f383e4b91d15a0869bf204845941de877ba5b746751e9c60",
+      "tx_hash": "0xe340bb246b5cedc3f383e4b91d15a0869bf204845941de877ba5b746751e9c60",
+      "status": "FINALIZED",
+      "receipt": "v3-rug-review-06-early-execute-rejected-receipt.json",
+      "execution_result": "ERROR",
+      "readback": "v3-rug-review-06-early-execute-rejected-readback.json",
+      "readback_variant": "latest-final",
+      "verified": true
+    },
+    {
+      "label": "v3-rug-review-07-review-path-rejected",
+      "actor": "stranger",
+      "method": "evaluate_graduation_gate",
+      "args": [
+        "v3-rug-review",
+        "https://raw.githubusercontent.com/halihalibt/mochicurve-rug-demo/main/release_manifest.jsonx",
+        "https://cdn.jsdelivr.net/gh/halihalibt/mochicurve-rug-demo@main/release_manifest.jsonx",
+        "0x6FD7846ca3A640DEEE45c97312A08eB5251e807a"
+      ],
+      "value_wei": "0",
+      "expected_error": "REVIEW_EVIDENCE_PATH_CHANGED",
+      "broadcast_hash": "0x97a9ebe5fb3793b7970ff5034a47433062646223ee13df2458c4fa824c901406",
+      "tx_hash": "0x97a9ebe5fb3793b7970ff5034a47433062646223ee13df2458c4fa824c901406",
+      "status": "FINALIZED",
+      "receipt": "v3-rug-review-07-review-path-rejected-receipt.json",
+      "execution_result": "ERROR",
+      "readback": "v3-rug-review-07-review-path-rejected-readback.json",
+      "readback_variant": "latest-final",
+      "verified": true
+    },
+    {
+      "label": "v3-rug-review-08-review",
+      "actor": "stranger",
+      "method": "evaluate_graduation_gate",
+      "args": [
+        "v3-rug-review",
+        "https://raw.githubusercontent.com/halihalibt/mochicurve-rug-demo/main/release_manifest.json",
+        "https://cdn.jsdelivr.net/gh/halihalibt/mochicurve-rug-demo@main/release_manifest.json",
+        "0x6FD7846ca3A640DEEE45c97312A08eB5251e807a"
+      ],
+      "value_wei": "0",
+      "expected_error": "",
+      "broadcast_hash": "0x630478c227085369a75f4d8f0f15d13c3463f6f4834571757371222e9c68d478",
+      "tx_hash": "0x630478c227085369a75f4d8f0f15d13c3463f6f4834571757371222e9c68d478",
+      "status": "FINALIZED",
+      "receipt": "v3-rug-review-08-review-receipt.json",
+      "execution_result": "SUCCESS",
+      "readback": "v3-rug-review-08-review-readback.json",
+      "readback_variant": "latest-final",
+      "verified": true
+    },
+    {
+      "label": "v3-rug-review-09-repeat-review-rejected",
+      "actor": "stranger",
+      "method": "evaluate_graduation_gate",
+      "args": [
+        "v3-rug-review",
+        "https://raw.githubusercontent.com/halihalibt/mochicurve-rug-demo/main/release_manifest.json",
+        "https://cdn.jsdelivr.net/gh/halihalibt/mochicurve-rug-demo@main/release_manifest.json",
+        "0x6FD7846ca3A640DEEE45c97312A08eB5251e807a"
+      ],
+      "value_wei": "0",
+      "expected_error": "NO_REVIEW_AVAILABLE",
+      "broadcast_hash": "0xc903d1cb7180215997c79115c6d27e48acf82ae79cc8098a4ad82da3bfe765ed",
+      "tx_hash": "0xc903d1cb7180215997c79115c6d27e48acf82ae79cc8098a4ad82da3bfe765ed",
+      "status": "FINALIZED",
+      "receipt": "v3-rug-review-09-repeat-review-rejected-receipt.json",
+      "execution_result": "ERROR",
+      "readback": "v3-rug-review-09-repeat-review-rejected-readback.json",
+      "readback_variant": "latest-final",
+      "verified": true
+    },
+    {
+      "label": "v3-graduate-01-launch",
+      "actor": "creator",
+      "method": "launch_curve",
+      "args": [
+        "v3-graduate",
+        "v3-graduate",
+        "$MCV3",
+        "0x2BD615B142077A79fc1a64136FF59760bf178B46",
+        "halihalibt/mochicurve-genlayer",
+        "Deliver verifiable v1.0 release tag, GenVM bonding curve module, scroll-driven frontend, mock tests and Studionet deploy scripts in halihalibt/mochicurve-genlayer.",
+        "15bb15869e5e9ccdc0787c3c36b680ad9c0aacebd1d54dc2530a7a49fc20ad90"
+      ],
+      "value_wei": "25000000000000000000",
+      "expected_error": "",
+      "broadcast_hash": "0x56d6b5f09e8c7187753f0102bb6a852f286def3c55ea588436466666c46091c4",
+      "tx_hash": "0x56d6b5f09e8c7187753f0102bb6a852f286def3c55ea588436466666c46091c4",
+      "status": "FINALIZED",
+      "receipt": "v3-graduate-01-launch-receipt.json",
+      "execution_result": "SUCCESS",
+      "readback": "v3-graduate-01-launch-readback.json",
+      "readback_variant": "latest-final",
+      "verified": true
+    },
+    {
+      "label": "v3-graduate-02-buy",
+      "actor": "buyer",
+      "method": "buy_tokens",
+      "args": [
+        "v3-graduate",
+        71,
+        "0x5cc2E082831E4D81Adb665Cd17662e925a3421AE"
+      ],
+      "value_wei": "104284000000000000000",
+      "expected_error": "",
+      "broadcast_hash": "0xe5d0e72c15b7fe60eb978bb2cbd9f6d6f8a993b7ac575a636e28c7820ca030ef",
+      "tx_hash": "0xe5d0e72c15b7fe60eb978bb2cbd9f6d6f8a993b7ac575a636e28c7820ca030ef",
+      "status": "FINALIZED",
+      "receipt": "v3-graduate-02-buy-receipt.json",
+      "execution_result": "SUCCESS",
+      "readback": "v3-graduate-02-buy-readback.json",
+      "readback_variant": "latest-final",
+      "verified": true
+    },
+    {
+      "label": "v3-graduate-03-evaluate",
+      "actor": "creator",
+      "method": "evaluate_graduation_gate",
+      "args": [
+        "v3-graduate",
+        "https://raw.githubusercontent.com/halihalibt/mochicurve-genlayer/main/evidence-manifests/graduate-v2.json",
+        "https://cdn.jsdelivr.net/gh/halihalibt/mochicurve-genlayer@main/evidence-manifests/graduate-v2.json",
+        "0x2BD615B142077A79fc1a64136FF59760bf178B46"
+      ],
+      "value_wei": "0",
+      "expected_error": "",
+      "broadcast_hash": "0x3bd0164f9027435dd7766be299e8139b95a1e4634f808cc0346e3f8d9b1407fb",
+      "tx_hash": "0x3bd0164f9027435dd7766be299e8139b95a1e4634f808cc0346e3f8d9b1407fb",
+      "status": "FINALIZED",
+      "receipt": "v3-graduate-03-evaluate-receipt.json",
+      "execution_result": "SUCCESS",
+      "readback": "v3-graduate-03-evaluate-readback.json",
+      "readback_variant": "latest-final",
+      "verified": true
+    },
+    {
+      "label": "v3-boost-01-launch",
+      "actor": "creator",
+      "method": "launch_curve",
+      "args": [
+        "v3-boost",
+        "v3-boost",
+        "$MCV3",
+        "0x2BD615B142077A79fc1a64136FF59760bf178B46",
+        "halihalibt/mochicurve-genlayer",
+        "Deliver the GenVM bonding curve contract for v1.0 in halihalibt/mochicurve-genlayer.",
+        "6b9e06b19464322302aa023a79a18af935586cc02a15446b6b623bc6fe5ea89b"
+      ],
+      "value_wei": "25000000000000000000",
+      "expected_error": "",
+      "broadcast_hash": "0xeec5edbc10680746c582e87322808625b45d832bb2d5bfb16c8eff7663152cc8",
+      "tx_hash": "0xeec5edbc10680746c582e87322808625b45d832bb2d5bfb16c8eff7663152cc8",
+      "status": "FINALIZED",
+      "receipt": "v3-boost-01-launch-receipt.json",
+      "execution_result": "SUCCESS",
+      "readback": "v3-boost-01-launch-readback.json",
+      "readback_variant": "latest-final",
+      "verified": true
+    },
+    {
+      "label": "v3-boost-02-buy",
+      "actor": "buyer",
+      "method": "buy_tokens",
+      "args": [
+        "v3-boost",
+        71,
+        "0x5cc2E082831E4D81Adb665Cd17662e925a3421AE"
+      ],
+      "value_wei": "104284000000000000000",
+      "expected_error": "",
+      "broadcast_hash": "0xd026e86e80085f181ac1bed620d342b4886e5a6b2b5a53d4e3a4d01d013434fb",
+      "tx_hash": "0xd026e86e80085f181ac1bed620d342b4886e5a6b2b5a53d4e3a4d01d013434fb",
+      "status": "FINALIZED",
+      "receipt": "v3-boost-02-buy-receipt.json",
+      "execution_result": "SUCCESS",
+      "readback": "v3-boost-02-buy-readback.json",
+      "readback_variant": "latest-final",
+      "verified": true
+    },
+    {
+      "label": "v3-boost-03-evaluate",
+      "actor": "creator",
+      "method": "evaluate_graduation_gate",
+      "args": [
+        "v3-boost",
+        "https://raw.githubusercontent.com/halihalibt/mochicurve-genlayer/main/evidence-manifests/boost-v2.json",
+        "https://cdn.jsdelivr.net/gh/halihalibt/mochicurve-genlayer@main/evidence-manifests/boost-v2.json",
+        "0x2BD615B142077A79fc1a64136FF59760bf178B46"
+      ],
+      "value_wei": "0",
+      "expected_error": "",
+      "broadcast_hash": "0x0e63cfdb6600cd11aaa180c33690b131c83dc34503b9b94eb4c92f1074c7e123",
+      "tx_hash": "0x0e63cfdb6600cd11aaa180c33690b131c83dc34503b9b94eb4c92f1074c7e123",
+      "status": "FINALIZED",
+      "receipt": "v3-boost-03-evaluate-receipt.json",
+      "execution_result": "SUCCESS",
+      "readback": "v3-boost-03-evaluate-readback.json",
+      "readback_variant": "latest-final",
+      "verified": true
+    }
+  ],
+  "deadlines": {
+    "v3-rug-expiry": 1794648314,
+    "v3-rug-review": 1794648550,
+    "v3-graduate": 1794648915,
+    "v3-boost": 1794649136
+  },
+  "reconciliation": null,
+  "accounts": {
+    "creator": {
+      "address": "0x2BD615B142077A79fc1a64136FF59760bf178B46",
+      "funded_gen": 10000
+    },
+    "buyer": {
+      "address": "0x5cc2E082831E4D81Adb665Cd17662e925a3421AE",
+      "funded_gen": 10000
+    },
+    "stranger": {
+      "address": "0x6FD7846ca3A640DEEE45c97312A08eB5251e807a",
+      "funded_gen": 10000
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "run_id": 43402573636,
+  "job_id": 131808815250,
+  "url": "https://github.com/halihalibt/mochicurve-genlayer/actions/runs/43402573636",
+  "conclusion": "failure",
+  "passed_steps": ["npm ci", "npm test", "node --test tests/frontend.test.mjs", "npm run build", "Install browser test runtime"],
+  "failed_step": "Run isolated browser rehearsal",
+  "error": "page.waitForFunction: Timeout 30000ms exceeded at tests/browser_rehearsal.cjs:29",
+  "cause": "The rehearsal-only bundle interception compared the full URL with /dist/app.js, but the actual script URL includes a cache query. The live address was therefore not cleared in the test fixture.",
+  "correction": "Match URL.pathname; explicitly wait for LOCAL_REHEARSAL_SEED before testing. Production configuration is unchanged."
+}

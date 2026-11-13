@@ -9,7 +9,7 @@ const {mkdirSync} = require('node:fs');
  await page.route('**/*',async route=>{
    const url=route.request().url();
    if(!url.startsWith('http://127.0.0.1:4173'))return route.abort();
-   if(url.endsWith('/dist/app.js')) {
+   if(new URL(url).pathname.endsWith('/dist/app.js')) {
      const response=await route.fetch();
      const body=(await response.text()).replace(/CONTRACT_ADDRESS:"0x[0-9a-fA-F]{40}"/, 'CONTRACT_ADDRESS:""');
      return route.fulfill({response,body});
@@ -19,6 +19,7 @@ const {mkdirSync} = require('node:fs');
  await page.addInitScript(()=>{window.ethereum={request:async({method})=> method==='eth_requestAccounts'?[window.testActor||'0x1111111111111111111111111111111111111111']:'0xf22f'};});
  await page.clock.install({time:new Date('2026-11-13T00:00:00Z')});
  await page.goto('http://127.0.0.1:4173/');
+ await page.waitForFunction(()=>document.querySelector('#hud-mode-label')?.textContent.includes('LOCAL') || document.body.textContent.includes('LOCAL_REHEARSAL_SEED'));
  await page.locator('#btn-connect-wallet').click({force:true});
  await page.locator('details.launch-drawer > summary').click({force:true});
  await page.locator('#launch-id').fill('browser-v3');

@@ -74,7 +74,7 @@ Catalyst commitments store only `SHA-256(salt + "|" + secret)`. Salt and secret 
 ```bash
 npm ci
 python3 -m unittest tests/test_mochi_curve.py -v
-node --test tests/frontend.test.mjs
+node --test tests/frontend.test.mjs tests/finality.test.mjs
 npm run build
 python3 scripts/deploy_studionet.py --dry-validate
 python3 scripts/deploy_studionet.py

@@ -1,0 +1,52 @@
+{
+  "status": "PRE_EXPIRY_VERIFIED",
+  "scope": "real Stable Studionet transactions, final receipts and latest-final readbacks; expiry execution still pending",
+  "transaction_count": 21,
+  "successful_operations": 15,
+  "expected_rejections": [
+    {
+      "label": "v3-rug-expiry-05-sybil-rejected",
+      "expected_error": "CHALLENGE_LIMIT_REACHED",
+      "unchanged_state": true
+    },
+    {
+      "label": "v3-rug-expiry-06-early-execute-rejected",
+      "expected_error": "VERDICT_WINDOW_OPEN",
+      "unchanged_state": true
+    },
+    {
+      "label": "v3-rug-review-05-sybil-rejected",
+      "expected_error": "CHALLENGE_LIMIT_REACHED",
+      "unchanged_state": true
+    },
+    {
+      "label": "v3-rug-review-06-early-execute-rejected",
+      "expected_error": "VERDICT_WINDOW_OPEN",
+      "unchanged_state": true
+    },
+    {
+      "label": "v3-rug-review-07-review-path-rejected",
+      "expected_error": "REVIEW_EVIDENCE_PATH_CHANGED",
+      "unchanged_state": true
+    },
+    {
+      "label": "v3-rug-review-09-repeat-review-rejected",
+      "expected_error": "NO_REVIEW_AVAILABLE",
+      "unchanged_state": true
+    }
+  ],
+  "deadlines_utc": {
+    "v3-rug-expiry": "2026-11-14T09:25:14+00:00",
+    "v3-rug-review": "2026-11-14T09:29:10+00:00",
+    "v3-graduate": "2026-11-14T09:35:15+00:00",
+    "v3-boost": "2026-11-14T09:38:56+00:00"
+  },
+  "pending_verdicts": {
+    "v3-rug-expiry": "RUG_SLASHED",
+    "v3-rug-review": "RUG_SLASHED",
+    "v3-graduate": "GRADUATE_APPROVED",
+    "v3-boost": "CATALYST_BOOST"
+  },
+  "source_sha256": "9e47037e0e388789baea4ba432ae41cd7678952d6e42fe6db7c3c9d600e33482",
+  "contract_address": "0x47767c833bC218e193177bC39F79235CCA639200"
+}

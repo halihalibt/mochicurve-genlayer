@@ -23,7 +23,7 @@ Time uses `gl.message_raw["datetime"]`, the GenVM consensus transaction context.
 ```sh
 npm ci
 npm test
-node --test tests/frontend.test.mjs
+node --test tests/frontend.test.mjs tests/finality.test.mjs
 npm run build
 python3 scripts/deploy_studionet.py --dry-validate
 ```
@@ -58,3 +58,11 @@ The v3 deployment is FINALIZED with SUCCESS. Real business transactions are reco
 ## Public browser reads
 
 A remote browser loaded the v3-targeted frontend at commit `8e8e506` and read the real finalized `v3-rug-expiry` and `v3-rug-review` curves, pending slashes, original evidence URLs and UTC deadlines. It displayed LIVE_STUDIONET_61999 and disabled execution before expiry. The check exposed an invalid `eth_getBalance` request for the pre-connection demo address. Balance requests now require a valid 20-byte hexadecimal address; two automated frontend tests cover public reads without a wallet and connected-wallet balance reads. The earlier failed browser launch log remains retained.
+
+## Receipt classification
+
+The first local classification of transaction `0x3bd0164f9027435dd7766be299e8139b95a1e4634f808cc0346e3f8d9b1407fb` reported ERROR because `leader_receipt` also contained a validator cancelled after quorum. The raw receipt is preserved: FINALIZED, MAJORITY_AGREE, mode=leader execution SUCCESS, and the finalized readback contains GRADUATE_APPROVED pending state. Success checking now requires FINALIZED, MAJORITY_AGREE, and exactly one mode=leader receipt with SUCCESS. Missing consensus, missing/ambiguous leaders and actual contract errors fail closed. Cancelled validator entries are retained as voting history and do not replace the leader result. Tests use these real receipts and adversarial malformed variants; recovery rechecks the existing transaction hash, never re-evaluates merely to change its classification.
+
+## Finalized pre-expiry evidence
+
+All 21 pre-expiry transactions have finalized with MAJORITY_AGREE: 15 successful operations and 6 expected contract rejections. Each expected rejection preserved the curves, ledger totals and contract balance compared with the preceding finalized readback. [Pre-expiry checks](../evidence/v3/pre-expiry-checks.json) records the actual pending results and deadlines. Both rug cases are RUG_SLASHED, ordinary delivery is GRADUATE_APPROVED, and over-delivery is CATALYST_BOOST. These are pending contract verdicts, not executed payouts. The last real deadline is 2026-11-14 09:38:56 UTC; expiry execution, redemption, withdrawal and final conservation remain unverified until then.

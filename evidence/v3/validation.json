@@ -1,7 +1,7 @@
 {
   "source_sha256": "9e47037e0e388789baea4ba432ae41cd7678952d6e42fe6db7c3c9d600e33482",
   "baseline_commit": "ae1fa5d",
-  "scope": "local mock validation and read-only remote schema check; not live consensus",
+  "scope": "local mock tests, read-only deployment checks and real pre-expiry Studionet transactions",
   "tests": {
     "command": "npm test",
     "passed": 26,
@@ -21,7 +21,7 @@
     "transactions_sent": 0
   },
   "browser": {
-    "status": "BLOCKED_BEFORE_PAGE_OPEN",
+    "status": "CI_PENDING",
     "reason": "Chromium singleton socket creation denied: Operation not permitted",
     "log": "browser-attempt.txt",
     "local_automated_status": "BLOCKED_BEFORE_PAGE_OPEN",
@@ -31,11 +31,11 @@
   "historical_evidence_data": "all pre-existing tracked evidence data bytes unchanged",
   "deployment_status": "FINALIZED_SUCCESS",
   "resubmission_ready": false,
-  "business_validation": "IN_PROGRESS: real 24-hour deadlines not yet reached",
+  "business_validation": "PRE_EXPIRY_VERIFIED: 21 finalized transactions; expiry execution still pending",
   "frontend_tests": {
-    "command": "node --test tests/frontend.test.mjs",
-    "passed": 2,
+    "command": "node --test tests/frontend.test.mjs tests/finality.test.mjs",
+    "passed": 6,
     "failed": 0,
-    "scope": "actual finalized-state read function with mocked RPC responses; prevents invalid demo-address balance requests"
+    "scope": "public wallet-free state reads and finalized consensus receipt classification"
   }
 }
