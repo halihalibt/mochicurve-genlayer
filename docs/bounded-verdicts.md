@@ -66,3 +66,7 @@ The first local classification of transaction `0x3bd0164f9027435dd7766be299e8139
 ## Finalized pre-expiry evidence
 
 All 21 pre-expiry transactions have finalized with MAJORITY_AGREE: 15 successful operations and 6 expected contract rejections. Each expected rejection preserved the curves, ledger totals and contract balance compared with the preceding finalized readback. [Pre-expiry checks](../evidence/v3/pre-expiry-checks.json) records the actual pending results and deadlines. Both rug cases are RUG_SLASHED, ordinary delivery is GRADUATE_APPROVED, and over-delivery is CATALYST_BOOST. These are pending contract verdicts, not executed payouts. The last real deadline is 2026-11-14 09:38:56 UTC; expiry execution, redemption, withdrawal and final conservation remain unverified until then.
+
+## CI verification
+
+[Verify MochiCurve run 43443752757](https://github.com/halihalibt/mochicurve-genlayer/actions/runs/43443752757), source commit `db224a8fbfe84fcfbc391a804473ba55c81b3bdb`, completed successfully: 26 contract mock tests, 6 frontend/receipt tests, frontend build and isolated browser rehearsal. Browser coverage includes launch, buy, creator evaluation, one third-party challenge/review, unchanged deadline, expired execution and desktop/mobile rendering. Browser expiry uses a synthetic clock only and is not live chain evidence. The first browser CI failure remains recorded in `ci-browser-first-failure.json`. The passing run skipped screenshot artifacts because `.qa` is hidden; artifact inclusion has been corrected.

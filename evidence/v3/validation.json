@@ -21,12 +21,21 @@
     "transactions_sent": 0
   },
   "browser": {
-    "status": "CI_PENDING",
+    "status": "CI_PASSED",
     "reason": "Chromium singleton socket creation denied: Operation not permitted",
     "log": "browser-attempt.txt",
     "local_automated_status": "BLOCKED_BEFORE_PAGE_OPEN",
     "remote_rehearsal": "PASS for launch, buy, pending verdict, challenge, third-party review, unchanged deadline and bilingual controls on commit 94d09da; not chain evidence",
-    "remote_live_read": "PASS at 8e8e506: real v3 pending curves and original evidence URLs/deadlines rendered; invalid demo-address balance RPC detected and corrected with frontend tests"
+    "remote_live_read": "PASS at 8e8e506: real v3 pending curves and original evidence URLs/deadlines rendered; invalid demo-address balance RPC detected and corrected with frontend tests",
+    "ci": {
+      "commit": "db224a8fbfe84fcfbc391a804473ba55c81b3bdb",
+      "run_id": 43443752757,
+      "job_id": 131947731098,
+      "url": "https://github.com/halihalibt/mochicurve-genlayer/actions/runs/43443752757",
+      "conclusion": "success",
+      "scope": "isolated local rehearsal with synthetic browser clock; desktop/mobile render; no chain claims",
+      "screenshots": "The first passing run skipped .qa screenshots because hidden files were excluded; workflow artifact inclusion corrected."
+    }
   },
   "historical_evidence_data": "all pre-existing tracked evidence data bytes unchanged",
   "deployment_status": "FINALIZED_SUCCESS",

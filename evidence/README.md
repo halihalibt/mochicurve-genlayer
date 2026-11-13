@@ -1,6 +1,6 @@
 # Historical MochiCurve v2 evidence
 
-These receipts describe the deployed v2 contract. They do not verify the current v3 bounded-verdict source. New local validation is in `v3/`; no v3 deployment or business transaction has been sent.
+These receipts describe the deployed v2 contract. They do not verify the current v3 bounded-verdict source. The separate v3 deployment and 21 finalized pre-expiry business transactions are recorded in `v3/`. Actual expiry execution and payouts remain pending until the recorded deadlines.
 
 All amounts are real Studionet GEN. 1 accounting unit = 0.001 GEN. Buys and launches attach GEN; sells, rewards and slashes become withdrawable credits pulled with `withdraw`. No simulated ledger remains.
 

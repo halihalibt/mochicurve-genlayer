@@ -36,3 +36,4 @@ jobs:
           name: browser-rehearsal
           path: .qa/
           if-no-files-found: ignore
+          include-hidden-files: true
