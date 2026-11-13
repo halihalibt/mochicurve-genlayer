@@ -2,7 +2,7 @@
 # { "Depends": "py-genlayer:1jb45aa8ynh2a9c9xn3b7qqh8sm5q93hwfp7jqmwsfhh8jpz09h6" }
 
 # contracts/mochi_curve.py
-# GenLayer Intelligent Contract: MochiCurve v2 (real-GEN bonding curve + API-anchored graduation gate)
+# GenLayer Intelligent Contract: MochiCurve v3 (real-GEN bonding curve + API-anchored graduation gate)
 # Target Network: GenLayer Stable Studionet (Chain ID 61999, RPC https://studio.genlayer.com/api)
 # Money: real testnet GEN, free from the Studionet faucet (sim_fundAccount, 10,000 GEN per account).
 # 1 accounting unit = 10^15 wei (0.001 GEN). All curve math is integer units; wei conversion
@@ -12,10 +12,11 @@
 # Graduation gate (v2): the release manifest is only a pointer. The tag's commit SHA,
 # the commit count and the delivered code files are all re-fetched from the GitHub API
 # by every validator; a self-reported manifest can no longer graduate a README-only repo.
-# Evaluation is creator-only and writes a pending verdict; execution is a separate
-# creator-only step that refuses while an unresolved challenge exists (clock-free window).
+# Initial evaluation is creator-only. One permissionless review can resolve one challenge.
+# A fixed transaction-time deadline permits anyone to execute, even if review fails.
 
 import json
+from datetime import datetime
 from genlayer import *
 
 # ==============================================================================
@@ -90,6 +91,12 @@ BPS_SCALE = 10000
 
 # Delivery-anchor thresholds: a tagged release must contain at least this much
 # independently fetched code, or the deterministic gate slashes.
+VERDICT_WINDOW_SECONDS = 86400
+
+def _transaction_seconds() -> int:
+    # GenVM-provided consensus transaction time, never a caller-supplied clock.
+    return int(datetime.fromisoformat(gl.message_raw["datetime"].replace("Z", "+00:00")).timestamp())
+
 MIN_CODE_FILES = 3
 MIN_CODE_BYTES = 1000
 CODE_EXTENSIONS = (".py", ".js", ".mjs", ".cjs", ".ts", ".tsx", ".jsx", ".sol", ".rs", ".go", ".java", ".c", ".cpp", ".h", ".hpp", ".html", ".css", ".sh")
@@ -257,6 +264,11 @@ class MochiCurve(gl.Contract):
             "positions": {},
             "pending_verdict": None,
             "pending_challenges": [],
+            "challenge_used": False,
+            "review_used": False,
+            "verdict_deadline": 0,
+            "evaluation_primary_url": "",
+            "evaluation_backup_url": "",
             "last_audit": None,
             "contradiction_witnesses": []
         }
@@ -399,17 +411,25 @@ class MochiCurve(gl.Contract):
 
     @gl.public.write
     def evaluate_graduation_gate(self, curve_id: str, primary_url: str, backup_url: str, evaluator: str) -> str:
-        # Creator-only: a stranger must never be able to trigger a verdict.
+        # Only the creator initiates; anyone may review the single open challenge.
         evaluator = self._authenticated_address(evaluator)
         curves, ledger = self._load_state()
         if curve_id not in curves:
             raise Exception("CURVE_NOT_FOUND")
         c = curves[curve_id]
-        if evaluator != c["creator"]:
-            raise Exception("EVALUATOR_NOT_CREATOR")
-
         if c["gate_status"] in ("GRADUATE_APPROVED", "CATALYST_BOOST", "RUG_SLASHED"):
             raise Exception("FINALIZED_VERDICT_IMMUTABLE")
+        reviewing = bool(c.get("pending_verdict"))
+        if reviewing:
+            if _transaction_seconds() >= int(c["verdict_deadline"]):
+                raise Exception("VERDICT_WINDOW_CLOSED")
+            if not c.get("pending_challenges") or c.get("review_used"):
+                raise Exception("NO_REVIEW_AVAILABLE")
+            if primary_url != c["evaluation_primary_url"] or backup_url != c["evaluation_backup_url"]:
+                raise Exception("REVIEW_EVIDENCE_PATH_CHANGED")
+        elif evaluator != c["creator"]:
+            raise Exception("EVALUATOR_NOT_CREATOR")
+
         if int(c["cumulative_buy_volume"]) < int(c["graduation_threshold"]):
             raise Exception("GRADUATION_THRESHOLD_NOT_REACHED: cumulative net buys < 100000")
 
@@ -609,10 +629,17 @@ class MochiCurve(gl.Contract):
 
         result = gl.vm.run_nondet_unsafe(independently_adjudicate, validate_independently)
 
-        # Step 1 of 2: evaluation writes a PENDING verdict only. No money moves here.
-        # A re-evaluation supersedes the old pending verdict and its challenges.
+        # No money moves. The first successful evaluation fixes the deadline forever.
+        if reviewing:
+            c["review_used"] = True
+            for challenge in c["pending_challenges"]:
+                challenge["resolution"] = "REVIEWED"
+                challenge["resolved_verdict"] = result["verdict"]
+        else:
+            c["verdict_deadline"] = _transaction_seconds() + VERDICT_WINDOW_SECONDS
+            c["evaluation_primary_url"] = primary_url
+            c["evaluation_backup_url"] = backup_url
         c["pending_verdict"] = result
-        c["pending_challenges"] = []
         c["gate_status"] = "VERDICT_PENDING"
         self._save_state(curves, ledger)
         return json.dumps(result)
@@ -629,6 +656,10 @@ class MochiCurve(gl.Contract):
         pending = c.get("pending_verdict")
         if not pending:
             raise Exception("NO_PENDING_VERDICT")
+        if _transaction_seconds() >= int(c["verdict_deadline"]):
+            raise Exception("VERDICT_WINDOW_CLOSED")
+        if c["challenge_used"]:
+            raise Exception("CHALLENGE_LIMIT_REACHED")
         if claimed_verdict not in ("RUG_SLASHED", "CATALYST_BOOST", "GRADUATE_APPROVED"):
             raise Exception("INVALID_CLAIM_VERDICT")
         if claimed_verdict == pending["verdict"]:
@@ -642,25 +673,26 @@ class MochiCurve(gl.Contract):
             "pending_verdict": pending["verdict"],
             "reason": reason
         }
+        c["challenge_used"] = True
         c["pending_challenges"].append(challenge)
         self._save_state(curves, ledger)
         return json.dumps(challenge)
 
     @gl.public.write
     def execute_verdict(self, curve_id: str, executor: str) -> str:
-        # Step 2 of 2: creator-only, and refused while any challenge is open.
+        # Permissionless after the fixed deadline, even with an unresolved challenge.
         executor = self._authenticated_address(executor)
         curves, ledger = self._load_state()
         if curve_id not in curves:
             raise Exception("CURVE_NOT_FOUND")
         c = curves[curve_id]
-        if executor != c["creator"]:
-            raise Exception("EXECUTOR_NOT_CREATOR")
         pending = c.get("pending_verdict")
         if not pending:
             raise Exception("NO_PENDING_VERDICT")
-        if c.get("pending_challenges"):
-            raise Exception("PENDING_CHALLENGE_BLOCKS_EXECUTION")
+        if _transaction_seconds() < int(c["verdict_deadline"]):
+            raise Exception("VERDICT_WINDOW_OPEN")
+        if pending["verdict"] not in ("RUG_SLASHED", "CATALYST_BOOST", "GRADUATE_APPROVED"):
+            raise Exception("INVALID_PENDING_VERDICT")
 
         verdict = pending["verdict"]
         s = int(c["Supply"])
@@ -705,6 +737,12 @@ class MochiCurve(gl.Contract):
         c["floor_multiplier_bps"] = BPS_SCALE + ((int(c["redemption_floor_pool"]) * BPS_SCALE) // max(1, r_actual))
         audit = dict(pending)
         audit["executed_by"] = executor
+        audit["verdict_deadline"] = str(c["verdict_deadline"])
+        audit["review_used"] = c["review_used"]
+        audit["challenges"] = c["pending_challenges"]
+        for challenge in audit["challenges"]:
+            if "resolution" not in challenge:
+                challenge["resolution"] = "EXPIRED"
         audit["slashed_amount"] = str(slashed_amt)
         audit["boost_subsidy_added"] = "0"
         audit["new_slope_k"] = str(k_new)

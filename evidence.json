@@ -15,5 +15,8 @@
   "seed_data": "The v2 constructor starts empty. Local rehearsal seed curves are illustrative placeholders, not consensus evidence.",
   "superseded_v1_contract": "0x0A96f7CB3636Dc46d517CEacb7b6E63b292b2632",
   "superseded_v1_evidence": "evidence/v1/",
-  "version": "2"
+  "version": "2 (historical live evidence only)",
+  "source_version": "3",
+  "source_deployment_status": "NOT_DEPLOYED",
+  "current_source_validation": "evidence/v3/validation.json"
 }

@@ -1,0 +1,36 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> mochicurve-genlayer@1.0.0 test
+> python3 -m unittest tests/test_mochi_curve.py -v
+
+test_01_pure_sha256_matches_stdlib_vectors (tests.test_mochi_curve.TestMochiCurveLocalMock.test_01_pure_sha256_matches_stdlib_vectors) ... ok
+test_02_constructor_starts_empty_no_seed_balances (tests.test_mochi_curve.TestMochiCurveLocalMock.test_02_constructor_starts_empty_no_seed_balances) ... ok
+test_03_launch_requires_exact_collateral_value (tests.test_mochi_curve.TestMochiCurveLocalMock.test_03_launch_requires_exact_collateral_value) ... ok
+test_04_buy_requires_exact_value_and_unlocks_threshold (tests.test_mochi_curve.TestMochiCurveLocalMock.test_04_buy_requires_exact_value_and_unlocks_threshold) ... ok
+test_05_sell_credits_withdrawable_and_withdraw_pays_real_value (tests.test_mochi_curve.TestMochiCurveLocalMock.test_05_sell_credits_withdrawable_and_withdraw_pays_real_value) ... ok
+test_06_evaluate_is_creator_only_and_writes_pending_only (tests.test_mochi_curve.TestMochiCurveLocalMock.test_06_evaluate_is_creator_only_and_writes_pending_only) ... ok
+test_07_permissionless_review_preserves_deadline_and_history (tests.test_mochi_curve.TestMochiCurveLocalMock.test_07_permissionless_review_preserves_deadline_and_history) ... ok
+test_08_execute_authentication_and_missing_verdict (tests.test_mochi_curve.TestMochiCurveLocalMock.test_08_execute_authentication_and_missing_verdict) ... ok
+test_09_readme_only_repo_slashes_on_all_three_anchors (tests.test_mochi_curve.TestMochiCurveLocalMock.test_09_readme_only_repo_slashes_on_all_three_anchors) ... ok
+test_10_missing_tag_slashes_without_llm (tests.test_mochi_curve.TestMochiCurveLocalMock.test_10_missing_tag_slashes_without_llm) ... ok
+test_11_annotated_tag_resolves_to_commit (tests.test_mochi_curve.TestMochiCurveLocalMock.test_11_annotated_tag_resolves_to_commit) ... ok
+test_12_boost_changes_slope_and_preserves_reserve_no_invented_subsidy (tests.test_mochi_curve.TestMochiCurveLocalMock.test_12_boost_changes_slope_and_preserves_reserve_no_invented_subsidy) ... ok
+test_13_both_sources_fail_reverts_before_write_and_retryable (tests.test_mochi_curve.TestMochiCurveLocalMock.test_13_both_sources_fail_reverts_before_write_and_retryable) ... ok
+test_14_tag_api_failure_keeps_state_unchanged (tests.test_mochi_curve.TestMochiCurveLocalMock.test_14_tag_api_failure_keeps_state_unchanged) ... ok
+test_15_reveal_requires_creator_and_commitment (tests.test_mochi_curve.TestMochiCurveLocalMock.test_15_reveal_requires_creator_and_commitment) ... ok
+test_16_contradiction_witness_preserves_finalized_verdict (tests.test_mochi_curve.TestMochiCurveLocalMock.test_16_contradiction_witness_preserves_finalized_verdict) ... ok
+test_17_money_reconciles_received_minus_withdrawn (tests.test_mochi_curve.TestMochiCurveLocalMock.test_17_money_reconciles_received_minus_withdrawn) ... ok
+test_18_normalize_release_json_carries_commit_sha (tests.test_mochi_curve.TestMochiCurveLocalMock.test_18_normalize_release_json_carries_commit_sha) ... ok
+test_19_sybil_challenges_cannot_extend_or_grow_state (tests.test_mochi_curve.TestMochiCurveLocalMock.test_19_sybil_challenges_cannot_extend_or_grow_state) ... ok
+test_20_adverse_verdict_expires_without_creator_or_network (tests.test_mochi_curve.TestMochiCurveLocalMock.test_20_adverse_verdict_expires_without_creator_or_network) ... ok
+test_21_failed_review_keeps_deadline_and_expiry_available (tests.test_mochi_curve.TestMochiCurveLocalMock.test_21_failed_review_keeps_deadline_and_expiry_available) ... ok
+test_22_creator_cannot_reset_uncontested_deadline (tests.test_mochi_curve.TestMochiCurveLocalMock.test_22_creator_cannot_reset_uncontested_deadline) ... ok
+test_23_challenge_validation_does_not_consume_slot (tests.test_mochi_curve.TestMochiCurveLocalMock.test_23_challenge_validation_does_not_consume_slot) ... ok
+test_24_review_can_change_verdict_without_resetting_deadline (tests.test_mochi_curve.TestMochiCurveLocalMock.test_24_review_can_change_verdict_without_resetting_deadline) ... ok
+test_25_permissionless_boost_never_rewards_executor (tests.test_mochi_curve.TestMochiCurveLocalMock.test_25_permissionless_boost_never_rewards_executor) ... ok
+test_26_missing_transaction_time_fails_closed (tests.test_mochi_curve.TestMochiCurveLocalMock.test_26_missing_transaction_time_fails_closed) ... ok
+
+----------------------------------------------------------------------
+Ran 26 tests in 0.114s
+
+OK

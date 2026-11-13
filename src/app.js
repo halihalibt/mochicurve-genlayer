@@ -522,16 +522,18 @@ function renderGraduationGateAndWitnesses(c) {
   if (c.pending_verdict) {
     const p = c.pending_verdict;
     const challenges = c.pending_challenges || [];
+    const expired = Date.now() >= Number(c.verdict_deadline) * 1000;
     pendingBox.hidden = false;
     document.getElementById("pending-verdict-text").innerHTML =
       `<strong>${escapeHtml(p.verdict)}</strong> — ${I18N_DICT[appState.lang].pending_note} ` +
       `Tag ${escapeHtml(p.tag_name)} / SHA ${escapeHtml((p.commit_sha || "").slice(0, 10))}… / ` +
       `API commits ${escapeHtml(p.api_commit_count)} / code files ${escapeHtml(p.code_file_count)} (${escapeHtml(p.code_bytes)} bytes) / ` +
       `Scores ${escapeHtml(p.completeness_score)}/${escapeHtml(p.authenticity_score)}/${escapeHtml(p.overdelivery_bonus)}` +
+      `<br/>Deadline (UTC): ${escapeHtml(c.verdict_deadline ? new Date(c.verdict_deadline * 1000).toISOString() : "legacy v2")}` +
       (challenges.length ? `<br/>${I18N_DICT[appState.lang].pending_challenges}: ${challenges.length} — ${I18N_DICT[appState.lang].pending_blocked}` : "");
-    const isCreator = appState.ephemeralSigner && appState.ephemeralSigner.address === c.creator;
-    if (execBtn) execBtn.disabled = !isCreator || challenges.length > 0;
-    if (challengeBtn) challengeBtn.disabled = isCreator;
+    const isCreator = appState.activeTraderAddress.toLowerCase() === c.creator.toLowerCase();
+    if (execBtn) execBtn.disabled = !expired;
+    if (challengeBtn) challengeBtn.disabled = isCreator || expired || c.challenge_used;
   } else if (pendingBox) {
     pendingBox.hidden = true;
   }
@@ -749,7 +751,7 @@ function bindInteractions() {
   async function applyPendingVerdictRehearsal(c, pUrl, bUrl) {
     const p = c.pending_verdict;
     if (!p) throw new Error("NO_PENDING_VERDICT");
-    if ((c.pending_challenges || []).length > 0) throw new Error("PENDING_CHALLENGE_BLOCKS_EXECUTION");
+    if (Date.now() < Number(c.verdict_deadline) * 1000) throw new Error("VERDICT_WINDOW_OPEN");
     if (p.verdict === "RUG_SLASHED") {
       const slashed = Number(c.creator_collateral) + Number(c.fee_escrow_pool);
       c.creator_collateral = 0;
@@ -757,7 +759,7 @@ function bindInteractions() {
       c.redemption_floor_pool += slashed;
       c.gate_status = "RUG_SLASHED";
       c.mochi_state = "mochi-point.png";
-      c.last_audit = { ...p, slashed_amount: String(slashed), boost_subsidy_added: "0", new_slope_k: String(c.slope_k) };
+      c.last_audit = { ...p, challenges: c.pending_challenges.map(ch => ({...ch, resolution: ch.resolution || "EXPIRED"})), slashed_amount: String(slashed), boost_subsidy_added: "0", new_slope_k: String(c.slope_k) };
       c.pending_verdict = null;
       c.pending_challenges = [];
       c.floor_multiplier_bps = 10000 + Math.floor((c.redemption_floor_pool * 10000) / Math.max(1, c.curve_reserve));
@@ -775,7 +777,7 @@ function bindInteractions() {
       c.spot_price = calcSpotPrice(c.Supply, c.base_price, kNew);
       c.gate_status = "CATALYST_BOOST";
       c.mochi_state = "mochi-celebrate-jump.png";
-      c.last_audit = { ...p, slashed_amount: "0", boost_subsidy_added: "0", new_slope_k: String(kNew) };
+      c.last_audit = { ...p, challenges: c.pending_challenges.map(ch => ({...ch, resolution: ch.resolution || "EXPIRED"})), slashed_amount: "0", boost_subsidy_added: "0", new_slope_k: String(kNew) };
       c.pending_verdict = null;
       c.pending_challenges = [];
       c.floor_multiplier_bps = 10000 + Math.floor((c.redemption_floor_pool * 10000) / Math.max(1, c.curve_reserve));
@@ -783,7 +785,7 @@ function bindInteractions() {
     }
     c.gate_status = "GRADUATE_APPROVED";
     c.mochi_state = "mochi-celebrate-expr.png";
-    c.last_audit = { ...p, slashed_amount: "0", boost_subsidy_added: "0", new_slope_k: String(c.slope_k) };
+    c.last_audit = { ...p, challenges: c.pending_challenges.map(ch => ({...ch, resolution: ch.resolution || "EXPIRED"})), slashed_amount: "0", boost_subsidy_added: "0", new_slope_k: String(c.slope_k) };
     c.pending_verdict = null;
     c.pending_challenges = [];
     c.floor_multiplier_bps = 10000 + Math.floor((c.redemption_floor_pool * 10000) / Math.max(1, c.curve_reserve));
@@ -801,6 +803,12 @@ function bindInteractions() {
       if (["GRADUATE_APPROVED", "CATALYST_BOOST", "RUG_SLASHED"].includes(c.gate_status)) {
         throw new Error("FINALIZED_VERDICT_IMMUTABLE");
       }
+      const reviewing = Boolean(c.pending_verdict);
+      if (reviewing) {
+        if (Date.now() >= c.verdict_deadline * 1000) throw new Error("VERDICT_WINDOW_CLOSED");
+        if (!(c.pending_challenges || []).length || c.review_used) throw new Error("NO_REVIEW_AVAILABLE");
+        if (pUrl !== c.evaluation_primary_url || bUrl !== c.evaluation_backup_url) throw new Error("REVIEW_EVIDENCE_PATH_CHANGED");
+      } else if (appState.activeTraderAddress !== c.creator) throw new Error("EVALUATOR_NOT_CREATOR");
       if (c.cumulative_buy_volume < c.graduation_threshold) {
         throw new Error("GRADUATION_THRESHOLD_NOT_REACHED: cumulative net buys < 100000");
       }
@@ -828,7 +836,14 @@ function bindInteractions() {
         c.pending_verdict = { ...base, verdict: "CATALYST_BOOST", tag_name: "v1.2.0",
           evidence_hash: evHash, completeness_score: "95", authenticity_score: "90", overdelivery_bonus: "90" };
       }
-      c.pending_challenges = [];
+      if (reviewing) {
+        c.review_used = true;
+        for (const ch of c.pending_challenges) { ch.resolution = "REVIEWED"; ch.resolved_verdict = c.pending_verdict.verdict; }
+      } else {
+        c.verdict_deadline = Math.floor(Date.now() / 1000) + 86400;
+        c.evaluation_primary_url = pUrl;
+        c.evaluation_backup_url = bUrl;
+      }
       c.gate_status = "VERDICT_PENDING";
       return "mochi-thinking.png";
     });
@@ -851,8 +866,14 @@ function bindInteractions() {
     const claimed = document.getElementById("input-challenge-verdict").value;
     submitStudionetWriteOrRehearsal("challenge_pending_verdict", [c.curve_id, appState.activeTraderAddress, claimed, reason], async () => {
       if (!c.pending_verdict) throw new Error("NO_PENDING_VERDICT");
+      if (appState.activeTraderAddress === c.creator) throw new Error("CREATOR_CANNOT_CHALLENGE_OWN_VERDICT");
+      if (Date.now() >= c.verdict_deadline * 1000) throw new Error("VERDICT_WINDOW_CLOSED");
+      if (c.challenge_used) throw new Error("CHALLENGE_LIMIT_REACHED");
+      if (!["RUG_SLASHED", "GRADUATE_APPROVED", "CATALYST_BOOST"].includes(claimed)) throw new Error("INVALID_CLAIM_VERDICT");
+      if (reason.length > 2000) throw new Error("REASON_TOO_LONG");
       if (claimed === c.pending_verdict.verdict) throw new Error("CLAIM_NOT_CONTRADICTORY");
       c.pending_challenges = c.pending_challenges || [];
+      c.challenge_used = true;
       c.pending_challenges.push({
         challenge_id: `chg-${c.curve_id}-${c.pending_challenges.length + 1}`,
         challenger: appState.activeTraderAddress, claimed_verdict: claimed,
@@ -979,5 +1000,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   if (saved && saved.contract === APP_CONFIG.CONTRACT_ADDRESS && saved.chainId === 61999) pollExistingTransaction(saved);
   setInterval(async () => { if (APP_CONFIG.CONTRACT_ADDRESS && !writeInFlight) {
     try { await refreshCurvesFromChainIfConfigured(); renderAll(); } catch {}
+  } else if (!APP_CONFIG.CONTRACT_ADDRESS) {
+    renderGraduationGateAndWitnesses(appState.curves[appState.activeCurveId]);
   } }, 15000);
 });

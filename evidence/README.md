@@ -1,9 +1,11 @@
-# MochiCurve v2 evidence
+# Historical MochiCurve v2 evidence
+
+These receipts describe the deployed v2 contract. They do not verify the current v3 bounded-verdict source. New local validation is in `v3/`; no v3 deployment or business transaction has been sent.
 
 All amounts are real Studionet GEN. 1 accounting unit = 0.001 GEN. Buys and launches attach GEN; sells, rewards and slashes become withdrawable credits pulled with `withdraw`. No simulated ledger remains.
 
 - **Contract:** [0xf3C716d9ff7FB529cd08e2fD15413E75Ebc1B742](https://explorer-studio.genlayer.com/address/0xf3C716d9ff7FB529cd08e2fD15413E75Ebc1B742)
-- **Deployment tx:** [0x5dbcd6a288efc2d7a72a5d159860d5588cca3f28c0290912f0de80f77e311cc3](https://explorer-studio.genlayer.com/tx/0x5dbcd6a288efc2d7a72a5d159860d5588cca3f28c0290912f0de80f77e311cc3), `FINALIZED`, `SUCCESS`. Source SHA-256 `e46c1b914df184eaec2f7a92498c45c434a0bd14a6ae58bca3d52332444eec69` matches `contracts/mochi_curve.py` (see `deployment-manifest.json`).
+- **Deployment tx:** [0x5dbcd6a288efc2d7a72a5d159860d5588cca3f28c0290912f0de80f77e311cc3](https://explorer-studio.genlayer.com/tx/0x5dbcd6a288efc2d7a72a5d159860d5588cca3f28c0290912f0de80f77e311cc3), `FINALIZED`, `SUCCESS`. Source SHA-256 `e46c1b914df184eaec2f7a92498c45c434a0bd14a6ae58bca3d52332444eec69` belongs to the deployed v2 source (see `deployment-manifest.json`).
 - **Live verification index:** [live-verification.json](live-verification.json) — 23 transactions, verdicts, and the GEN conservation reconciliation.
 - **Local mock tests:** [local-tests.txt](local-tests.txt) — 18 tests, all passing. Local mocks only; not consensus evidence.
 

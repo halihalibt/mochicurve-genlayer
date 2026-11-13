@@ -1,0 +1,226 @@
+{
+  "ctor": {
+    "params": [],
+    "kwparams": {}
+  },
+  "methods": {
+    "buy_tokens": {
+      "params": [
+        [
+          "curve_id",
+          "string"
+        ],
+        [
+          "amount",
+          "int"
+        ],
+        [
+          "buyer",
+          "string"
+        ]
+      ],
+      "kwparams": {},
+      "readonly": false,
+      "ret": "string",
+      "payable": true
+    },
+    "challenge_pending_verdict": {
+      "params": [
+        [
+          "curve_id",
+          "string"
+        ],
+        [
+          "challenger",
+          "string"
+        ],
+        [
+          "claimed_verdict",
+          "string"
+        ],
+        [
+          "reason",
+          "string"
+        ]
+      ],
+      "kwparams": {},
+      "readonly": false,
+      "ret": "string",
+      "payable": false
+    },
+    "evaluate_graduation_gate": {
+      "params": [
+        [
+          "curve_id",
+          "string"
+        ],
+        [
+          "primary_url",
+          "string"
+        ],
+        [
+          "backup_url",
+          "string"
+        ],
+        [
+          "evaluator",
+          "string"
+        ]
+      ],
+      "kwparams": {},
+      "readonly": false,
+      "ret": "string",
+      "payable": false
+    },
+    "execute_verdict": {
+      "params": [
+        [
+          "curve_id",
+          "string"
+        ],
+        [
+          "executor",
+          "string"
+        ]
+      ],
+      "kwparams": {},
+      "readonly": false,
+      "ret": "string",
+      "payable": false
+    },
+    "get_all_curves": {
+      "params": [],
+      "kwparams": {},
+      "readonly": true,
+      "ret": "string"
+    },
+    "get_ledger_totals": {
+      "params": [],
+      "kwparams": {},
+      "readonly": true,
+      "ret": "string"
+    },
+    "get_user_balance": {
+      "params": [
+        [
+          "address",
+          "string"
+        ]
+      ],
+      "kwparams": {},
+      "readonly": true,
+      "ret": "string"
+    },
+    "launch_curve": {
+      "params": [
+        [
+          "curve_id",
+          "string"
+        ],
+        [
+          "name",
+          "string"
+        ],
+        [
+          "ticker",
+          "string"
+        ],
+        [
+          "creator",
+          "string"
+        ],
+        [
+          "expected_repo_slug",
+          "string"
+        ],
+        [
+          "manifesto_text",
+          "string"
+        ],
+        [
+          "secret_catalyst_commitment",
+          "string"
+        ]
+      ],
+      "kwparams": {},
+      "readonly": false,
+      "ret": "string",
+      "payable": true
+    },
+    "record_contradiction_claim": {
+      "params": [
+        [
+          "curve_id",
+          "string"
+        ],
+        [
+          "challenger",
+          "string"
+        ],
+        [
+          "claimed_verdict",
+          "string"
+        ],
+        [
+          "claimed_tag",
+          "string"
+        ]
+      ],
+      "kwparams": {},
+      "readonly": false,
+      "ret": "string",
+      "payable": false
+    },
+    "reveal_secret_catalyst": {
+      "params": [
+        [
+          "curve_id",
+          "string"
+        ],
+        [
+          "salt",
+          "string"
+        ],
+        [
+          "secret_catalyst",
+          "string"
+        ],
+        [
+          "revealer",
+          "string"
+        ]
+      ],
+      "kwparams": {},
+      "readonly": false,
+      "ret": "string",
+      "payable": false
+    },
+    "sell_tokens": {
+      "params": [
+        [
+          "curve_id",
+          "string"
+        ],
+        [
+          "amount",
+          "int"
+        ],
+        [
+          "seller",
+          "string"
+        ]
+      ],
+      "kwparams": {},
+      "readonly": false,
+      "ret": "string",
+      "payable": false
+    },
+    "withdraw": {
+      "params": [],
+      "kwparams": {},
+      "readonly": false,
+      "ret": "string",
+      "payable": false
+    }
+  }
+}

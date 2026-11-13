@@ -6,6 +6,7 @@
 # the two-step verdict execution, challenge windows and witnesses.
 # ==============================================================================
 
+from datetime import datetime, timezone
 import hashlib
 import json
 import os
@@ -51,6 +52,7 @@ class _MockGL:
     class Contract:
         pass
 
+    message_raw = {"datetime": "2026-11-13T00:00:00+00:00"}
     public = _MockPublic()
     evm = types.SimpleNamespace(contract_interface=_contract_interface)
     _webpage_handler = None
@@ -180,6 +182,7 @@ class TestMochiCurveLocalMock(unittest.TestCase):
 
     def setUp(self):
         self.contract = MochiCurve()
+        _MockGL.message_raw = {"datetime": "2026-11-13T00:00:00+00:00"}
         _MockGL._webpage_handler = None
         _MockGL._prompt_handler = None
         _MockGL._tag_exists = True
@@ -194,6 +197,15 @@ class TestMochiCurveLocalMock(unittest.TestCase):
         _MockGL.message.sender_address.as_hex = CREATOR
         _MockGL.message.value = 0
         _MockRecipient.transfers = []
+
+    def _expire(self, cid="curve-unit-01", offset=0):
+        c = json.loads(self.contract.get_all_curves())[cid]
+        _MockGL.message_raw["datetime"] = datetime.fromtimestamp(
+            c["verdict_deadline"] + offset, timezone.utc).isoformat()
+
+    def _execute_expired(self, cid, executor):
+        self._expire(cid)
+        return self.contract.execute_verdict(cid, executor)
 
     def _set_sender(self, address):
         _MockGL.message.sender_address.as_hex = address
@@ -320,43 +332,39 @@ class TestMochiCurveLocalMock(unittest.TestCase):
         self.assertEqual(c["creator_collateral"], 25000)  # still locked
         self.assertEqual(self.contract.get_user_balance(CREATOR), "0")
 
-    def test_07_challenge_blocks_execute_and_reevaluate_clears_it(self):
+    def test_07_permissionless_review_preserves_deadline_and_history(self):
         self._unlock()
         self._healthy_evidence()
         self._set_sender(CREATOR)
         self.contract.evaluate_graduation_gate("curve-unit-01", P_URL, B_URL, CREATOR)
-        # Buyer challenges the pending GRADUATE verdict.
+        before = json.loads(self.contract.get_all_curves())["curve-unit-01"]
         self._set_sender(BUYER)
-        ch = json.loads(self.contract.challenge_pending_verdict(
-            "curve-unit-01", BUYER, "RUG_SLASHED", "Tag looks fine but delivery is thin."))
-        self.assertEqual(ch["pending_verdict"], "GRADUATE_APPROVED")
-        # Creator cannot execute while the challenge is open.
-        self._set_sender(CREATOR)
-        with self.assertRaisesRegex(Exception, "PENDING_CHALLENGE_BLOCKS_EXECUTION"):
-            self.contract.execute_verdict("curve-unit-01", CREATOR)
-        # Creator re-evaluates: supersedes the pending verdict, clears challenges.
-        self.contract.evaluate_graduation_gate("curve-unit-01", P_URL, B_URL, CREATOR)
+        self.contract.challenge_pending_verdict("curve-unit-01", BUYER, "RUG_SLASHED", "Thin delivery")
+        with self.assertRaisesRegex(Exception, "VERDICT_WINDOW_OPEN"):
+            self.contract.execute_verdict("curve-unit-01", BUYER)
+        self._set_sender(STRANGER)
+        self.contract.evaluate_graduation_gate("curve-unit-01", P_URL, B_URL, STRANGER)
         c = json.loads(self.contract.get_all_curves())["curve-unit-01"]
-        self.assertEqual(c["pending_challenges"], [])
-        # Now execution succeeds and credits the creator reward as withdrawable.
-        audit = json.loads(self.contract.execute_verdict("curve-unit-01", CREATOR))
-        self.assertEqual(audit["verdict"], "GRADUATE_APPROVED")
-        c = json.loads(self.contract.get_all_curves())["curve-unit-01"]
-        self.assertEqual(c["gate_status"], "GRADUATE_APPROVED")
-        self.assertIsNone(c["pending_verdict"])
-        self.assertEqual(self.contract.get_user_balance(CREATOR), "27044")  # 25000 + 2044 fee
+        self.assertEqual(c["verdict_deadline"], before["verdict_deadline"])
+        self.assertEqual(c["pending_challenges"][0]["resolution"], "REVIEWED")
+        with self.assertRaisesRegex(Exception, "NO_REVIEW_AVAILABLE"):
+            self.contract.evaluate_graduation_gate("curve-unit-01", P_URL, B_URL, STRANGER)
+        self._expire()
+        self.contract.execute_verdict("curve-unit-01", STRANGER)
+        self.assertEqual(self.contract.get_user_balance(CREATOR), "27044")
+        self.assertEqual(self.contract.get_user_balance(STRANGER), "0")
 
-    def test_08_execute_is_creator_only_and_needs_pending_verdict(self):
+    def test_08_execute_authentication_and_missing_verdict(self):
         self._unlock()
-        self._set_sender(CREATOR)
         with self.assertRaisesRegex(Exception, "NO_PENDING_VERDICT"):
-            self.contract.execute_verdict("curve-unit-01", CREATOR)
+            self.contract.execute_verdict("curve-unit-01", BUYER)
         self._healthy_evidence()
+        self._set_sender(CREATOR)
         self.contract.evaluate_graduation_gate("curve-unit-01", P_URL, B_URL, CREATOR)
         self._set_sender(STRANGER)
         with self.assertRaisesRegex(Exception, "CALLER_ADDRESS_MISMATCH"):
             self.contract.execute_verdict("curve-unit-01", CREATOR)
-        with self.assertRaisesRegex(Exception, "EXECUTOR_NOT_CREATOR"):
+        with self.assertRaisesRegex(Exception, "VERDICT_WINDOW_OPEN"):
             self.contract.execute_verdict("curve-unit-01", STRANGER)
 
     def test_09_readme_only_repo_slashes_on_all_three_anchors(self):
@@ -395,7 +403,7 @@ class TestMochiCurveLocalMock(unittest.TestCase):
         self.assertEqual(result["code_ok"], "false")
         self.assertEqual(result["code_file_count"], "0")
         self.assertEqual(_MockGL._prompt_calls, 0)  # deterministic slash, no LLM
-        audit = json.loads(self.contract.execute_verdict("curve-rug-01", CREATOR))
+        audit = json.loads(self._execute_expired("curve-rug-01", CREATOR))
         self.assertEqual(audit["verdict"], "RUG_SLASHED")
         c = json.loads(self.contract.get_all_curves())["curve-rug-01"]
         self.assertEqual(c["gate_status"], "RUG_SLASHED")
@@ -430,7 +438,7 @@ class TestMochiCurveLocalMock(unittest.TestCase):
         self._set_sender(CREATOR)
         pending = json.loads(self.contract.evaluate_graduation_gate("curve-unit-01", P_URL, B_URL, CREATOR))
         self.assertEqual(pending["verdict"], "CATALYST_BOOST")
-        audit = json.loads(self.contract.execute_verdict("curve-unit-01", CREATOR))
+        audit = json.loads(self._execute_expired("curve-unit-01", CREATOR))
         self.assertEqual(audit["new_slope_k"], "50")
         self.assertEqual(audit["boost_subsidy_added"], "0")
         c = json.loads(self.contract.get_all_curves())["curve-unit-01"]
@@ -480,7 +488,7 @@ class TestMochiCurveLocalMock(unittest.TestCase):
         self._healthy_evidence()
         self._set_sender(CREATOR)
         self.contract.evaluate_graduation_gate("curve-unit-01", P_URL, B_URL, CREATOR)
-        self.contract.execute_verdict("curve-unit-01", CREATOR)
+        self._execute_expired("curve-unit-01", CREATOR)
         self._set_sender(BUYER)
         wit = json.loads(self.contract.record_contradiction_claim(
             "curve-unit-01", BUYER, "RUG_SLASHED", "v0.0.0-fake"))
@@ -496,7 +504,7 @@ class TestMochiCurveLocalMock(unittest.TestCase):
         self._healthy_evidence()
         self._set_sender(CREATOR)
         self.contract.evaluate_graduation_gate("curve-unit-01", P_URL, B_URL, CREATOR)
-        self.contract.execute_verdict("curve-unit-01", CREATOR)
+        self._execute_expired("curve-unit-01", CREATOR)
         # Creator withdraws the 27,044 reward; buyer keeps the sell credit.
         self._set_sender(CREATOR)
         self.contract.withdraw()
@@ -524,6 +532,133 @@ class TestMochiCurveLocalMock(unittest.TestCase):
         self.assertEqual(norm["commit_sha"], "c6430a1a8d380cf4384e7c516b45ec28b50bd410")
         self.assertEqual(norm["commit_count"], "7")
         self.assertEqual(norm["repo_slug"], "halihalibt/mochicurve-genlayer")
+
+    def _pending_rug(self):
+        self._unlock()
+        self._healthy_evidence()
+        _MockGL._tag_exists = False
+        self._set_sender(CREATOR)
+        self.contract.evaluate_graduation_gate("curve-unit-01", P_URL, B_URL, CREATOR)
+        self._set_sender(BUYER)
+        self.contract.challenge_pending_verdict("curve-unit-01", BUYER, "GRADUATE_APPROVED", "Disputed")
+
+    def test_19_sybil_challenges_cannot_extend_or_grow_state(self):
+        self._pending_rug()
+        before = self.contract.get_all_curves()
+        for sender in (BUYER, STRANGER, "0xsybil1", "0xsybil2"):
+            self._set_sender(sender)
+            with self.assertRaisesRegex(Exception, "CHALLENGE_LIMIT_REACHED"):
+                self.contract.challenge_pending_verdict("curve-unit-01", sender, "GRADUATE_APPROVED", "Again")
+            self.assertEqual(before, self.contract.get_all_curves())
+
+    def test_20_adverse_verdict_expires_without_creator_or_network(self):
+        self._pending_rug()
+        _MockGL._tag_api_fail = True
+        self._set_sender(STRANGER)
+        self._expire(offset=-1)
+        with self.assertRaisesRegex(Exception, "VERDICT_WINDOW_OPEN"):
+            self.contract.execute_verdict("curve-unit-01", STRANGER)
+        self._expire()
+        audit = json.loads(self.contract.execute_verdict("curve-unit-01", STRANGER))
+        self.assertEqual(audit["verdict"], "RUG_SLASHED")
+        self.assertEqual(audit["challenges"][0]["resolution"], "EXPIRED")
+        c = json.loads(self.contract.get_all_curves())["curve-unit-01"]
+        self.assertEqual(c["redemption_floor_pool"], 27044)
+        self.assertEqual(self.contract.get_user_balance(STRANGER), "0")
+        before = self.contract.get_all_curves(), self.contract.ledger_json
+        with self.assertRaisesRegex(Exception, "NO_PENDING_VERDICT"):
+            self.contract.execute_verdict("curve-unit-01", STRANGER)
+        with self.assertRaisesRegex(Exception, "FINALIZED_VERDICT_IMMUTABLE"):
+            self.contract.evaluate_graduation_gate("curve-unit-01", P_URL, B_URL, STRANGER)
+        self.assertEqual(before, (self.contract.get_all_curves(), self.contract.ledger_json))
+
+    def test_21_failed_review_keeps_deadline_and_expiry_available(self):
+        self._pending_rug()
+        self._set_sender(STRANGER)
+        before = self.contract.get_all_curves(), self.contract.ledger_json
+        with self.assertRaisesRegex(Exception, "REVIEW_EVIDENCE_PATH_CHANGED"):
+            self.contract.evaluate_graduation_gate("curve-unit-01", P_URL+"x", B_URL+"x", STRANGER)
+        _MockGL._tag_api_fail = True
+        with self.assertRaisesRegex(Exception, "GITHUB_TAG_API_UNAVAILABLE"):
+            self.contract.evaluate_graduation_gate("curve-unit-01", P_URL, B_URL, STRANGER)
+        self.assertEqual(before, (self.contract.get_all_curves(), self.contract.ledger_json))
+        self._expire()
+        with self.assertRaisesRegex(Exception, "VERDICT_WINDOW_CLOSED"):
+            self.contract.evaluate_graduation_gate("curve-unit-01", P_URL, B_URL, STRANGER)
+        with self.assertRaisesRegex(Exception, "VERDICT_WINDOW_CLOSED"):
+            self.contract.challenge_pending_verdict("curve-unit-01", STRANGER, "GRADUATE_APPROVED", "Late")
+        self.contract.execute_verdict("curve-unit-01", STRANGER)
+
+    def test_22_creator_cannot_reset_uncontested_deadline(self):
+        self._unlock()
+        self._healthy_evidence()
+        self._set_sender(CREATOR)
+        self.contract.evaluate_graduation_gate("curve-unit-01", P_URL, B_URL, CREATOR)
+        before = self.contract.get_all_curves()
+        with self.assertRaisesRegex(Exception, "NO_REVIEW_AVAILABLE"):
+            self.contract.evaluate_graduation_gate("curve-unit-01", P_URL, B_URL, CREATOR)
+        self.assertEqual(before, self.contract.get_all_curves())
+
+    def test_23_challenge_validation_does_not_consume_slot(self):
+        self._unlock()
+        self._healthy_evidence()
+        self._set_sender(CREATOR)
+        self.contract.evaluate_graduation_gate("curve-unit-01", P_URL, B_URL, CREATOR)
+        before = self.contract.get_all_curves()
+        with self.assertRaisesRegex(Exception, "CREATOR_CANNOT_CHALLENGE"):
+            self.contract.challenge_pending_verdict("curve-unit-01", CREATOR, "RUG_SLASHED", "Self")
+        self._set_sender(BUYER)
+        for verdict, reason, error in (("BAD", "x", "INVALID_CLAIM"), ("GRADUATE_APPROVED", "x", "CLAIM_NOT"), ("RUG_SLASHED", "x"*2001, "REASON_TOO_LONG")):
+            with self.assertRaisesRegex(Exception, error):
+                self.contract.challenge_pending_verdict("curve-unit-01", BUYER, verdict, reason)
+        self.assertEqual(before, self.contract.get_all_curves())
+        self._expire()
+        with self.assertRaisesRegex(Exception, "VERDICT_WINDOW_CLOSED"):
+            self.contract.challenge_pending_verdict("curve-unit-01", BUYER, "RUG_SLASHED", "Late")
+
+    def test_24_review_can_change_verdict_without_resetting_deadline(self):
+        self._unlock()
+        self._healthy_evidence()
+        self._set_sender(CREATOR)
+        self.contract.evaluate_graduation_gate("curve-unit-01", P_URL, B_URL, CREATOR)
+        deadline = json.loads(self.contract.get_all_curves())["curve-unit-01"]["verdict_deadline"]
+        self._set_sender(BUYER)
+        self.contract.challenge_pending_verdict("curve-unit-01", BUYER, "RUG_SLASHED", "Tag removed")
+        _MockGL._tag_exists = False
+        self._set_sender(STRANGER)
+        result = json.loads(self.contract.evaluate_graduation_gate("curve-unit-01", P_URL, B_URL, STRANGER))
+        self.assertEqual(result["verdict"], "RUG_SLASHED")
+        c = json.loads(self.contract.get_all_curves())["curve-unit-01"]
+        self.assertEqual(c["verdict_deadline"], deadline)
+        self.assertEqual(c["pending_challenges"][0]["resolved_verdict"], "RUG_SLASHED")
+        with self.assertRaisesRegex(Exception, "CHALLENGE_LIMIT_REACHED"):
+            self.contract.challenge_pending_verdict("curve-unit-01", STRANGER, "GRADUATE_APPROVED", "Again")
+        self._expire()
+        self.contract.execute_verdict("curve-unit-01", STRANGER)
+        c = json.loads(self.contract.get_all_curves())["curve-unit-01"]
+        self.assertEqual(c["redemption_floor_pool"], 27044)
+        self.assertEqual(c["last_audit"]["challenges"][0]["resolution"], "REVIEWED")
+
+    def test_25_permissionless_boost_never_rewards_executor(self):
+        self._unlock()
+        self._healthy_evidence(scores=("90", "90", "90"))
+        self._set_sender(CREATOR)
+        self.contract.evaluate_graduation_gate("curve-unit-01", P_URL, B_URL, CREATOR)
+        self._set_sender(STRANGER)
+        self._expire()
+        self.contract.execute_verdict("curve-unit-01", STRANGER)
+        c = json.loads(self.contract.get_all_curves())["curve-unit-01"]
+        self.assertEqual(c["slope_k"], 50)
+        self.assertEqual(self.contract.get_user_balance(CREATOR), "27044")
+        self.assertEqual(self.contract.get_user_balance(STRANGER), "0")
+
+    def test_26_missing_transaction_time_fails_closed(self):
+        self._pending_rug()
+        before = self.contract.get_all_curves(), self.contract.ledger_json
+        _MockGL.message_raw = {}
+        with self.assertRaises(KeyError):
+            self.contract.execute_verdict("curve-unit-01", BUYER)
+        self.assertEqual(before, (self.contract.get_all_curves(), self.contract.ledger_json))
 
 
 if __name__ == "__main__":

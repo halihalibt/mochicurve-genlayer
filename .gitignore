@@ -6,3 +6,5 @@ __pycache__/
 .deploy_checkpoint.json
 .qa/
 .local/
+
+.deploy_v3_checkpoint.json

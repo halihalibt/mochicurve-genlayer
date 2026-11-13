@@ -1,3 +1,4 @@
+throw new Error("Historical v2 runner: incompatible with v3 bounded deadlines; use the v3 validation specification.");
 // scripts/rescue-evidence.mjs
 // Runs the MochiCurve v2 evidence cases against the deployed contract.
 // Usage: node scripts/rescue-evidence.mjs

@@ -6,15 +6,21 @@ An integer bonding curve market whose delivery verdict changes creator rewards, 
 
 All money is real testnet GEN (faucet-funded). 1 accounting unit = 0.001 GEN. Launches attach 25 GEN of creator collateral; buys attach GEN; sells, rewards and slashes become withdrawable credits pulled with `withdraw`. There is no simulated ledger and no protocol subsidy.
 
-## Deployed contract and evidence
+## v3 source and deployment boundary
+
+The current source adds bounded challenge resolution. It **requires a new deployment**; no v3 address or live verification exists yet. The frontend has an empty deployment address and runs in labeled local rehearsal mode until a verified v3 deployment is configured. Existing v2 funds and positions remain at the old contract; there is no automatic migration.
+
+[Bounded-verdict specification and validation](docs/bounded-verdicts.md). Deployment dry validation writes to `evidence/v3/`; v2 receipts are retained unchanged. Deployment and business transactions require separate signing authorization.
+
+## Historical v2 deployment and evidence
 
 - Contract: [0xf3C716d9ff7FB529cd08e2fD15413E75Ebc1B742](https://explorer-studio.genlayer.com/address/0xf3C716d9ff7FB529cd08e2fD15413E75Ebc1B742).
-- Deployment: [0x5dbcd6a288efc2d7a72a5d159860d5588cca3f28c0290912f0de80f77e311cc3](https://explorer-studio.genlayer.com/tx/0x5dbcd6a288efc2d7a72a5d159860d5588cca3f28c0290912f0de80f77e311cc3), `FINALIZED`, `SUCCESS`. Source SHA-256 `e46c1b914df184eaec2f7a92498c45c434a0bd14a6ae58bca3d52332444eec69` matches `contracts/mochi_curve.py`.
+- Deployment: [0x5dbcd6a288efc2d7a72a5d159860d5588cca3f28c0290912f0de80f77e311cc3](https://explorer-studio.genlayer.com/tx/0x5dbcd6a288efc2d7a72a5d159860d5588cca3f28c0290912f0de80f77e311cc3), `FINALIZED`, `SUCCESS`. Source SHA-256 `e46c1b914df184eaec2f7a92498c45c434a0bd14a6ae58bca3d52332444eec69` identifies the deployed v2 source, not the current v3 source.
 - [Evidence index](evidence.json), [business receipts and finalized readbacks](evidence/live-verification.json).
 - `curve-v2-graduate`: live `GRADUATE_APPROVED`, scores 85 / 90 / 0; creator withdrew 27.044 GEN. After selling 31 tokens, reserve is 32,800 while cumulative net buys remain 102,240. A contradiction witness preserves that audit.
 - `curve-v2-rug`: live `RUG_SLASHED` for a README-only repo with a false manifest (API commits 1 vs claimed 12, 0 code files, all anchors false). A challenge blocked execution first; re-evaluation cleared it. Full redemption returned 102.240 reserve plus 27.044 floor bonus, leaving zero supply and no position entry.
 - `curve-v2-boost`: live `CATALYST_BOOST`, scores 88 / 92 / 78; slope k 40 → 50 with a virtual offset preserving solvency; creator withdrew 27.044 GEN.
-- A stranger calling `evaluate_graduation_gate` reverts (`contract_error exit_code 1`); only the curve creator can evaluate or execute.
+- A stranger calling `evaluate_graduation_gate` reverts (`contract_error exit_code 1`); v2 restricted evaluation and execution to the creator.
 - GEN conservation holds exactly: EOA balances + contract balance sum to 30,000 GEN (3 × 10,000 faucet GEN); contract balance 135.04 GEN equals received 387.852 GEN minus withdrawn 252.812 GEN.
 
 The raw audit receipts retain majority voting, including disagreement and idle votes. Successful consensus is not a claim of unanimous voting.
@@ -47,7 +53,9 @@ The manifest is only a pointer. Validators then anchor it against the GitHub API
 
 Only after those checks pass does each validator independently assess semantic completeness, consistency and over-delivery against the fetched file tree. LLM scores cannot override a deterministic slash. Validators require identical evidence hashes, tag existence and verdict; score differences of at most 20 are accepted within that same verdict. Scores and source metadata travel in the returned consensus payload, never through mutable closure side effects.
 
-Evaluation is two-step and sender-bound. `evaluate_graduation_gate` requires the sender to be the curve creator and writes only a `pending_verdict`; no money moves. Any non-creator can challenge it with a different claimed verdict, and `execute_verdict` refuses while a challenge is open. Re-evaluation supersedes the pending verdict and clears challenges. `reveal_secret_catalyst` is likewise creator-bound. There is no clock source, so the challenge window has no expiry.
+Initial `evaluate_graduation_gate` remains creator-only and writes no money. It fixes a 24-hour deadline using the consensus transaction timestamp (`gl.message_raw["datetime"]`). Each curve permits one contradictory non-creator challenge before that deadline. Anyone may re-run evaluation once on a challenged verdict using the original two evidence URLs. A successful review records its outcome without deleting the challenge or extending the deadline. Unavailable evidence leaves the pending verdict and deadline unchanged.
+
+At or after the deadline, **any authenticated caller** may call `execute_verdict`, including for `RUG_SLASHED`, with or without a completed review. It applies the latest successful consensus verdict; an allegation alone never changes the verdict. Challenges and review requests are rejected at the boundary. Execution archives challenge resolution as `REVIEWED` or `EXPIRED` and clears the pending verdict, preventing double execution. No external fetch or creator cooperation is required for expiry execution.
 
 Finalized verdicts cannot be replaced. A contradictory claim appends a caller-attributed witness while retaining the active verdict. Launch, buy, sell and witness attribution are checked against `gl.message.sender_address`.
 

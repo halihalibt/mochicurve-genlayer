@@ -1,0 +1,10 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> mochicurve-genlayer@1.0.0 build
+> esbuild src/app.js --bundle --minify --legal-comments=linked --format=esm --platform=browser --target=es2022 --outfile=dist/app.js
+
+
+  dist/app.js            639.8kb
+  dist/app.js.LEGAL.txt    429b 
+
+⚡ Done in 96ms

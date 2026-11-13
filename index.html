@@ -234,7 +234,7 @@
         <div class="station-kicker" data-i18n="st3_kicker">03 // GENLAYER GRADUATION GATE</div>
         <h2 class="station-title" data-i18n="st3_title">Dual-Mirror GitHub Release Adjudication</h2>
         <p class="station-desc" data-i18n="st3_desc">
-          Once cumulative_buy_volume >= 100 GEN, the curve creator triggers a consensus graduation audit. Validators fetch the release manifest from Primary (GitHub Raw) and Backup (jsDelivr CDN) mirrors, then anchor it against the GitHub API: the tag commit SHA, the commit count, and the repository tree at that commit (real code files, not README). Evaluation writes only a pending verdict; the creator executes it in a second step, and anyone can challenge it before execution.
+          Once cumulative_buy_volume >= 100 GEN, the curve creator triggers a consensus graduation audit. Validators fetch the release manifest from Primary (GitHub Raw) and Backup (jsDelivr CDN) mirrors, then anchor it against the GitHub API: the tag commit SHA, the commit count, and the repository tree at that commit (real code files, not README). Evaluation writes only a pending verdict; anyone executes it after a fixed 24-hour window. One challenge and one public review are allowed; neither extends the deadline.
         </p>
 
         <div class="mirror-config-card">

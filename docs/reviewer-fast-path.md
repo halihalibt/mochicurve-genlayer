@@ -1,3 +1,7 @@
+# Current source and historical deployment
+
+The current v3 source requires redeployment and real finalized validation. See [bounded verdicts](bounded-verdicts.md). The application is in local rehearsal mode while its v3 contract address is empty. The following instructions describe historical v2 evidence only.
+
 # Reviewer fast path
 
 1. Start with [the evidence index](../evidence.json). Read the deployment manifest and match its source SHA-256 against `contracts/mochi_curve.py`.

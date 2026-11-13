@@ -3,8 +3,12 @@ import {readFileSync,writeFileSync,existsSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
 import {keccak256,parseEventLogs} from 'viem';
+import { studionet } from 'genlayer-js/chains';
+import { mkdirSync } from 'node:fs';
 import {client,guard,finalSuccess,json,RPC} from './studionet-client.mjs';
-const checkpoint='scripts/.deploy_checkpoint.json';
+const output='evidence/v3';
+mkdirSync(output,{recursive:true});
+const checkpoint='scripts/.deploy_v3_checkpoint.json';
 const source=readFileSync('contracts/mochi_curve.py','utf8');
 const hash=createHash('sha256').update(source).digest('hex');
 const command=process.argv[2] || 'validate';
@@ -12,7 +16,7 @@ const publicClient=client();
 await guard(publicClient);
 if(command==='validate') {
   const schema=await publicClient.getContractSchemaForCode(source);
-  writeFileSync('evidence/remote-schema.json',json(schema)+'\n');
+  writeFileSync(`${output}/remote-schema.json`,json(schema)+'\n');
   console.log('Validated remote chain 61999, zero gas price, and contract schema. No transaction sent.');
   process.exit(0);
 }
@@ -56,14 +60,14 @@ for(let i=0;i<150;i++) {
   if(status!==previous){console.log('STATUS',status);previous=status;}
   cp.status=status;save();
   if(status==='FINALIZED' || ['CANCELED','UNDETERMINED'].includes(status)) {
-    writeFileSync('evidence/deployment-receipt.json',json(tx)+'\n');
+    writeFileSync(`${output}/deployment-receipt.json`,json(tx)+'\n');
     if(!finalSuccess(tx)) throw Error('Deployment did not execute successfully. Receipt retained; do not redeploy automatically.');
     cp.contract_address=tx.to_address || tx.toAddress || tx.recipient || '';
     cp.finalized_at=new Date().toISOString();save();
     if(!/^0x[0-9a-fA-F]{40}$/.test(cp.contract_address)) throw Error('Read the raw receipt to extract the deployed contract address');
     const curves=await publicClient.readContract({address:cp.contract_address,functionName:'get_all_curves',args:[],transactionHashVariant:'latest-final'});
-    writeFileSync('evidence/deployment-readback.json',typeof curves==='string'?curves:json(curves));
-    writeFileSync('evidence/deployment-manifest.json',json({...cp,execution_result:'SUCCESS',constructor_args:[]})+'\n');
+    writeFileSync(`${output}/deployment-readback.json`,typeof curves==='string'?curves:json(curves));
+    writeFileSync(`${output}/deployment-manifest.json`,json({...cp,execution_result:'SUCCESS',constructor_args:[]})+'\n');
     console.log('CONTRACT_ADDRESS',cp.contract_address);process.exit(0);
   }
   await new Promise(r=>setTimeout(r,4000));
