@@ -23,6 +23,7 @@ Time uses `gl.message_raw["datetime"]`, the GenVM consensus transaction context.
 ```sh
 npm ci
 npm test
+node --test tests/frontend.test.mjs
 npm run build
 python3 scripts/deploy_studionet.py --dry-validate
 ```
@@ -53,3 +54,7 @@ Real validation scenarios:
 The v3 deployment is FINALIZED with SUCCESS. Real business transactions are recorded in `evidence/v3/live-verification.json`; the 24-hour expiry scenarios remain in progress.
 
 `node scripts/verify-v3.mjs prepare` records the pre-expiry transactions. `node scripts/verify-v3.mjs status` only reads finalized state. `node scripts/verify-v3.mjs finish` refuses to send any transaction before the actual latest deadline plus a one-minute safety margin. It records permissionless execution, repeat-execution rejection, redemption, withdrawals and GEN conservation. Public hashes are checkpointed before broadcast; uncertain broadcasts are resumed rather than resent. Fresh faucet-funded test account credentials stay in the ignored private local checkpoint, never in published evidence.
+
+## Public browser reads
+
+A remote browser loaded the v3-targeted frontend at commit `8e8e506` and read the real finalized `v3-rug-expiry` and `v3-rug-review` curves, pending slashes, original evidence URLs and UTC deadlines. It displayed LIVE_STUDIONET_61999 and disabled execution before expiry. The check exposed an invalid `eth_getBalance` request for the pre-connection demo address. Balance requests now require a valid 20-byte hexadecimal address; two automated frontend tests cover public reads without a wallet and connected-wallet balance reads. The earlier failed browser launch log remains retained.

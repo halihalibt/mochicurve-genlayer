@@ -22,6 +22,20 @@ await guard(reader);
 mkdirSync('scripts/.local', { recursive: true });
 let run = existsSync(LOCAL) ? JSON.parse(readFileSync(LOCAL, 'utf8')) : { contract_address: address, accounts: {}, transactions: {} };
 assert.equal(run.contract_address, address);
+// Merge published transaction hashes when restoring an older private account checkpoint.
+// This keeps recovery from broadcasting transactions already recorded on chain.
+const indexPath=`${OUT}/live-verification.json`;
+if(existsSync(indexPath)) {
+  const published=JSON.parse(readFileSync(indexPath,'utf8'));
+  assert.equal(published.contract_address,address);
+  for(const record of published.transactions || []) {
+    const local=run.transactions[record.label];
+    if(local?.tx_hash && record.tx_hash)assert.equal(local.tx_hash,record.tx_hash,'Conflicting checkpoint hashes');
+    if(!local || record.verified)run.transactions[record.label]=record;
+  }
+  run.deadlines={...(published.deadlines || {}),...(run.deadlines || {})};
+}
+
 const save = () => writeFileSync(LOCAL, json(run) + '\n', { mode: 0o600 });
 const publicIndex = () => writeFileSync(`${OUT}/live-verification.json`, json({network:'Stable Studionet',chain_id:61999,rpc:RPC,source_sha256:sourceHash,contract_address:address,origin:'user_created',phase:run.phase || 'IN_PROGRESS',transactions:Object.values(run.transactions),deadlines:run.deadlines || {},reconciliation:run.reconciliation || null,accounts:Object.fromEntries(Object.entries(run.accounts).map(([k,a])=>[k,{address:a.address,funded_gen:10000}]))})+'\n');
 async function state() {

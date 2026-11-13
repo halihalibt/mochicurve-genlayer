@@ -73,7 +73,7 @@ async function refreshCurvesFromChainIfConfigured() {
   appState.curves = typeof rawCurves === "string" ? JSON.parse(rawCurves) : rawCurves;
   const ids = Object.keys(appState.curves);
   if (!appState.curves[appState.activeCurveId]) appState.activeCurveId = ids[0] || null;
-  if (appState.activeTraderAddress) {
+  if (/^0x[0-9a-fA-F]{40}$/.test(appState.activeTraderAddress || "")) {
     // get_user_balance is the pull-payment credit owed (units), not a wallet balance.
     const withdrawable = await publicClient.readContract({ address: APP_CONFIG.CONTRACT_ADDRESS,
       functionName: "get_user_balance", args: [appState.activeTraderAddress], transactionHashVariant: "latest-final" });

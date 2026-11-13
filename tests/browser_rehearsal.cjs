@@ -1,8 +1,9 @@
 // Optional browser integration check; requires Playwright and a permitted Chromium runtime.
 const { chromium } = require(require.resolve('playwright', {paths: [process.cwd(), process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES].filter(Boolean)}));
 const assert = require('node:assert/strict');
+const {mkdirSync} = require('node:fs');
 (async()=>{
- const browser=await chromium.launch({headless:true,executablePath:"/usr/bin/chromium",args:["--no-sandbox"]});
+ const browser=await chromium.launch({headless:true,...(process.env.CHROMIUM_PATH?{executablePath:process.env.CHROMIUM_PATH}:{}),args:["--no-sandbox"]});
  const page=await browser.newPage(); const errors=[];page.on('pageerror',e=>errors.push(e.message));
  // This check always exercises labeled rehearsal, even after the repository has a live address.
  await page.route('**/*',async route=>{
@@ -19,11 +20,13 @@ const assert = require('node:assert/strict');
  await page.clock.install({time:new Date('2026-11-13T00:00:00Z')});
  await page.goto('http://127.0.0.1:4173/');
  await page.locator('#btn-connect-wallet').click({force:true});
+ await page.locator('details.launch-drawer > summary').click({force:true});
  await page.locator('#launch-id').fill('browser-v3');
+ await page.locator('#launch-name').fill('Browser V3 Check');
  await page.locator('#launch-repo').fill('halihalibt/mochicurve-genlayer');
  await page.locator('#launch-secret-raw').fill('salt|secret');
  await page.locator('#btn-launch-curve').click({force:true});
- await page.waitForFunction(()=>document.body.textContent.includes('browser-v3'));
+ await page.waitForFunction(()=>document.querySelector('#active-curve-name').textContent==='Browser V3 Check');
  await page.locator('#input-trade-amount').fill('71');
  await page.locator('#input-trade-amount').dispatchEvent('input');
  await page.locator('#btn-buy-tokens').click({force:true});
@@ -45,7 +48,11 @@ const assert = require('node:assert/strict');
  await page.locator('#btn-execute-verdict').click({force:true});
  assert(await page.locator('#pending-verdict-box').isHidden());
  assert.equal(errors.length,0,JSON.stringify(errors));
+ mkdirSync('.qa',{recursive:true});
+ await page.screenshot({path:'.qa/desktop.png'});
  await page.setViewportSize({width:390,height:844});
+ assert(await page.locator('#btn-lang-toggle').isVisible());
+ await page.screenshot({path:'.qa/mobile.png'});
  console.log('PASS browser rehearsal: launch, buy, creator evaluation, deadline, self-challenge disabled, noncreator challenge/review/expiry execution, desktop/mobile render; no page errors, external requests blocked. Local browser clock only; not chain evidence.');
  await browser.close();
 })().catch(e=>{console.error(e);process.exit(1)});

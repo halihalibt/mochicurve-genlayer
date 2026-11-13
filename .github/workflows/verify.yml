@@ -1,0 +1,38 @@
+name: Verify MochiCurve
+on:
+  push:
+    branches: [main, fix/bounded-verdict-resolution]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: npm ci
+      - run: npm test
+      - run: node --test tests/frontend.test.mjs
+      - run: npm run build
+      - name: Install browser test runtime
+        run: |
+          npm install --no-save --package-lock=false playwright@1.62.1
+          npx playwright install --with-deps chromium
+      - name: Run isolated browser rehearsal
+        run: |
+          node scripts/serve.mjs --port 4173 > /tmp/mochicurve-preview.log 2>&1 &
+          node tests/browser_rehearsal.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: browser-rehearsal
+          path: .qa/
+          if-no-files-found: ignore

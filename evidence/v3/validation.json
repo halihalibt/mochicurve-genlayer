@@ -25,10 +25,17 @@
     "reason": "Chromium singleton socket creation denied: Operation not permitted",
     "log": "browser-attempt.txt",
     "local_automated_status": "BLOCKED_BEFORE_PAGE_OPEN",
-    "remote_rehearsal": "PASS for launch, buy, pending verdict, challenge, third-party review, unchanged deadline and bilingual controls on commit 94d09da; not chain evidence"
+    "remote_rehearsal": "PASS for launch, buy, pending verdict, challenge, third-party review, unchanged deadline and bilingual controls on commit 94d09da; not chain evidence",
+    "remote_live_read": "PASS at 8e8e506: real v3 pending curves and original evidence URLs/deadlines rendered; invalid demo-address balance RPC detected and corrected with frontend tests"
   },
   "historical_evidence_data": "all pre-existing tracked evidence data bytes unchanged",
   "deployment_status": "FINALIZED_SUCCESS",
   "resubmission_ready": false,
-  "business_validation": "IN_PROGRESS: real 24-hour deadlines not yet reached"
+  "business_validation": "IN_PROGRESS: real 24-hour deadlines not yet reached",
+  "frontend_tests": {
+    "command": "node --test tests/frontend.test.mjs",
+    "passed": 2,
+    "failed": 0,
+    "scope": "actual finalized-state read function with mocked RPC responses; prevents invalid demo-address balance requests"
+  }
 }
