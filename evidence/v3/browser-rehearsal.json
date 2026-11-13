@@ -1,0 +1,22 @@
+{
+  "source_commit": "94d09da0e9dc043c44de1995418c9fd134e61f20",
+  "url": "https://raw.githack.com/halihalibt/mochicurve-genlayer/fix/bounded-verdict-resolution/index.html",
+  "mode": "LOCAL_REHEARSAL_NON_ONCHAIN",
+  "observed_at_utc": "2026-11-13T09:25:47Z",
+  "verified": [
+    "Created Browser V3 Check curve",
+    "Bought 71 token units and crossed cumulative threshold",
+    "Evaluation wrote pending verdict with visible UTC deadline",
+    "Creator challenge and early execution controls disabled",
+    "Enabled a different temporary account and submitted one challenge",
+    "Third-party review completed; deadline remained 2026-11-14T09:25:33.000Z",
+    "Repeat challenge and early execution remained disabled",
+    "Chinese and English controls rendered"
+  ],
+  "not_verified": [
+    "Real browser writes on v3",
+    "Expiry execution",
+    "Mobile viewport"
+  ],
+  "console_errors": "Only extension metadata errors observed; no application error observed"
+}

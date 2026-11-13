@@ -31,6 +31,6 @@ test_25_permissionless_boost_never_rewards_executor (tests.test_mochi_curve.Test
 test_26_missing_transaction_time_fails_closed (tests.test_mochi_curve.TestMochiCurveLocalMock.test_26_missing_transaction_time_fails_closed) ... ok
 
 ----------------------------------------------------------------------
-Ran 26 tests in 0.114s
+Ran 26 tests in 0.108s
 
 OK

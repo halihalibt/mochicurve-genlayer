@@ -14,7 +14,7 @@ export const APP_CONFIG = {
   EXPLORER_URL: "https://explorer-studio.genlayer.com",
   // Leave empty ("") until deployed on Studionet; when empty, UI enforces honest Local Rehearsal mode
   // and NEVER fakes a FINALIZED status or fake transaction hash.
-  CONTRACT_ADDRESS: "",
+  CONTRACT_ADDRESS: "0x47767c833bC218e193177bC39F79235CCA639200",
   GRADUATION_BUY_VOLUME_THRESHOLD: 100000,
   DEFAULT_BASE_PRICE: 20,
   DEFAULT_SLOPE_K: 40,

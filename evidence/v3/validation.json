@@ -23,9 +23,12 @@
   "browser": {
     "status": "BLOCKED_BEFORE_PAGE_OPEN",
     "reason": "Chromium singleton socket creation denied: Operation not permitted",
-    "log": "browser-attempt.txt"
+    "log": "browser-attempt.txt",
+    "local_automated_status": "BLOCKED_BEFORE_PAGE_OPEN",
+    "remote_rehearsal": "PASS for launch, buy, pending verdict, challenge, third-party review, unchanged deadline and bilingual controls on commit 94d09da; not chain evidence"
   },
   "historical_evidence_data": "all pre-existing tracked evidence data bytes unchanged",
-  "deployment_status": "NOT_DEPLOYED",
-  "resubmission_ready": false
+  "deployment_status": "FINALIZED_SUCCESS",
+  "resubmission_ready": false,
+  "business_validation": "IN_PROGRESS: real 24-hour deadlines not yet reached"
 }

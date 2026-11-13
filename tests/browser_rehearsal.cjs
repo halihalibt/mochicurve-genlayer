@@ -4,7 +4,17 @@ const assert = require('node:assert/strict');
 (async()=>{
  const browser=await chromium.launch({headless:true,executablePath:"/usr/bin/chromium",args:["--no-sandbox"]});
  const page=await browser.newPage(); const errors=[];page.on('pageerror',e=>errors.push(e.message));
- await page.route('**/*',route=>route.request().url().startsWith('http://127.0.0.1:4173')?route.continue():route.abort());
+ // This check always exercises labeled rehearsal, even after the repository has a live address.
+ await page.route('**/*',async route=>{
+   const url=route.request().url();
+   if(!url.startsWith('http://127.0.0.1:4173'))return route.abort();
+   if(url.endsWith('/dist/app.js')) {
+     const response=await route.fetch();
+     const body=(await response.text()).replace(/CONTRACT_ADDRESS:"0x[0-9a-fA-F]{40}"/, 'CONTRACT_ADDRESS:""');
+     return route.fulfill({response,body});
+   }
+   return route.continue();
+ });
  await page.addInitScript(()=>{window.ethereum={request:async({method})=> method==='eth_requestAccounts'?[window.testActor||'0x1111111111111111111111111111111111111111']:'0xf22f'};});
  await page.clock.install({time:new Date('2026-11-13T00:00:00Z')});
  await page.goto('http://127.0.0.1:4173/');

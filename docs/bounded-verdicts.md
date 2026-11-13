@@ -1,6 +1,6 @@
 # Bounded verdict resolution
 
-MochiCurve v3 keeps the integer market, real Studionet GEN accounting, API anchors and independent leader/validator comparison. Only the pending-verdict lifecycle changes. It requires a new contract deployment; the v2 address is historical evidence only.
+MochiCurve v3 keeps the integer market, real Studionet GEN accounting, API anchors and independent leader/validator comparison. Only the pending-verdict lifecycle changes. It has a separate v3 deployment; the v2 address is historical evidence only.
 
 ## State transitions
 
@@ -33,15 +33,15 @@ Logs: [tests](../evidence/v3/local-tests.txt), [build](../evidence/v3/build.txt)
 
 The first local run passed 22/23 tests; the remaining case expected `FINALIZED_VERDICT_IMMUTABLE` but received `EVALUATOR_NOT_CREATOR`. Moving the immutable-state check before evaluator-role checking corrected the error precedence. The final expanded suite passes 26/26. No prior live failure receipts were deleted.
 
-An optional browser rehearsal check is in `tests/browser_rehearsal.cjs`, against `node scripts/serve.mjs --port 4173`. It requires Playwright and Chromium. Browser execution in this environment failed before opening a page: Chromium singleton socket creation was denied (`Operation not permitted`). The attempted run is retained in [browser-attempt.txt](../evidence/v3/browser-attempt.txt). No browser interaction or visual pass is claimed.
+An optional browser rehearsal check is in `tests/browser_rehearsal.cjs`, against `node scripts/serve.mjs --port 4173`. It requires Playwright and Chromium. Browser execution in this environment failed before opening a page: Chromium singleton socket creation was denied (`Operation not permitted`). The attempted run is retained in [browser-attempt.txt](../evidence/v3/browser-attempt.txt). The automated local browser check remains blocked. A separate remote browser rehearsal subsequently verified launch, buy, pending verdict, third-party challenge and review, unchanged deadline and bilingual controls; see [browser-rehearsal.json](../evidence/v3/browser-rehearsal.json). This does not establish real browser writes or mobile rendering.
 
 ## Deployment and real validation
 
-The source changes storage fields and lifecycle semantics; v2 cannot serve as v3 evidence. The frontend deployment address is empty until a new finalized successful deployment and empty-state readback are recorded. Old balances and positions remain at v2; no migration is attempted. The deploy runner writes v3 receipts into `evidence/v3/` and uses a separate public checkpoint, preserving previous evidence. The old v2 business runner refuses execution against the new lifecycle.
+The source changes storage fields and lifecycle semantics; v2 cannot serve as v3 evidence. The frontend targets the finalized v3 deployment recorded in `evidence/v3/deployment-manifest.json`. Old balances and positions remain at v2; no migration is attempted. The deploy runner writes v3 receipts into `evidence/v3/` and uses a separate public checkpoint, preserving previous evidence. The old v2 business runner refuses execution against the new lifecycle.
 
-Before any signing, inspect the source SHA-256 and network in `evidence/v3/deployment-plan.json`. No private key or signature is included. The existing signed SDK deployment path is retained; no deployment command was executed during local validation.
+`evidence/v3/deployment-plan.json` records the exact source SHA-256 and network and links the successful deployment receipt. No private key is included.
 
-Required real scenarios after signing approval:
+Real validation scenarios:
 
 1. Deploy this source on Stable Studionet 61999. Retain FINALIZED + SUCCESS receipt, exact source hash and empty `latest-final` readback.
 2. Creator launches a new curve with 25 GEN collateral; buyer buys 71 units (104.284 GEN including fee). Creator evaluates to a deterministic adverse pending verdict. Record `verdict_deadline` and all finalized readbacks.
@@ -50,4 +50,6 @@ Required real scenarios after signing approval:
 5. On a separate curve, exercise third-party review using original URLs, verify unchanged deadline, reject repeat review/challenge, execute once after expiry, then reject double execution. Verify reserve/credits and GEN conservation, including successful graduate and boost regressions.
 6. Configure the new address, rebuild the frontend, and verify desktop/mobile browser interaction before publishing updated evidence links.
 
-Current validation stops before deployment signing. There are no v3 live receipts and no claim that v3 is ready for resubmission.
+The v3 deployment is FINALIZED with SUCCESS. Real business transactions are recorded in `evidence/v3/live-verification.json`; the 24-hour expiry scenarios remain in progress.
+
+`node scripts/verify-v3.mjs prepare` records the pre-expiry transactions. `node scripts/verify-v3.mjs status` only reads finalized state. `node scripts/verify-v3.mjs finish` refuses to send any transaction before the actual latest deadline plus a one-minute safety margin. It records permissionless execution, repeat-execution rejection, redemption, withdrawals and GEN conservation. Public hashes are checkpointed before broadcast; uncertain broadcasts are resumed rather than resent. Fresh faucet-funded test account credentials stay in the ignored private local checkpoint, never in published evidence.

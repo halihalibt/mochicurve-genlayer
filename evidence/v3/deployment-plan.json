@@ -6,10 +6,13 @@
   "source_sha256": "9e47037e0e388789baea4ba432ae41cd7678952d6e42fe6db7c3c9d600e33482",
   "constructor_args": [],
   "gas_price": "0",
-  "transaction_sent": false,
-  "signature_created": false,
-  "contract_address": null,
+  "transaction_sent": true,
+  "signature_created": true,
+  "contract_address": "0x47767c833bC218e193177bC39F79235CCA639200",
   "evidence_directory": "evidence/v3",
   "historical_v2_address": "0xf3C716d9ff7FB529cd08e2fD15413E75Ebc1B742",
-  "requires_new_deployment": true
+  "requires_new_deployment": true,
+  "deployment_receipt": "deployment-receipt.json",
+  "deployment_status": "FINALIZED",
+  "execution_result": "SUCCESS"
 }

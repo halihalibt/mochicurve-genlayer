@@ -4,7 +4,7 @@ npm warn Unknown env config "http-proxy". This will stop working in the next maj
 > esbuild src/app.js --bundle --minify --legal-comments=linked --format=esm --platform=browser --target=es2022 --outfile=dist/app.js
 
 
-  dist/app.js            639.8kb
+  dist/app.js            640.8kb
   dist/app.js.LEGAL.txt    429b 
 
-⚡ Done in 96ms
+⚡ Done in 148ms

@@ -510,12 +510,21 @@ function renderGraduationGateAndWitnesses(c) {
     if (witList) witList.innerHTML = `<p class="empty-state">${I18N_DICT[appState.lang].wit_empty}</p>`;
     return;
   }
-  const pUrl = `https://raw.githubusercontent.com/${c.expected_repo_slug}/main/release_manifest.json`;
-  const bUrl = `https://cdn.jsdelivr.net/gh/${c.expected_repo_slug}@main/release_manifest.json`;
+  const pUrl = c.evaluation_primary_url || `https://raw.githubusercontent.com/${c.expected_repo_slug}/main/release_manifest.json`;
+  const bUrl = c.evaluation_backup_url || `https://cdn.jsdelivr.net/gh/${c.expected_repo_slug}@main/release_manifest.json`;
   if (document.getElementById("input-primary-url").dataset.curve !== c.curve_id) {
     document.getElementById("input-primary-url").value = pUrl;
     document.getElementById("input-backup-url").value = bUrl;
     document.getElementById("input-primary-url").dataset.curve = c.curve_id;
+  }
+
+  const evaluateBtn = document.getElementById("btn-evaluate-gate");
+  const initialAllowed = appState.activeTraderAddress.toLowerCase() === c.creator.toLowerCase()
+    && c.cumulative_buy_volume >= c.graduation_threshold
+    && !["RUG_SLASHED", "GRADUATE_APPROVED", "CATALYST_BOOST"].includes(c.gate_status);
+  if (evaluateBtn) { evaluateBtn.disabled = !initialAllowed; evaluateBtn.textContent = I18N_DICT[appState.lang].btn_trigger_gate; }
+  for (const id of ["input-primary-url", "input-backup-url"]) {
+    document.getElementById(id).readOnly = Boolean(c.pending_verdict);
   }
 
   // Pending verdict (step 1 of 2): shown with Execute / Challenge actions.
@@ -530,8 +539,14 @@ function renderGraduationGateAndWitnesses(c) {
       `API commits ${escapeHtml(p.api_commit_count)} / code files ${escapeHtml(p.code_file_count)} (${escapeHtml(p.code_bytes)} bytes) / ` +
       `Scores ${escapeHtml(p.completeness_score)}/${escapeHtml(p.authenticity_score)}/${escapeHtml(p.overdelivery_bonus)}` +
       `<br/>Deadline (UTC): ${escapeHtml(c.verdict_deadline ? new Date(c.verdict_deadline * 1000).toISOString() : "legacy v2")}` +
-      (challenges.length ? `<br/>${I18N_DICT[appState.lang].pending_challenges}: ${challenges.length} — ${I18N_DICT[appState.lang].pending_blocked}` : "");
+      (challenges.length ? `<br/>${I18N_DICT[appState.lang].pending_challenges}: ${challenges.length} — ${c.review_used ? I18N_DICT[appState.lang].review_completed : I18N_DICT[appState.lang].pending_blocked}` : "");
     const isCreator = appState.activeTraderAddress.toLowerCase() === c.creator.toLowerCase();
+    if (evaluateBtn) {
+      evaluateBtn.disabled = expired || !challenges.length || Boolean(c.review_used);
+      evaluateBtn.textContent = I18N_DICT[appState.lang].btn_review_verdict;
+      document.getElementById("input-primary-url").value = pUrl;
+      document.getElementById("input-backup-url").value = bUrl;
+    }
     if (execBtn) execBtn.disabled = !expired;
     if (challengeBtn) challengeBtn.disabled = isCreator || expired || c.challenge_used;
   } else if (pendingBox) {

@@ -1,6 +1,6 @@
 # Current source and historical deployment
 
-The current v3 source requires redeployment and real finalized validation. See [bounded verdicts](bounded-verdicts.md). The application is in local rehearsal mode while its v3 contract address is empty. The following instructions describe historical v2 evidence only.
+The current v3 deployment is finalized successfully; real business validation is in progress. See [bounded verdicts](bounded-verdicts.md). The application targets the v3 address in `evidence/v3/deployment-manifest.json`. The following instructions describe historical v2 evidence only.
 
 # Reviewer fast path
 
