@@ -1,6 +1,19 @@
-# Historical MochiCurve v2 evidence
+# MochiCurve evidence — current v3 and historical v2
 
-These receipts describe the deployed v2 contract. They do not verify the current v3 bounded-verdict source. The separate v3 deployment and 21 finalized pre-expiry business transactions are recorded in `v3/`. Actual expiry execution and payouts remain pending until the recorded deadlines.
+## Current v3: bounded verdict lifecycle
+
+- **Current contract:** [0x47767c833bC218e193177bC39F79235CCA639200](https://explorer-studio.genlayer.com/address/0x47767c833bC218e193177bC39F79235CCA639200)
+- **Deployed source SHA-256:** `9e47037e0e388789baea4ba432ae41cd7678952d6e42fe6db7c3c9d600e33482`
+- **Deployment:** [manifest](v3/deployment-manifest.json), [receipt](v3/deployment-receipt.json) (FINALIZED / MAJORITY_AGREE / leader SUCCESS)
+- **Live validation:** [v3/live-verification.json](v3/live-verification.json) — `FINALIZED_VERIFIED`, **39 FINALIZED / MAJORITY_AGREE transactions**: 29 successful executions and 10 expected contract rejections. All four real-time 24-hour verdict expiry cases executed permissionlessly; duplicate executions were rejected, and redemption and withdrawals completed.
+- **Final reconciliation:** All three faucet-funded accounts plus contract retain **30,000 test GEN** in aggregate; contract balance and unsettled balances are zero, with recorded GEN received equal to GEN withdrawn.
+- **Review path:** [v3 reviewer fast path](../docs/reviewer-fast-path.md), [bounded verdict implementation and tests](../docs/bounded-verdicts.md), [v3 validation summary](v3/validation.json).
+
+The successful and expected-error transactions have separate receipts and `latest-final` readbacks. Historical pre-expiry evidence is retained and explicitly superseded by the complete live run. Mock and browser rehearsal tests are not represented as live validator evidence.
+
+## Historical v2 evidence (not proof of v3 challenge expiry)
+
+These receipts describe the deployed v2 contract. They do not verify the current v3 bounded-verdict source.
 
 All amounts are real Studionet GEN. 1 accounting unit = 0.001 GEN. Buys and launches attach GEN; sells, rewards and slashes become withdrawable credits pulled with `withdraw`. No simulated ledger remains.
 
