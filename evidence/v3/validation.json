@@ -1,7 +1,7 @@
 {
   "source_sha256": "9e47037e0e388789baea4ba432ae41cd7678952d6e42fe6db7c3c9d600e33482",
   "baseline_commit": "ae1fa5d",
-  "scope": "local mock tests, read-only deployment checks and real pre-expiry Studionet transactions",
+  "scope": "local tests and complete real pre/post-expiry Studionet validation",
   "tests": {
     "command": "npm test",
     "passed": 26,
@@ -39,8 +39,8 @@
   },
   "historical_evidence_data": "all pre-existing tracked evidence data bytes unchanged",
   "deployment_status": "FINALIZED_SUCCESS",
-  "resubmission_ready": false,
-  "business_validation": "PRE_EXPIRY_VERIFIED: 21 finalized transactions; expiry execution still pending",
+  "resubmission_ready": true,
+  "business_validation": "FINALIZED_VERIFIED: 39 transactions; 29 successful operations and 10 expected rejections; latest-final readbacks and 30000 GEN conservation verified",
   "frontend_tests": {
     "command": "node --test tests/frontend.test.mjs tests/finality.test.mjs",
     "passed": 6,

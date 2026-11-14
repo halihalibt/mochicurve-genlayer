@@ -51,7 +51,7 @@ Real validation scenarios:
 5. On a separate curve, exercise third-party review using original URLs, verify unchanged deadline, reject repeat review/challenge, execute once after expiry, then reject double execution. Verify reserve/credits and GEN conservation, including successful graduate and boost regressions.
 6. Configure the new address, rebuild the frontend, and verify desktop/mobile browser interaction before publishing updated evidence links.
 
-The v3 deployment is FINALIZED with SUCCESS. Real business transactions are recorded in `evidence/v3/live-verification.json`; the 24-hour expiry scenarios remain in progress.
+The v3 deployment is FINALIZED with SUCCESS. Real business transactions are recorded in `evidence/v3/live-verification.json`; all four real 24-hour expiry scenarios are FINALIZED_VERIFIED.
 
 `node scripts/verify-v3.mjs prepare` records the pre-expiry transactions. `node scripts/verify-v3.mjs status` only reads finalized state. `node scripts/verify-v3.mjs finish` refuses to send any transaction before the actual latest deadline plus a one-minute safety margin. It records permissionless execution, repeat-execution rejection, redemption, withdrawals and GEN conservation. Public hashes are checkpointed before broadcast; uncertain broadcasts are resumed rather than resent. Fresh faucet-funded test account credentials stay in the ignored private local checkpoint, never in published evidence.
 
@@ -65,8 +65,12 @@ The first local classification of transaction `0x3bd0164f9027435dd7766be299e8139
 
 ## Finalized pre-expiry evidence
 
-All 21 pre-expiry transactions have finalized with MAJORITY_AGREE: 15 successful operations and 6 expected contract rejections. Each expected rejection preserved the curves, ledger totals and contract balance compared with the preceding finalized readback. [Pre-expiry checks](../evidence/v3/pre-expiry-checks.json) records the actual pending results and deadlines. Both rug cases are RUG_SLASHED, ordinary delivery is GRADUATE_APPROVED, and over-delivery is CATALYST_BOOST. These are pending contract verdicts, not executed payouts. The last real deadline is 2026-11-14 09:38:56 UTC; expiry execution, redemption, withdrawal and final conservation remain unverified until then.
+All 21 pre-expiry transactions have finalized with MAJORITY_AGREE: 15 successful operations and 6 expected contract rejections. Each expected rejection preserved the curves, ledger totals and contract balance compared with the preceding finalized readback. [Pre-expiry checks](../evidence/v3/pre-expiry-checks.json) records the actual pending results and deadlines. Both rug cases are RUG_SLASHED, ordinary delivery is GRADUATE_APPROVED, and over-delivery is CATALYST_BOOST. These are pending contract verdicts, not executed payouts. The last real deadline is 2026-11-14 09:38:56 UTC; subsequent real expiry execution, redemption, withdrawals and conservation passed on 2026-11-14.
 
 ## CI verification
 
 [Verify MochiCurve run 43443752757](https://github.com/halihalibt/mochicurve-genlayer/actions/runs/43443752757), source commit `db224a8fbfe84fcfbc391a804473ba55c81b3bdb`, completed successfully: 26 contract mock tests, 6 frontend/receipt tests, frontend build and isolated browser rehearsal. Browser coverage includes launch, buy, creator evaluation, one third-party challenge/review, unchanged deadline, expired execution and desktop/mobile rendering. Browser expiry uses a synthetic clock only and is not live chain evidence. The first browser CI failure remains recorded in `ci-browser-first-failure.json`. The passing run skipped screenshot artifacts because `.qa` is hidden; artifact inclusion has been corrected.
+
+## Final expiry evidence
+
+All 39 business transactions are FINALIZED with MAJORITY_AGREE: 29 successful leader executions and 10 expected contract rejections. Four independent third-party executions cleared pending state; duplicate execution preserved state and returned NO_PENDING_VERDICT. Both slash cases archived their original challenge resolution; graduate and boost creator rewards were withdrawn by the creator. All buyers sold and withdrew. The final latest-final snapshot reconciles contract balance to received minus withdrawn and conserves 30,000 test GEN across the three accounts and contract. Raw receipts and readbacks are indexed in [live-verification.json](../evidence/v3/live-verification.json).

@@ -5,7 +5,7 @@
   "source_sha256": "9e47037e0e388789baea4ba432ae41cd7678952d6e42fe6db7c3c9d600e33482",
   "contract_address": "0x47767c833bC218e193177bC39F79235CCA639200",
   "origin": "user_created",
-  "phase": "WAITING_FOR_REAL_DEADLINES",
+  "phase": "FINALIZED_VERIFIED",
   "transactions": [
     {
       "label": "v3-rug-expiry-01-launch",
@@ -451,6 +451,338 @@
       "readback": "v3-boost-03-evaluate-readback.json",
       "readback_variant": "latest-final",
       "verified": true
+    },
+    {
+      "label": "v3-rug-expiry-20-execute",
+      "actor": "stranger",
+      "method": "execute_verdict",
+      "args": [
+        "v3-rug-expiry",
+        "0x6FD7846ca3A640DEEE45c97312A08eB5251e807a"
+      ],
+      "value_wei": "0",
+      "expected_error": "",
+      "broadcast_hash": "0x1b933dcd526a9c33ed75427e7015467e7536924ab69a614d5fcfa9195480ea02",
+      "tx_hash": "0x1b933dcd526a9c33ed75427e7015467e7536924ab69a614d5fcfa9195480ea02",
+      "status": "FINALIZED",
+      "receipt": "v3-rug-expiry-20-execute-receipt.json",
+      "execution_result": "SUCCESS",
+      "readback": "v3-rug-expiry-20-execute-readback.json",
+      "readback_variant": "latest-final",
+      "verified": true
+    },
+    {
+      "label": "v3-rug-expiry-21-double-execute-rejected",
+      "actor": "stranger",
+      "method": "execute_verdict",
+      "args": [
+        "v3-rug-expiry",
+        "0x6FD7846ca3A640DEEE45c97312A08eB5251e807a"
+      ],
+      "value_wei": "0",
+      "expected_error": "NO_PENDING_VERDICT",
+      "before_state": "v3-rug-expiry-21-double-execute-rejected-before-state.json",
+      "broadcast_hash": "0x158296e05dd16f9ca43f7943c890ca45afd06226322c42a4a8aac4f5784758ce",
+      "tx_hash": "0x158296e05dd16f9ca43f7943c890ca45afd06226322c42a4a8aac4f5784758ce",
+      "status": "FINALIZED",
+      "receipt": "v3-rug-expiry-21-double-execute-rejected-receipt.json",
+      "execution_result": "ERROR",
+      "readback": "v3-rug-expiry-21-double-execute-rejected-readback.json",
+      "readback_variant": "latest-final",
+      "verified": true
+    },
+    {
+      "label": "v3-rug-expiry-22-sell",
+      "actor": "buyer",
+      "method": "sell_tokens",
+      "args": [
+        "v3-rug-expiry",
+        71,
+        "0x5cc2E082831E4D81Adb665Cd17662e925a3421AE"
+      ],
+      "value_wei": "0",
+      "expected_error": "",
+      "broadcast_hash": "0x708ebe121b143d5000c38c4305abc9e8a090b5f77d8446c3c244afac4fbc2e50",
+      "tx_hash": "0x708ebe121b143d5000c38c4305abc9e8a090b5f77d8446c3c244afac4fbc2e50",
+      "status": "FINALIZED",
+      "receipt": "v3-rug-expiry-22-sell-receipt.json",
+      "execution_result": "SUCCESS",
+      "readback": "v3-rug-expiry-22-sell-readback.json",
+      "readback_variant": "latest-final",
+      "verified": true
+    },
+    {
+      "label": "v3-rug-expiry-23-withdraw-buyer",
+      "actor": "buyer",
+      "method": "withdraw",
+      "args": [],
+      "value_wei": "0",
+      "expected_error": "",
+      "broadcast_hash": "0x9a0202317e30bd5eb73b4855b77a0285609b343043dbd949fdbfbc18335ca4ba",
+      "tx_hash": "0x9a0202317e30bd5eb73b4855b77a0285609b343043dbd949fdbfbc18335ca4ba",
+      "status": "FINALIZED",
+      "receipt": "v3-rug-expiry-23-withdraw-buyer-receipt.json",
+      "execution_result": "SUCCESS",
+      "readback": "v3-rug-expiry-23-withdraw-buyer-readback.json",
+      "readback_variant": "latest-final",
+      "verified": true
+    },
+    {
+      "label": "v3-rug-review-20-execute",
+      "actor": "stranger",
+      "method": "execute_verdict",
+      "args": [
+        "v3-rug-review",
+        "0x6FD7846ca3A640DEEE45c97312A08eB5251e807a"
+      ],
+      "value_wei": "0",
+      "expected_error": "",
+      "broadcast_hash": "0xfaa7602c3384d05651486ee77b160afc11c00a494b2401ecbabe81780ce0749b",
+      "tx_hash": "0xfaa7602c3384d05651486ee77b160afc11c00a494b2401ecbabe81780ce0749b",
+      "status": "FINALIZED",
+      "receipt": "v3-rug-review-20-execute-receipt.json",
+      "execution_result": "SUCCESS",
+      "readback": "v3-rug-review-20-execute-readback.json",
+      "readback_variant": "latest-final",
+      "verified": true
+    },
+    {
+      "label": "v3-rug-review-21-double-execute-rejected",
+      "actor": "stranger",
+      "method": "execute_verdict",
+      "args": [
+        "v3-rug-review",
+        "0x6FD7846ca3A640DEEE45c97312A08eB5251e807a"
+      ],
+      "value_wei": "0",
+      "expected_error": "NO_PENDING_VERDICT",
+      "before_state": "v3-rug-review-21-double-execute-rejected-before-state.json",
+      "broadcast_hash": "0x27ae0e9fbc64ee4abd66a6d359c513543f21a20c568334d987fa25189be99deb",
+      "tx_hash": "0x27ae0e9fbc64ee4abd66a6d359c513543f21a20c568334d987fa25189be99deb",
+      "status": "FINALIZED",
+      "receipt": "v3-rug-review-21-double-execute-rejected-receipt.json",
+      "execution_result": "ERROR",
+      "readback": "v3-rug-review-21-double-execute-rejected-readback.json",
+      "readback_variant": "latest-final",
+      "verified": true
+    },
+    {
+      "label": "v3-rug-review-22-sell",
+      "actor": "buyer",
+      "method": "sell_tokens",
+      "args": [
+        "v3-rug-review",
+        71,
+        "0x5cc2E082831E4D81Adb665Cd17662e925a3421AE"
+      ],
+      "value_wei": "0",
+      "expected_error": "",
+      "broadcast_hash": "0x97044bb1d57985ed18df643fbc649058deacc225be69d24b6b2ee0f3c732ef28",
+      "tx_hash": "0x97044bb1d57985ed18df643fbc649058deacc225be69d24b6b2ee0f3c732ef28",
+      "status": "FINALIZED",
+      "receipt": "v3-rug-review-22-sell-receipt.json",
+      "execution_result": "SUCCESS",
+      "readback": "v3-rug-review-22-sell-readback.json",
+      "readback_variant": "latest-final",
+      "verified": true
+    },
+    {
+      "label": "v3-rug-review-23-withdraw-buyer",
+      "actor": "buyer",
+      "method": "withdraw",
+      "args": [],
+      "value_wei": "0",
+      "expected_error": "",
+      "broadcast_hash": "0x78f491a6864d926398056134301d9e544a88c06f2a565320118ebef058f2ddcf",
+      "tx_hash": "0x78f491a6864d926398056134301d9e544a88c06f2a565320118ebef058f2ddcf",
+      "status": "FINALIZED",
+      "receipt": "v3-rug-review-23-withdraw-buyer-receipt.json",
+      "execution_result": "SUCCESS",
+      "readback": "v3-rug-review-23-withdraw-buyer-readback.json",
+      "readback_variant": "latest-final",
+      "verified": true
+    },
+    {
+      "label": "v3-graduate-20-execute",
+      "actor": "stranger",
+      "method": "execute_verdict",
+      "args": [
+        "v3-graduate",
+        "0x6FD7846ca3A640DEEE45c97312A08eB5251e807a"
+      ],
+      "value_wei": "0",
+      "expected_error": "",
+      "broadcast_hash": "0x6d292e97286970b4bbb2210c6309f4d6b02dc4e95fe03f1aed6b9d5d2dad9f23",
+      "tx_hash": "0x6d292e97286970b4bbb2210c6309f4d6b02dc4e95fe03f1aed6b9d5d2dad9f23",
+      "status": "FINALIZED",
+      "receipt": "v3-graduate-20-execute-receipt.json",
+      "execution_result": "SUCCESS",
+      "readback": "v3-graduate-20-execute-readback.json",
+      "readback_variant": "latest-final",
+      "verified": true
+    },
+    {
+      "label": "v3-graduate-21-double-execute-rejected",
+      "actor": "stranger",
+      "method": "execute_verdict",
+      "args": [
+        "v3-graduate",
+        "0x6FD7846ca3A640DEEE45c97312A08eB5251e807a"
+      ],
+      "value_wei": "0",
+      "expected_error": "NO_PENDING_VERDICT",
+      "before_state": "v3-graduate-21-double-execute-rejected-before-state.json",
+      "broadcast_hash": "0xcead5605d3e159ad6bdbd07a1420ec6b385e9cccbc51d38e6e2b4063f9de9ee3",
+      "tx_hash": "0xcead5605d3e159ad6bdbd07a1420ec6b385e9cccbc51d38e6e2b4063f9de9ee3",
+      "status": "FINALIZED",
+      "receipt": "v3-graduate-21-double-execute-rejected-receipt.json",
+      "execution_result": "ERROR",
+      "readback": "v3-graduate-21-double-execute-rejected-readback.json",
+      "readback_variant": "latest-final",
+      "verified": true
+    },
+    {
+      "label": "v3-graduate-22-sell",
+      "actor": "buyer",
+      "method": "sell_tokens",
+      "args": [
+        "v3-graduate",
+        71,
+        "0x5cc2E082831E4D81Adb665Cd17662e925a3421AE"
+      ],
+      "value_wei": "0",
+      "expected_error": "",
+      "broadcast_hash": "0x5b92c1658d8fd2879b83cc57edb9544f68dd277aeebd7af3cafd3e584062a5ca",
+      "tx_hash": "0x5b92c1658d8fd2879b83cc57edb9544f68dd277aeebd7af3cafd3e584062a5ca",
+      "status": "FINALIZED",
+      "receipt": "v3-graduate-22-sell-receipt.json",
+      "execution_result": "SUCCESS",
+      "readback": "v3-graduate-22-sell-readback.json",
+      "readback_variant": "latest-final",
+      "verified": true
+    },
+    {
+      "label": "v3-graduate-23-withdraw-buyer",
+      "actor": "buyer",
+      "method": "withdraw",
+      "args": [],
+      "value_wei": "0",
+      "expected_error": "",
+      "broadcast_hash": "0x3457624737f4332ed4ff422d3ea928305d9944bfc2c4bb36ba0b63a3ef201876",
+      "tx_hash": "0x3457624737f4332ed4ff422d3ea928305d9944bfc2c4bb36ba0b63a3ef201876",
+      "status": "FINALIZED",
+      "receipt": "v3-graduate-23-withdraw-buyer-receipt.json",
+      "execution_result": "SUCCESS",
+      "readback": "v3-graduate-23-withdraw-buyer-readback.json",
+      "readback_variant": "latest-final",
+      "verified": true
+    },
+    {
+      "label": "v3-graduate-24-withdraw-creator",
+      "actor": "creator",
+      "method": "withdraw",
+      "args": [],
+      "value_wei": "0",
+      "expected_error": "",
+      "broadcast_hash": "0xbbf35e204171994fcee116632f816e1e57098ad3da6d5c9ae2feaad5ee2becfd",
+      "tx_hash": "0xbbf35e204171994fcee116632f816e1e57098ad3da6d5c9ae2feaad5ee2becfd",
+      "status": "FINALIZED",
+      "receipt": "v3-graduate-24-withdraw-creator-receipt.json",
+      "execution_result": "SUCCESS",
+      "readback": "v3-graduate-24-withdraw-creator-readback.json",
+      "readback_variant": "latest-final",
+      "verified": true
+    },
+    {
+      "label": "v3-boost-20-execute",
+      "actor": "stranger",
+      "method": "execute_verdict",
+      "args": [
+        "v3-boost",
+        "0x6FD7846ca3A640DEEE45c97312A08eB5251e807a"
+      ],
+      "value_wei": "0",
+      "expected_error": "",
+      "broadcast_hash": "0xb48013bf8feea0e23f642fd1384c559da56599c94b0541cc6ab8b59a656073bb",
+      "tx_hash": "0xb48013bf8feea0e23f642fd1384c559da56599c94b0541cc6ab8b59a656073bb",
+      "status": "FINALIZED",
+      "receipt": "v3-boost-20-execute-receipt.json",
+      "execution_result": "SUCCESS",
+      "readback": "v3-boost-20-execute-readback.json",
+      "readback_variant": "latest-final",
+      "verified": true
+    },
+    {
+      "label": "v3-boost-21-double-execute-rejected",
+      "actor": "stranger",
+      "method": "execute_verdict",
+      "args": [
+        "v3-boost",
+        "0x6FD7846ca3A640DEEE45c97312A08eB5251e807a"
+      ],
+      "value_wei": "0",
+      "expected_error": "NO_PENDING_VERDICT",
+      "before_state": "v3-boost-21-double-execute-rejected-before-state.json",
+      "broadcast_hash": "0x7213e7417e97d0e9b11b755ba1bbc443d2165f0e430b0c59c31aa64725fc0f9d",
+      "tx_hash": "0x7213e7417e97d0e9b11b755ba1bbc443d2165f0e430b0c59c31aa64725fc0f9d",
+      "status": "FINALIZED",
+      "receipt": "v3-boost-21-double-execute-rejected-receipt.json",
+      "execution_result": "ERROR",
+      "readback": "v3-boost-21-double-execute-rejected-readback.json",
+      "readback_variant": "latest-final",
+      "verified": true
+    },
+    {
+      "label": "v3-boost-22-sell",
+      "actor": "buyer",
+      "method": "sell_tokens",
+      "args": [
+        "v3-boost",
+        71,
+        "0x5cc2E082831E4D81Adb665Cd17662e925a3421AE"
+      ],
+      "value_wei": "0",
+      "expected_error": "",
+      "broadcast_hash": "0x67a28a8752d3ccdae98aa27c1b01fd7b66f13375a1f4fd199d2d5ce2a3a1761b",
+      "tx_hash": "0x67a28a8752d3ccdae98aa27c1b01fd7b66f13375a1f4fd199d2d5ce2a3a1761b",
+      "status": "FINALIZED",
+      "receipt": "v3-boost-22-sell-receipt.json",
+      "execution_result": "SUCCESS",
+      "readback": "v3-boost-22-sell-readback.json",
+      "readback_variant": "latest-final",
+      "verified": true
+    },
+    {
+      "label": "v3-boost-23-withdraw-buyer",
+      "actor": "buyer",
+      "method": "withdraw",
+      "args": [],
+      "value_wei": "0",
+      "expected_error": "",
+      "broadcast_hash": "0x6be5345dd26223e0c3373f83093ac399761acc76b393c8856297dea6bafcf1c5",
+      "tx_hash": "0x6be5345dd26223e0c3373f83093ac399761acc76b393c8856297dea6bafcf1c5",
+      "status": "FINALIZED",
+      "receipt": "v3-boost-23-withdraw-buyer-receipt.json",
+      "execution_result": "SUCCESS",
+      "readback": "v3-boost-23-withdraw-buyer-readback.json",
+      "readback_variant": "latest-final",
+      "verified": true
+    },
+    {
+      "label": "v3-boost-24-withdraw-creator",
+      "actor": "creator",
+      "method": "withdraw",
+      "args": [],
+      "value_wei": "0",
+      "expected_error": "",
+      "broadcast_hash": "0x96cfa2bc2b7a73d413087a4f6f6a9151c2ab2053f76ff0fdeb8c58d19a5f25aa",
+      "tx_hash": "0x96cfa2bc2b7a73d413087a4f6f6a9151c2ab2053f76ff0fdeb8c58d19a5f25aa",
+      "status": "FINALIZED",
+      "receipt": "v3-boost-24-withdraw-creator-receipt.json",
+      "execution_result": "SUCCESS",
+      "readback": "v3-boost-24-withdraw-creator-readback.json",
+      "readback_variant": "latest-final",
+      "verified": true
     }
   ],
   "deadlines": {
@@ -459,7 +791,18 @@
     "v3-graduate": 1794648915,
     "v3-boost": 1794649136
   },
-  "reconciliation": null,
+  "reconciliation": {
+    "eoa_balances_wei": {
+      "creator": "9954088000000000000000",
+      "buyer": "10045912000000000000000",
+      "stranger": "10000000000000000000000"
+    },
+    "contract_balance_wei": "0",
+    "total_wei": "30000000000000000000000",
+    "expected_wei": "30000000000000000000000",
+    "conservation_holds": true,
+    "contract_equals_received_minus_withdrawn": true
+  },
   "accounts": {
     "creator": {
       "address": "0x2BD615B142077A79fc1a64136FF59760bf178B46",

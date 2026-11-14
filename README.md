@@ -10,7 +10,7 @@ All money is real testnet GEN (faucet-funded). 1 accounting unit = 0.001 GEN. La
 
 The current source adds bounded challenge resolution. It is deployed at [0x47767c833bC218e193177bC39F79235CCA639200](https://explorer-studio.genlayer.com/address/0x47767c833bC218e193177bC39F79235CCA639200) on Stable Studionet, chain 61999. [Deployment transaction](https://explorer-studio.genlayer.com/tx/0xa1505183d0dc3943cd867a773dabf6c5658eefee3ac53071dacf9a83b0986d45) is `FINALIZED` with successful execution; the constructor readback was empty. Source SHA-256: `9e47037e0e388789baea4ba432ae41cd7678952d6e42fe6db7c3c9d600e33482`. The frontend targets this v3 address. Existing v2 funds and positions remain at the old contract; there is no automatic migration.
 
-Real v3 business validation is in progress. The live-verification index records only actual receipts and finalized readbacks. The fixed 24-hour expiry cases have not completed yet; v2 history does not establish v3 expiry behavior.
+Real v3 business validation completed on 2026-11-14: 39 FINALIZED / MAJORITY_AGREE transactions, including 29 successful operations and 10 expected rejections. All four real 24-hour expiry cases executed permissionlessly, rejected duplicate execution, and completed redemption and withdrawals. Final account plus contract balances conserve 30,000 faucet-funded test GEN. [Receipts and latest-final readbacks](evidence/v3/live-verification.json).
 
 [Bounded-verdict specification and validation](docs/bounded-verdicts.md). Deployment dry validation writes to `evidence/v3/`; v2 receipts are retained unchanged. GEN used for validation is free faucet-funded testnet currency.
 
