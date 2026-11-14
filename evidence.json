@@ -17,7 +17,7 @@
   "superseded_v1_evidence": "evidence/v1/",
   "version": "3",
   "source_version": "3",
-  "source_deployment_status": "FINALIZED_SUCCESS_BUSINESS_IN_PROGRESS",
+  "source_deployment_status": "FINALIZED_SUCCESS_BUSINESS_VERIFIED",
   "current_source_validation": "evidence/v3/validation.json",
   "historical_v2_contract": "0xf3C716d9ff7FB529cd08e2fD15413E75Ebc1B742",
   "historical_v2_live_verification": "evidence/live-verification.json"
